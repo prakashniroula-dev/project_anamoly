@@ -1,0 +1,647 @@
+make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.4.1
+# Built for x86_64-w64-mingw32
+# Copyright (C) 1988-2023 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Sun Aug  2 14:02:39 2026
+
+# Variables
+
+# environment
+SYSTEMDRIVE = C:
+# makefile (from 'Makefile', line 41)
+OBJ := obj/core/scale.o obj/editor/level_editor.o obj/entities/character.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o
+# makefile (from 'Makefile', line 19)
+LIBDIR := -LSFML/lib
+# environment
+LC_ALL = C
+# makefile (from 'Makefile', line 38)
+SRC :=        src/core/scale.cpp        src/editor/level_editor.cpp     src/entities/character.cpp      src/entities/terrain.cpp     src/graphics/animation.cpp    src/graphics/background.cpp    src/graphics/textures.cpp    src/graphics/tiles.cpp     src/main.cpp  
+# environment
+MXC_BIN_DIR = c:\Users\pr0n3o\AppData\Local\Programs\Microsoft VS Code\e4c7e7b1d6\resources\app\node_modules.asar.unpacked\@microsoft\mxc-sdk\bin
+# makefile (from 'Makefile', line 14)
+EXT := .cpp
+# environment
+TERM_PROMPT_PATH_RAW = E:\home\main\projects\replay
+# makefile (from 'Makefile', line 11)
+OBJDIR := obj
+# environment
+USERPROFILE = C:\Users\pr0n3o
+# makefile (from 'Makefile', line 12)
+BINDIR := bin
+# environment
+LOCALAPPDATA = C:\Users\pr0n3o\AppData\Local
+# environmen 
+t
+WSLENV = WT_SESSION:WT_PROFILE_ID:
+# environment
+VSCODE_CRASH_REPORTER_PROCESS_TYPE = extensionHost
+# environment
+VSCODE_CWD = E:\home\main\projects\replay
+# environment
+SYSTEMROOT = C:\Windows
+# environment
+PROCESSOR_LEVEL = 6
+# environment
+PSMODULEPATH = C:\Program Files\WindowsPowerShell\Modules;C:\Windows\system32\WindowsPowerShell\v1.0\Modules
+# default
+MAKE_COMMAND := make.exe
+# automatic
+@D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
+# environment
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_6456_GQOEWOYEQSWRPJYV
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# default
+.VARIABLES := 
+# automatic
+%D = $(patsubst %/,%,$(patsubst %\,%,$(dir $%)))
+# environment
+TOCD = E:\home\main\projects\replay
+# automatic
+^D = $(patsubst %/,%,$(patsubst %\,%,$(dir $^)))
+# automatic
+%F = $(notdir $%)
+# environment
+VSCODE_CODE_CACHE_PATH = C:\Users\pr0n3o\AppData\Roaming\Code\CachedData\e4c7e7b1d6d060162f4aa7f8225271b67ce1df75
+# environment
+TERM_PROMPT_UNAME = pr0n3o
+# environment
+LANG = C
+# environment
+TOTALCD = E:/home/main/projects/replay
+# default
+.LOADED := 
+# environment
+TMP = C:\Users\pr0n3o\AppData\Local\Temp
+# default
+.INCLUDE_DIRS := 
+# makefile
+MAKEFLAGS = pqrR
+# environment
+ONEDRIVE = C:\Users\pr0n3o\OneDrive
+# makefile (from 'Makefile', line 44)
+DEP := obj/core/scale.d obj/editor/level_editor.d obj/entities/character.d obj/entities/terrain.d obj/graphics/animation.d obj/graphics/background.d obj/graphics/textures.d obj/graphics/tiles.d obj/main.d
+# makefile
+CURDIR := e:/home/main/projects/replay
+# environment
+POSH_INSTALLER = winget
+# automatic
+*D = $(patsubst %/,%,$(patsubst %\,%,$(dir $*)))
+# environment
+PROGRAMFILES = C:\Program Files
+# environment
+MFLAGS = -pqrR
+# default
+.SHELLFLAGS := -c
+# environment
+COMMONPROGRAMW6432 = C:\Program Files\Common Files
+# environment
+COPILOT_OTEL_FILE_EXPORTER_PATH = \\.\nul
+# automatic
++D = $(patsubst %/,%,$(patsubst %\,%,$(dir $+)))
+# makefile (from 'Makefile', line 1)
+MAKEFILE_LIST := Makefile
+# automatic
+@F = $(notdir $@)
+# environment
+VSCODE_PID = 6456
+# makefile (from 'Makefile', line 7)
+APPNAME := myapp
+# automatic
+?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
+# environment
+PROJFPATH = .\.proj_info
+# environment
+WT_PROFILE_ID = {0caa0dad-35be-5f56-a8ff-afceeeaa6101}
+# makefile (from 'Makefile', line 18)
+INCLUDES := -ISFML/include -Isrc
+# automatic
+*F = $(notdir $*)
+# makefile (from 'Makefile', line 17)
+SFML := SFML
+# automatic
+<D = $(patsubst %/,%,$(patsubst %\,%,$(dir $<)))
+# environment
+VSCODE_NLS_CONFIG = {"userLocale":"en-us","osLocale":"en-us","resolvedLanguage":"en","defaultMessagesFile":"C:\\Users\\pr0n3o\\AppData\\Local\\Programs\\Microsoft VS Code\\e4c7e7b1d6\\resources\\app\\out\\nls.messages.json","locale":"en-us","availableLanguages":{}}
+# default
+MAKE_HOST := x86_64-w64-mingw32
+# environment
+PROGRAMDATA = C:\ProgramData
+# default
+SHELL := C:/Program Files/Git/usr/bin/sh.exe
+# environment
+HOMEPATH = \Users\pr0n3o
+# default
+MAKECMDGOALS := all
+# environment
+DRIVERDATA = C:\Windows\System32\Drivers\DriverData
+# environment
+COMSPEC = C:\Windows\system32\cmd.exe
+# environment
+WINDIR = C:\Windows
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# environment
+PATH = C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\Paragon Software\LinuxFS for Windows\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\CMake\bin;C:\Program Files\GitHub CLI\;C:\Users\user\AppData\Local\Programs\oh-my-posh\bin;E:\LLVM\bin\;C:\Program Files\Tailscale\;C:\Users\pr0n3o\AppData\Local\Programs\SiYuan\resources\kernel;C:\Users\pr0n3o\.local\bin;C:\Users\pr0n3o\emsdk;C:\Users\pr0n3o\emsdk\upstream\emscripten;C:\Users\pr0n3o\.cargo\bin;C:\Users\pr0n3o\AppData\Local\Programs\Python\Python311\Scripts\;C:\Users\pr0n3o\AppData\Local\Programs\Python\Python311\;C:\Users\pr0n3o\AppData\Local\Microsoft\WindowsApps;C:\Users\pr0n3o\.path\;C:\Users\pr0n3o\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\pr0n3o\AppData\Roaming\npm;C:\Program Files\mingw64\bin\;C:\Users\pr0n3o\.path\flutter\bin\;C:\Users\pr0n3o\.path\openjdk17\bin\;C:\Users\pr0n3o\.path\gradle\bin\;C:\Users\pr0n3o\.path\Android\cmdline-tools\latest\bin\;C:\Users\pr0n3o\.path\Android\platform-tools\;C:\Users\pr0n3o\AppData\Local\Microsoft\WinGet\Links;C:\Users\pr0n3o\AppData\Roaming\Python\Python311\Scripts;C:\Program Files\Tailscale\;
+# environment
+COMPUTERNAME = WINUX
+# default
+MAKEFILES := 
+# automatic
+^F = $(notdir $^)
+# environment
+PROMPT = [92mpr0n3o@winux[0m:[96mE:/home/main/projects/replay[0m$$$S
+# environment
+APPLICATION_INSIGHTS_NO_STATSBEAT = true
+# environment
+WT_SESSION = 639ca19f-ab55-4dc3-9a4a-09724cb4ba75
+# environment
+LOGONSERVER = \\WINUX
+# environment
+USERNAME = pr0n3o
+# environment
+COMMONPROGRAMFILES = C:\Program Files\Common Files
+# automatic
+?F = $(notdir $?)
+# environment
+PROGRAMW6432 = C:\Program Files
+# environment
+PATHEXT = .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
+# automatic
++F = $(notdir $+)
+# environment
+USERDOMAIN = WINUX
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+OS = Windows_NT
+# makefile
+.DEFAULT_GOAL := all
+# default
+MAKE_VERSION := 4.4.1
+# environment
+PROGRAMFILES(X86) = C:\Program Files (x86)
+# makefile (from 'Makefile', line 25)
+LDFLAGS := -LSFML/lib -lsfml-graphics -lsfml-window -lsfml-system
+# environment
+USERDOMAIN_ROAMINGPROFILE = WINUX
+# environment
+NUMBER_OF_PROCESSORS = 4
+# environment
+PUBLIC = C:\Users\Public
+# environment
+APPDATA = C:\Users\pr0n3o\AppData\Roaming
+# environment
+HOMEDRIVE = C:
+# environment
+PROCESSOR_ARCHITECTURE = AMD64
+# environment
+TERM_PROMPT_PATH = E:/home/main/projects/replay
+# environment
+LCASEMACRO = for /f "tokens=* USEBACKQ" %f IN (`lcase %_str%`) do (set _str=%f)
+# environment
+PROJFPATHRAW = .
+# environment
+COMMONPROGRAMFILES(X86) = C:\Program Files (x86)\Common Files
+# environment
+TERM_PROMPT_PCNAME = winux
+# environment
+_STR = pr0n3o
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+TEMP = C:\Users\pr0n3o\AppData\Local\Temp
+# environment
+VSCODE_IPC_HOOK = \\.\pipe\c29e8353-1.131.0-main-sock
+# makefile (from 'Makefile', line 10)
+SRCDIR := src
+# default
+.RECIPEPREFIX := 
+# automatic
+<F = $(notdir $<)
+# environment
+DPATH = E:/home/main/projects/replay
+# default
+SUFFIXES := 
+# environment
+ALLUSERSPROFILE = C:\ProgramData
+# makefile (from 'Makefile', line 8)
+TARGET := bin/myapp
+# environment
+SESSIONNAME = Console
+# environment
+VSCODE_CLI = 1
+# environment
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# makefile (from 'Makefile', line 22)
+CXXFLAGS := -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs notintermediate shell-export archives jobserver output-sync dospaths
+# environment
+PROCESSOR_REVISION = 3a09
+# makefile (from 'Makefile', line 5)
+CXX := g++
+# environment
+VSCODE_ESM_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+DPATHMACRO = for /f "tokens=* USEBACKQ" %f IN (`w2ldir %_str%`) do (set _str=%f)
+# environment
+PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 58 Stepping 9, GenuineIntel
+# makefile (from 'Makefile', line 35)
+rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
+# variable set hash-table stats:
+# Load=122/1024=12%, Rehash=0, Collisions=10/232=4%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# src/graphics/animation.hpp (key e:/home/main/projects/replay/src/graphics/animation.hpp, mtime 1785650522): could not be opened.
+# src/graphics/tiles.cpp (key e:/home/main/projects/replay/src/graphics/tiles.cpp, mtime 1785647568): could not be opened.
+# src/graphics/textures.hpp (key e:/home/main/projects/replay/src/graphics/textures.hpp, mtime 1785647204): could not be opened.
+# src/entities/character.cpp (key e:/home/main/projects/replay/src/entities/character.cpp, mtime 1785657210): could not be opened.
+# src/entities/game_object.hpp (key e:/home/main/projects/replay/src/entities/game_object.hpp, mtime 1785647360): could not be opened.
+# src/entities/terrain.cpp (key e:/home/main/projects/replay/src/entities/terrain.cpp, mtime 1785655520): could not be opened.
+# src/debug/logs.hpp (key e:/home/main/projects/replay/src/debug/logs.hpp, mtime 1785647246): could not be opened.
+# src/core/scale.cpp (key e:/home/main/projects/replay/src/core/scale.cpp, mtime 1785647554): could not be opened.
+# src/editor/level_editor.hpp (key e:/home/main/projects/replay/src/editor/level_editor.hpp, mtime 1785658508): could not be opened.
+# src/main.cpp (key e:/home/main/projects/replay/src/main.cpp, mtime 1785657854): could not be opened.
+# src/editor (key e:/home/main/projects/replay/src/editor, mtime 1785652349): 4 files, no impossibilities.
+# src/graphics/animation.cpp (key e:/home/main/projects/replay/src/graphics/animation.cpp, mtime 1785650590): could not be opened.
+# src/core/collision.hpp (key e:/home/main/projects/replay/src/core/collision.hpp, mtime 1785642250): could not be opened.
+# src (key e:/home/main/projects/replay/src, mtime 1784915574): 9 files, no impossibilities.
+# src/core/scale.hpp (key e:/home/main/projects/replay/src/core/scale.hpp, mtime 1785647544): could not be opened.
+# src/entities/characters.hpp (key e:/home/main/projects/replay/src/entities/characters.hpp, mtime 1785657834): could not be opened.
+# src/entities (key e:/home/main/projects/replay/src/entities, mtime 1785647353): 7 files, no impossibilities.
+# src/graphics/tiles.hpp (key e:/home/main/projects/replay/src/graphics/tiles.hpp, mtime 1785647430): could not be opened.
+# . (key e:/home/main/projects/replay, mtime 1784915458): 10 files, no impossibilities.
+# src/graphics/background.cpp (key e:/home/main/projects/replay/src/graphics/background.cpp, mtime 1785652296): could not be opened.
+# src/graphics/background.hpp (key e:/home/main/projects/replay/src/graphics/background.hpp, mtime 1785649392): could not be opened.
+# src/graphics/textures.cpp (key e:/home/main/projects/replay/src/graphics/textures.cpp, mtime 1785647232): could not be opened.
+# src/entities/terrain.hpp (key e:/home/main/projects/replay/src/entities/terrain.hpp, mtime 1785652768): could not be opened.
+# src/editor/level_editor.cpp (key e:/home/main/projects/replay/src/editor/level_editor.cpp, mtime 1785658554): could not be opened.
+# src/graphics (key e:/home/main/projects/replay/src/graphics, mtime 1785646468): 10 files, no impossibilities.
+# src/core/position.hpp (key e:/home/main/projects/replay/src/core/position.hpp, mtime 1785649176): could not be opened.
+# src/core (key e:/home/main/projects/replay/src/core, mtime 1784917408): 7 files, no impossibilities.
+# src/core/constants.hpp (key e:/home/main/projects/replay/src/core/constants.hpp, mtime 1785658204): could not be opened.
+# src/debug (key e:/home/main/projects/replay/src/debug, mtime 1785647239): 3 files, no impossibilities.
+# src/tests (key e:/home/main/projects/replay/src/tests, mtime 1784921518): 2 files, no impossibilities.
+
+# 52 files, no impossibilities in 30 directories.
+
+# Implicit Rules
+
+obj/%.o: src/%.cpp
+#  recipe to execute (from 'Makefile', line 57):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# 1 implicit rules, 0 (0.0%) terminal.
+# Files
+
+obj/graphics/animation.o: src/graphics/animation.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'graphics/animation'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 14:01:44
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 57):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Not a target:
+src/graphics/tiles.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 10:57:48
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+obj/graphics/animation.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+obj/main.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+obj/core/scale.o: src/core/scale.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'core/scale'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 14:01:30
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 57):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Not a target:
+obj/graphics/textures.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+src/graphics/textures.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 10:52:12
+#  File has been updated.
+#  Successfully updated.
+
+obj/main.o: src/main.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'main'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 14:01:56
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 57):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Not a target:
+obj/core/scale.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+obj/graphics/background.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+bin/myapp: obj/core/scale.o obj/editor/level_editor.o obj/entities/character.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o | bin
+#  Implicit rule search has not been done.
+#  Implicit/static pattern stem: ''
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := bin/myapp
+# automatic
+# * := 
+# automatic
+# < := obj/core/scale.o
+# automatic
+# + := obj/core/scale.o obj/editor/level_editor.o obj/entities/character.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o
+# automatic
+# % := 
+# automatic
+# ^ := obj/core/scale.o obj/editor/level_editor.o obj/entities/character.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o
+# automatic
+# ? := obj/core/scale.o obj/editor/level_editor.o obj/entities/character.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o
+# automatic
+# | := bin
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/15=7%
+#  recipe to execute (from 'Makefile', line 53):
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+obj/entities/character.o: src/entities/character.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'entities/character'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 14:01:38
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 57):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 14:02:06
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/entities/character.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 13:38:30
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/entities/terrain.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 13:10:20
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/main.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 13:49:14
+#  File has been updated.
+#  Successfully updated.
+
+clean:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 76):
+	rm -f $(TARGET)
+	rm -rf $(OBJDIR)
+
+# Not a target:
+src/graphics/animation.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 11:48:10
+#  File has been updated.
+#  Successfully updated.
+
+obj:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 61):
+	mkdir -p $(OBJDIR)
+
+obj/graphics/background.o: src/graphics/background.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'graphics/background'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 14:01:46
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 57):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Not a target:
+src/core/scale.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 10:57:34
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+all: bin/myapp
+#  Phony target (prerequisite of .PHONY).
+#  Command line target.
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/5=0%
+
+# Not a target:
+obj/entities/character.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+obj/editor/level_editor.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+src/editor/level_editor.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 14:00:54
+#  File has been updated.
+#  Successfully updated.
+
+bin:
+#  Implicit rule search has not been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-07-25 00:26:22
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 64):
+	mkdir -p $(BINDIR)
+
+# Not a target:
+obj/entities/terrain.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+obj/entities/terrain.o: src/entities/terrain.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'entities/terrain'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 14:01:40
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 57):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Not a target:
+obj/graphics/tiles.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+obj/editor/level_editor.o: src/editor/level_editor.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'editor/level_editor'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 14:01:34
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 57):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Not a target:
+src/graphics/background.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 12:16:36
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+obj/graphics/tiles.o: src/graphics/tiles.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'graphics/tiles'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 14:01:52
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 57):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+.PHONY: all clean
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+obj/graphics/textures.o: src/graphics/textures.cpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'graphics/textures'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-02 14:01:48
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 57):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# files hash-table stats:
+# Load=36/1024=4%, Rehash=0, Collisions=0/101=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 101 / storage = 1586 B / avg = 15 B
+# current buf: size = 8162 B / used = 1586 B / count = 101 / avg = 15 B
+
+# strcache performance: lookups = 160 / hit rate = 36%
+# hash-table stats:
+# Load=101/8192=1%, Rehash=0, Collisions=0/160=0%
+# Finished Make data base on Sun Aug  2 14:02:39 2026
+
+ 

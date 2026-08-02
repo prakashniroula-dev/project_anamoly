@@ -1,0 +1,5 @@
+make.exe --dry-run --keep-going --print-directory
+make: Entering directory 'e:/home/main/projects/replay'
+g++ obj/core/scale.o obj/editor/level_editor.o obj/entities/character.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o -o bin/myapp -LSFML/lib -lsfml-graphics -lsfml-window -lsfml-system
+make: Leaving directory 'e:/home/main/projects/replay'
+ 
