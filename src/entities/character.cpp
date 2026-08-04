@@ -277,10 +277,10 @@ void Character::drawDebugBounds(sf::RenderWindow& win) {
     debugFeet.setOutlineThickness(2.f);
     win.draw(debugFeet);
 
-    sf::CircleShape dot(4.f);
-    dot.setPosition(pos - sf::Vector2f(4.f, 4.f));
-    dot.setFillColor(sf::Color::Cyan);
-    win.draw(dot);
+    // sf::CircleShape dot(4.f);
+    // dot.setPosition(pos - sf::Vector2f(4.f, 4.f));
+    // dot.setFillColor(sf::Color::Cyan);
+    // win.draw(dot);
 }
 
 // ---------- PUBLIC INTERFACE ----------
