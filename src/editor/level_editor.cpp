@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <SFML/Graphics.hpp>
 #include <debug/logs.hpp>
+#include <cmath>
 
 void LevelEditor::paintTile(int tx, int ty)
 {
