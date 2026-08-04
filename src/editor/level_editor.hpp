@@ -1,7 +1,7 @@
 // src/editor/LevelEditor.hpp
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <entities/Terrain.hpp>
+#include <entities/terrain.hpp>
 
 class LevelEditor {
 public:
