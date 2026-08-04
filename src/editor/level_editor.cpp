@@ -1,11 +1,12 @@
 // src/editor/LevelEditor.cpp
 #include <core/constants.hpp>
-#include <graphics/Tiles.hpp>
+#include <graphics/tiles.hpp>
 #include <editor/level_editor.hpp>
 #include <core/scale.hpp>
 #include <iostream>
 #include <algorithm>
 #include <SFML/Graphics.hpp>
+#include <debug/logs.hpp>
 
 void LevelEditor::paintTile(int tx, int ty)
 {
@@ -127,7 +128,7 @@ void LevelEditor::updatePaletteLayout(const sf::Vector2u& windowSize)
     updateHighlightPosition();
 
     // Scale info text character size
-    int charSize = static_cast<int>(20 * std::min(scale.x, scale.y));
+    int charSize = static_cast<int>(16 * std::min(scale.x, scale.y));
     tileInfo.setCharacterSize(charSize);
 }
 
@@ -174,6 +175,7 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
 
             isPainting = true;
             lastPaintedTile = {-1, -1};
+            Log::info << "Painting tile at (" << tx << ", " << ty << ") with ID " << selectedTile << std::endl;
             paintTile(tx, ty);
         }
         else if (btnPressed->button == sf::Mouse::Button::Right)
@@ -270,7 +272,9 @@ void LevelEditor::draw(sf::RenderWindow &window)
     }
 
     tileInfo.setPosition(sf::Vector2f(10.f * std::min(Scale::getVec().x, Scale::getVec().y), 10.f * std::min(Scale::getVec().x, Scale::getVec().y)));
-    tileInfo.setString("Tile: " + std::to_string(selectedTile) + "  (scroll)  [E: toggle grid/palette]");
+    tileInfo.setString("[f1: save], [esc: exit], [e: toggle grid], [mouse wheel: change tile]\n"
+                       "Selected Tile ID: " + std::to_string(selectedTile) +
+                       "\nHovered Tile: (" + std::to_string(hoveredTile.x) + ", " + std::to_string(hoveredTile.y) + ")");
     window.draw(tileInfo);
 
     // ---- Restore original view ----

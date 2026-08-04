@@ -13,19 +13,25 @@ BINDIR := bin
 
 EXT := .cpp
 
-# SFML
+# SFML local folder (used only on Windows)
 SFML := SFML
-INCLUDES := -I$(SFML)/include -I$(SRCDIR)
-LIBDIR := -L$(SFML)/lib
 
-# Compiler flags
+# Detect OS
+UNAME := $(shell uname -s)
+
+ifeq ($(UNAME), Linux)
+    # Linux: use system-installed SFML (no -I/-L)
+    INCLUDES := -I$(SRCDIR)
+    LDFLAGS  := -lsfml-graphics -lsfml-window -lsfml-system
+else
+    # Windows (MSYS2, MinGW, Cygwin) or unknown: use local SFML folder
+    INCLUDES := -I$(SFML)/include -I$(SRCDIR)
+    LIBDIR   := -L$(SFML)/lib
+    LDFLAGS  := $(LIBDIR) -lsfml-graphics -lsfml-window -lsfml-system
+endif
+
+# Compiler flags (includes are added here)
 CXXFLAGS := -std=c++17 -Wall -MMD -MP $(INCLUDES)
-
-# Linker flags
-LDFLAGS := $(LIBDIR) \
-	-lsfml-graphics \
-	-lsfml-window \
-	-lsfml-system
 
 ########################################################################
 ######################### Source Collection ############################

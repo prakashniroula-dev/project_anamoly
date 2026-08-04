@@ -4,6 +4,7 @@
 #include <core/scale.hpp> // Assuming you move scale.hpp to core/math/ later
 #include <cmath>               // for std::floor
 #include <vector>
+#include <core/constants.hpp>           // For Constants::WORLD_HEIGHT_TILES
 
 namespace Tiles {
 
@@ -55,14 +56,14 @@ namespace Tiles {
         float s = Scale::get();
         return sf::Vector2f(
             tx * 32.f * s,
-            32.f * 10 * s - ty * 32.f * s
+            32.f * Constants::WORLD_HEIGHT_TILES * s - ty * 32.f * s
         );
     }
 
     sf::Vector2i getTileGridPosition(sf::Vector2f pos) {
         float s = Scale::get();
         int tx = static_cast<int>(std::floor(pos.x / (32.f * s)));
-        int ty = static_cast<int>(std::floor((32.f * 10 * s - pos.y) / (32.f * s)));
+        int ty = static_cast<int>(std::floor((32.f * Constants::WORLD_HEIGHT_TILES * s - pos.y) / (32.f * s)));
         return sf::Vector2i(tx, ty);
     }
 }

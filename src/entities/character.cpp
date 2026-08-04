@@ -6,7 +6,7 @@
 #include <debug/logs.hpp>
 #include <core/scale.hpp>
 #include <core/collision.hpp>    // Fixed spelling!
-#include <entities/Terrain.hpp>
+#include <entities/terrain.hpp>
 #include <cmath>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/Keyboard.hpp>

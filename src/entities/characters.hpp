@@ -62,15 +62,13 @@ class Character : public GameObject {
     float m_screenHeight = 0.f;
 
     // ---------- BOUNDS FUNCTIONS ----------
-    sf::FloatRect getBounds() const;
-    sf::FloatRect getFeetBounds() const;
     bool onGround() const;
-
+    
     // ---------- PHYSICS ----------
     void physics(float dt);
     void resolveX();
     void resolveY();
-
+    
     // ---------- ANIMATION ----------
     void animate(sf::RenderWindow& win, float dt);
 
@@ -78,9 +76,12 @@ class Character : public GameObject {
     void drawDebugBounds(sf::RenderWindow& win);
 
 public:
+    sf::FloatRect getBounds() const;
+    sf::FloatRect getFeetBounds() const;
     Character(std::string c = Characters::Fighter_Boss);
     
     inline sf::Vector2f getPosition() const { return pos; }
+    inline sf::Vector2f getSize() const { return sf::Vector2f(128.f, 128.f); } // Placeholder size
     
     void setCharacter(std::string c);
     

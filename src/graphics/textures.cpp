@@ -1,5 +1,5 @@
 // src/graphics/Textures.cpp
-#include <debug/Logs.hpp>   // Updated path!
+#include <debug/logs.hpp>   // Updated path!
 #include <unordered_map>
 #include <memory>
 #include <exception>
