@@ -1,5 +1,6 @@
-make.exe --dry-run --keep-going --print-directory
+make.exe --dry-run --always-make --keep-going --print-directory
 make: Entering directory 'e:/home/main/projects/replay'
+ 
 mkdir -p obj/core/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/core/scale.cpp -o obj/core/scale.o
 mkdir -p obj/editor/
@@ -18,6 +19,7 @@ mkdir -p obj/graphics/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/graphics/tiles.cpp -o obj/graphics/tiles.o
 mkdir -p obj/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/main.cpp -o obj/main.o
+mkdir -p bin
 g++ obj/core/scale.o obj/editor/level_editor.o obj/entities/character.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o -o bin/myapp -LSFML/lib -lsfml-graphics -lsfml-window -lsfml-system
 make: Leaving directory 'e:/home/main/projects/replay'
  

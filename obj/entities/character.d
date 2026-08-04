@@ -61,8 +61,8 @@ obj/entities/character.o: src/entities/character.cpp \
  SFML/include/SFML/System/Sleep.hpp \
  SFML/include/SFML/System/TimeoutWithPredicate.hpp \
  SFML/include/SFML/System/Version.hpp src/entities/characters.hpp \
- src/entities/game_object.hpp src/core/constants.hpp src/debug/logs.hpp \
- src/core/scale.hpp src/core/collision.hpp src/entities/terrain.hpp
+ src/entities/game_object.hpp src/core/constants.hpp src/core/scale.hpp \
+ src/debug/logs.hpp src/core/collision.hpp src/entities/terrain.hpp
 src/graphics/textures.hpp:
 SFML/include/SFML/Graphics/Texture.hpp:
 SFML/include/SFML/Graphics/Export.hpp:
@@ -149,7 +149,7 @@ SFML/include/SFML/System/Version.hpp:
 src/entities/characters.hpp:
 src/entities/game_object.hpp:
 src/core/constants.hpp:
-src/debug/logs.hpp:
 src/core/scale.hpp:
+src/debug/logs.hpp:
 src/core/collision.hpp:
 src/entities/terrain.hpp:

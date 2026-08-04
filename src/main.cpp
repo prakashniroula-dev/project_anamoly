@@ -62,9 +62,9 @@ public:
         // Camera parameters – more gradual movement
         viewY = height / 2.f;
         targetY = viewY;
-        smoothSpeed = 350.f;      // pixels per second – slow enough to be smooth
-        topDeadZone = 200.f;      // larger safe zone at the top
-        bottomDeadZone = 100.f;   // smaller safe zone at the bottom
+        smoothSpeed = Character::MAX_FALL_SPEED;      // pixels per second – slow enough to be smooth
+        topDeadZone = 80.f;      // larger safe zone at the top
+        bottomDeadZone = 200.f;   // smaller safe zone at the bottom
 
         // Load resources
         Tiles::load();
@@ -109,6 +109,11 @@ public:
             targetY = charCentreY;
         }
         // else: inside dead‑zone → target unchanged (camera holds)
+
+        // don't show beyond world bounds vertically
+        if ( targetY + (height / 2.0f) > Constants::WORLD_HEIGHT_PIXELS * Scale::get() ) {
+            targetY = Constants::WORLD_HEIGHT_PIXELS * Scale::get() - (height / 2.0f);
+        }
 
         // Linear interpolation with capped speed (gradual movement)
         float diff = targetY - viewY;

@@ -17,4 +17,5 @@ namespace Terrain {
     void saveToFile(const std::string& filename);
     void setTile(int x, int y, int id);
     void eraseTile(int x, int y);
+    int getTile(int x, int y); // Added getter for tile ID
 }

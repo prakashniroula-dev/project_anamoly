@@ -78,9 +78,21 @@ void Terrain::saveToFile(const std::string& filename) {
 
 // src/entities/Terrain.cpp (add at the end)
 void Terrain::setTile(int x, int y, int id) {
-    terrain[{x, y + 1}] = id;
+    if ( id < 0 ) {
+        terrain.erase({x, y + 1});
+    } else {
+        terrain[{x, y + 1}] = id;
+    }
 }
 
 void Terrain::eraseTile(int x, int y) {
     terrain.erase({x, y + 1});
+}
+
+int Terrain::getTile(int x, int y) {
+    auto it = terrain.find({x, y + 1});
+    if (it != terrain.end()) {
+        return it->second;
+    }
+    return -1; // or some default value indicating no tile
 }

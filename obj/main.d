@@ -60,10 +60,9 @@ obj/main.o: src/main.cpp SFML/include/SFML/Graphics.hpp \
  SFML/include/SFML/System/TimeoutWithPredicate.hpp \
  SFML/include/SFML/System/Version.hpp src/debug/logs.hpp \
  src/entities/terrain.hpp src/entities/characters.hpp \
- src/entities/game_object.hpp src/core/constants.hpp \
+ src/entities/game_object.hpp src/core/constants.hpp src/core/scale.hpp \
  src/graphics/tiles.hpp src/graphics/textures.hpp \
- src/graphics/background.hpp src/core/scale.hpp \
- src/editor/level_editor.hpp
+ src/graphics/background.hpp src/editor/level_editor.hpp
 SFML/include/SFML/Graphics.hpp:
 SFML/include/SFML/Graphics/BlendMode.hpp:
 SFML/include/SFML/Graphics/Export.hpp:
@@ -149,8 +148,8 @@ src/entities/terrain.hpp:
 src/entities/characters.hpp:
 src/entities/game_object.hpp:
 src/core/constants.hpp:
+src/core/scale.hpp:
 src/graphics/tiles.hpp:
 src/graphics/textures.hpp:
 src/graphics/background.hpp:
-src/core/scale.hpp:
 src/editor/level_editor.hpp:

@@ -60,22 +60,26 @@ namespace Characters {
 
 // ---------- CHARACTER IMPLEMENTATION ----------
 Character::Character(std::string c) : character(c) {
-    pos = sf::Vector2f(100.f, 32.f * 6 * Scale::get()); // Starting position
+    vel = sf::Vector2f(0.f, 0.f);
+    pos = SPAWN_POS();
 }
 
 void Character::setCharacter(std::string c) { character = c; }
 
 // ---------- BOUNDS ----------
-sf::FloatRect Character::getBounds() const {
+sf::FloatRect Character::getBounds() {
     float s = Scale::get();
     sf::Vector2f offset(OFFSET_X * s, OFFSET_Y * s);
+    if ( direction < 0 ) {
+        offset.x += 10.f * s; // Adjust for left-facing sprite
+    }
     return sf::FloatRect(
         pos + offset,
         sf::Vector2f(BASE_WIDTH * s, BASE_HEIGHT * s)
     );
 }
 
-sf::FloatRect Character::getFeetBounds() const {
+sf::FloatRect Character::getFeetBounds() {
     float s = Scale::get();
     sf::FloatRect full = getBounds();
     float x = full.position.x + (full.size.x - FEET_WIDTH * s) / 2.f;
@@ -86,16 +90,42 @@ sf::FloatRect Character::getFeetBounds() const {
     );
 }
 
-bool Character::onGround() const {
+bool Character::onGround() {
     sf::FloatRect feet = getFeetBounds();
     float s = Scale::get();
     float tileSize = 32.f * s;
 
-    sf::Vector2f center = feet.position + feet.size / 2.f;
-    sf::Vector2i tile = Tiles::getTileGridPosition(center);
+    // (Optional) Extend feet downward by 1 pixel to catch rounding errors
+    feet.size.y += 1.f;
 
-    const TileMap& map = Terrain::getMap();
-    return Tiles::isSolidTile(map, tile.x, tile.y);
+    // Get the tile range that the feet rectangle covers
+    sf::Vector2i topLeft = Tiles::getTileGridPosition(feet.position);
+    sf::Vector2f bottomRight = feet.position + feet.size - sf::Vector2f(0.001f, 0.001f);
+    sf::Vector2i bottomRightTile = Tiles::getTileGridPosition(bottomRight);
+
+    int minTileX = std::min(topLeft.x, bottomRightTile.x);
+    int maxTileX = std::max(topLeft.x, bottomRightTile.x);
+    int minTileY = std::min(topLeft.y, bottomRightTile.y);
+    int maxTileY = std::max(topLeft.y, bottomRightTile.y);
+
+    const TileMap& terrain_map = Terrain::getMap();
+
+    for (int tx = minTileX; tx <= maxTileX; ++tx) {
+        for (int ty = minTileY; ty <= maxTileY; ++ty) {
+            if (!Tiles::isSolidTile(terrain_map, tx, ty)) continue;
+
+            sf::FloatRect tileRect(
+                Tiles::getTilePosition(tx, ty),
+                sf::Vector2f(tileSize, tileSize)
+            );
+
+            // SFML 3.x way: check if intersection exists
+            if (feet.findIntersection(tileRect).has_value()) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 
@@ -115,6 +145,12 @@ void Character::physics(float dt) {
 
     // Update grounded state
     m_grounded = onGround();
+    if ( m_grounded && vel.y > 0.f ) {
+        if ( state == CharacterState::Jumping ) {
+            state = CharacterState::None;
+        }
+        vel.y = 0.f; // Reset vertical velocity when grounded
+    }
 }
 
 void Character::resolveX() {
@@ -212,12 +248,12 @@ void Character::animate(sf::RenderWindow& win, float dt) {
     }
     
     s.setTextureRect(rect);
-    s.setScale(sf::Vector2f(0.9f, 0.9f));
     s.scale(Scale::getVec());
     s.setPosition(pos);
 
     if (currentFrame == info.totalFrames - 1) {
-        state = CharacterState::None;
+        if ( state != CharacterState::Jumping )
+            state = CharacterState::None;
     }
 
     win.draw(s);
@@ -264,14 +300,12 @@ void Character::run() {
 void Character::shoot() {
     if (state != CharacterState::Shooting) timer = 0;
     vel.x = 0;
-    vel.y = 0;
     state = CharacterState::Shooting;
 }
 
 void Character::recharge() {
     state = CharacterState::Recharging;
     vel.x = 0;
-    vel.y = 0;
     timer = 0;
 }
 
@@ -283,7 +317,7 @@ void Character::idle() {
 }
 
 void Character::jump() {
-    if (state == CharacterState::Jumping) return;
+    if (state != CharacterState::None || !onGround()) return;
     state = CharacterState::Jumping;
     vel.y = JUMP_SPEED;
     timer = 0;
@@ -318,5 +352,15 @@ void Character::update(sf::RenderWindow& win, float dt) {
         recharge();
 
     physics(dt);
+    if (pos.y + getSize().y > Constants::WORLD_HEIGHT_PIXELS * Scale::get()) {
+        // Reset to initial position
+        pos = SPAWN_POS();
+        vel = sf::Vector2f(0.f, 0.f);
+        state = CharacterState::None;
+        moving = CharacterMoving::Idle;
+        timer = 0.f;
+        // (Optionally reset animation state)
+    }
+
     timer += dt;
 }
