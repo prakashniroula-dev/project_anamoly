@@ -9,6 +9,7 @@
 #include <graphics/background.hpp>
 #include <core/scale.hpp>
 #include <editor/level_editor.hpp>
+#include <entities/objects.hpp> 
 
 using namespace std;
 
@@ -68,10 +69,13 @@ public:
 
         // Load resources
         Tiles::load();
+        Objects::load();
         Background::load(window);
         Characters::load();
         Terrain::loadFromFile("assets/map.txt");
+        Terrain::loadObjectsFromFile("assets/objects.txt");
         editor.initPalette();
+        editor.initObjectPalette();
         updateScale();
     }
 
@@ -156,13 +160,13 @@ public:
                 }
                 else if (event->is<sf::Event::KeyPressed>()) {
                     const auto& key = event->getIf<sf::Event::KeyPressed>();
-                    if (key->code == sf::Keyboard::Key::F1) {
-                        if (!editor.isActive()) {
-                            editor.setActive(true);
-                        } else {
-                            Terrain::saveToFile("assets/map.txt");
-                            std::cout << "Map saved!\n";
-                        }
+                    if (key->code == sf::Keyboard::Key::F1 || key->code == sf::Keyboard::Key::F2) {
+                        editor.setActive(true);
+                    }
+                    if (key->code == sf::Keyboard::Key::F3) {
+                        Terrain::saveToFile("assets/map.txt");
+                        Terrain::saveObjectsToFile("assets/objects.txt");
+                        Log::info << "Map and objects saved to assets/map.txt and assets/objects.txt" << std::endl;
                     }
                 }
                 editor.handleEvent(*event, window);

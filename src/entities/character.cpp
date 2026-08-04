@@ -1,3 +1,5 @@
+
+
 // src/entities/Character.cpp
 #include <graphics/textures.hpp>
 #include <graphics/tiles.hpp>
@@ -70,9 +72,7 @@ void Character::setCharacter(std::string c) { character = c; }
 sf::FloatRect Character::getBounds() {
     float s = Scale::get();
     sf::Vector2f offset(OFFSET_X * s, OFFSET_Y * s);
-    if ( direction < 0 ) {
-        offset.x += 10.f * s; // Adjust for left-facing sprite
-    }
+    // No direction check here – the box is always centered on pos
     return sf::FloatRect(
         pos + offset,
         sf::Vector2f(BASE_WIDTH * s, BASE_HEIGHT * s)
@@ -137,11 +137,11 @@ void Character::physics(float dt) {
 
     // Horizontal movement
     pos.x += vel.x * dt;
-    resolveX();
+    pos.y += vel.y * dt;
+    resolveCollision(); // testing - one does both
 
     // Vertical movement
-    pos.y += vel.y * dt;
-    resolveY();                 // handles floors, ceilings, and slopes
+    // resolveY();                 // handles floors, ceilings, and slopes
 
     // Update grounded state
     m_grounded = onGround();
@@ -153,75 +153,54 @@ void Character::physics(float dt) {
     }
 }
 
-void Character::resolveX() {
+void Character::resolveCollision() {
     float s = Scale::get();
     float tileSize = 32.f * s;
-    sf::FloatRect charBox = getBounds();
-    
-    sf::Vector2i topLeft = Tiles::getTileGridPosition(charBox.position);
-    sf::Vector2f bottomRight = charBox.position + charBox.size - sf::Vector2f(0.001f, 0.001f);
-    sf::Vector2i bottomRightTile = Tiles::getTileGridPosition(bottomRight);
-    
-    int minTileX = std::min(topLeft.x, bottomRightTile.x) - 1;
-    int maxTileX = std::max(topLeft.x, bottomRightTile.x) + 1;
-    int minTileY = std::min(topLeft.y, bottomRightTile.y) - 1;
-    int maxTileY = std::max(topLeft.y, bottomRightTile.y) + 1;
-    
-    const TileMap& terrain_map = Terrain::getMap();
-    
-    for (int tx = minTileX; tx <= maxTileX; ++tx) {
-        for (int ty = minTileY; ty <= maxTileY; ++ty) {
-            if (!Tiles::isSolidTile(terrain_map, tx, ty)) continue;
-            int tileID = Tiles::getTileSafe(terrain_map, tx, ty);
-
-            sf::FloatRect tileRect(
-                Tiles::getTilePosition(tx, ty),
-                sf::Vector2f(tileSize, tileSize)
-            );
-            auto result = Collision::getCollision(charBox, tileRect);
-            if (!result.collided) continue;
-
-            float sign = (charBox.position.x + charBox.size.x / 2.f < tileRect.position.x + tileRect.size.x / 2.f) ? 1.f : -1.f;
-            pos.x -= result.overlap.x * sign;
-            charBox.position.x = pos.x + OFFSET_X * s;
-        }
-    }
-}
-
-void Character::resolveY() {
-    float s = Scale::get();
-    float tileSize = 32.f * s;
-    sf::FloatRect charBox = getBounds();
-
-    sf::Vector2i topLeft = Tiles::getTileGridPosition(charBox.position);
-    sf::Vector2f bottomRight = charBox.position + charBox.size - sf::Vector2f(0.001f, 0.001f);
-    sf::Vector2i bottomRightTile = Tiles::getTileGridPosition(bottomRight);
-
-    int minTileX = std::min(topLeft.x, bottomRightTile.x) - 1;
-    int maxTileX = std::max(topLeft.x, bottomRightTile.x) + 1;
-    int minTileY = std::min(topLeft.y, bottomRightTile.y) - 1;
-    int maxTileY = std::max(topLeft.y, bottomRightTile.y) + 1;
-
     const TileMap& terrain_map = Terrain::getMap();
 
-    // --- Second pass: handle non‑slope tiles (original logic) ---
-    for (int tx = minTileX; tx <= maxTileX; ++tx) {
-        for (int ty = minTileY; ty <= maxTileY; ++ty) {
-            if (!Tiles::isSolidTile(terrain_map, tx, ty)) continue;
-            int tileID = Tiles::getTileSafe(terrain_map, tx, ty);
+    // We'll iterate a few times to handle cases where resolving one tile
+    // pushes the character into another tile.
+    const int MAX_ITERATIONS = 5;
+    for (int iter = 0; iter < MAX_ITERATIONS; ++iter) {
+        sf::FloatRect charBox = getBounds();
+        bool anyCollision = false;
 
-            sf::FloatRect tileRect(
-                Tiles::getTilePosition(tx, ty),
-                sf::Vector2f(tileSize, tileSize)
-            );
+        // Get the tile range covering the character's bounding box
+        sf::Vector2i topLeft = Tiles::getTileGridPosition(charBox.position);
+        sf::Vector2f bottomRight = charBox.position + charBox.size - sf::Vector2f(0.001f, 0.001f);
+        sf::Vector2i bottomRightTile = Tiles::getTileGridPosition(bottomRight);
 
-            auto result = Collision::getCollision(charBox, tileRect);
-            if (!result.collided) continue;
+        int minTileX = std::min(topLeft.x, bottomRightTile.x) - 1;
+        int maxTileX = std::max(topLeft.x, bottomRightTile.x) + 1;
+        int minTileY = std::min(topLeft.y, bottomRightTile.y) - 1;
+        int maxTileY = std::max(topLeft.y, bottomRightTile.y) + 1;
 
-            float sign = (charBox.position.y + charBox.size.y / 2.f < tileRect.position.y + tileRect.size.y / 2.f) ? 1.f : -1.f;
-            pos.y -= result.overlap.y * sign;
-            charBox.position.y = pos.y + OFFSET_Y * s;
+        for (int tx = minTileX; tx <= maxTileX; ++tx) {
+            for (int ty = minTileY; ty <= maxTileY; ++ty) {
+                if (!Tiles::isSolidTile(terrain_map, tx, ty)) continue;
+
+                sf::FloatRect tileRect(
+                    Tiles::getTilePosition(tx, ty),
+                    sf::Vector2f(tileSize, tileSize)
+                );
+
+                // Check collision
+                auto result = Collision::getCollision(charBox, tileRect);
+                if (!result.collided) continue;
+
+                anyCollision = true;
+
+                // Use the existing resolveCollision from collision.hpp
+                // It will adjust pos on the axis with the smaller overlap.
+                Collision::resolveCollision(charBox, tileRect, pos);
+
+                // Update charBox to reflect new position for subsequent tile checks
+                charBox.position = pos + sf::Vector2f(OFFSET_X * s, OFFSET_Y * s);
+            }
         }
+
+        // If no collisions were found this iteration, we're done
+        if (!anyCollision) break;
     }
 }
 
@@ -249,11 +228,14 @@ void Character::animate(sf::RenderWindow& win, float dt) {
     
     s.setTextureRect(rect);
     s.scale(Scale::getVec());
-    s.setPosition(pos);
+    sf::Vector2f drawPos = pos;
+    if (direction == -1) {
+        drawPos.x -= 10.f * Scale::get();  // or whatever value matches your visual alignment
+    }
+    s.setPosition(drawPos);
 
     if (currentFrame == info.totalFrames - 1) {
-        if ( state != CharacterState::Jumping )
-            state = CharacterState::None;
+        state = CharacterState::None;
     }
 
     win.draw(s);

@@ -74,8 +74,7 @@ class Character : public GameObject {
     
     // ---------- PHYSICS ----------
     void physics(float dt);
-    void resolveX();
-    void resolveY();
+    void resolveCollision();
     
     // ---------- ANIMATION ----------
     void animate(sf::RenderWindow& win, float dt);

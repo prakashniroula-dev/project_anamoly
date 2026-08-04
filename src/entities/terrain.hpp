@@ -1,14 +1,13 @@
-// src/entities/Terrain.hpp
 #pragma once
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <map>
+#include <unordered_map>
+#include <vector>
 #include <utility>
-
-// Forward declare TileMap (we don't need the full definition here)
-using TileMap = std::map<std::pair<int, int>, int>;
+#include <functional>
+#include <graphics/tiles.hpp>
+#include <entities/objects.hpp>
 
 namespace Terrain {
-    // Declarations only - no function bodies!
     void draw(sf::RenderWindow& win, float dt);
     void setMap(const TileMap& new_map);
     const TileMap& getMap();
@@ -17,5 +16,15 @@ namespace Terrain {
     void saveToFile(const std::string& filename);
     void setTile(int x, int y, int id);
     void eraseTile(int x, int y);
-    int getTile(int x, int y); // Added getter for tile ID
+
+    // Object functions
+    const ObjectMap& getObjectMap();                         // for lookups (may be unordered)
+    const std::vector<std::pair<float,float>>& getObjectOrder();  // insertion order
+    void setObject(float x, float y, const ObjectProps& props);
+    void eraseObject(float x, float y);
+    void loadObjectsFromFile(const std::string& filename);
+    void saveObjectsToFile(const std::string& filename);
+    ObjectProps getObject(float x, float y);
+
+    int getTile(int x, int y);
 }

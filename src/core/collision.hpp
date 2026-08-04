@@ -1,4 +1,4 @@
-// collison.hpp (fix filename spelling)
+
 #pragma once
 #include <SFML/Graphics.hpp>
 

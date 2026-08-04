@@ -1,4 +1,3 @@
-// src/editor/LevelEditor.hpp
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <entities/terrain.hpp>
@@ -12,63 +11,114 @@ public:
     void draw(sf::RenderWindow& window);
     void setActive(bool active);
     bool isActive() const;
-    void initPalette();
+    void initPalette();          // tile palette
+    void initObjectPalette();    // object palette
 
 private:
+    enum class EditorMode { Tile, Object };
+    EditorMode currentMode = EditorMode::Tile;
+
+    // --- Tile editing ---
     void updatePaletteLayout(const sf::Vector2u& windowSize);
     void updateHighlightPosition();
     void paintTile(int tx, int ty);
-    void handleRightClickAction(int tx, int ty, bool shiftHeld);
-
-    // Undo/redo helpers
-    void startRecording();
-    void stopRecordingAndPush();
+    void handleRightClickTile(int tx, int ty, bool shiftHeld);
     void setTileDirect(int tx, int ty, int newTile);
     void setTileWithUndo(int tx, int ty, int newTile, bool isPaint);
-    void undo();
-    void redo();
+    void undoTile();
+    void redoTile();
+    void startRecordingTiles();
+    void stopRecordingAndPushTiles();
+
+    // --- Object editing ---
+    void updateObjectPaletteLayout(const sf::Vector2u& windowSize);
+    void updateObjectHighlightPosition();
+    void paintObject(float x, float y);
+    void eraseObject(float x, float y);
+    void setObjectDirect(float x, float y, const ObjectProps& props);
+    void setObjectWithUndo(float x, float y, const ObjectProps& newProps, bool isPaint);
+    void undoObject();
+    void redoObject();
+    void startRecordingObjects();
+    void stopRecordingAndPushObjects();
+
+    // --- General UI ---
+    void drawPalette(sf::RenderWindow& window);
+    void updateObjectCursor();
 
     // Base (unscaled) palette parameters
     float basePaletteTileSize = 32.f;
     float baseSpacing = 4.f;
     int paletteColumns = 10;
 
+    // Object palette parameters (smaller)
+    float baseObjectPaletteTileSize = 24.f;
+    float baseObjectSpacing = 3.f;
+    int objectPaletteColumns = 8;
+
     bool active = false;
-    int selectedTile = 1;   // default tile ID
-    sf::RectangleShape cursor;
-    sf::Text tileInfo;
-    sf::Font font;
-    sf::Vector2i hoveredTile;  // grid coords
-    bool isPainting = false;
-    sf::Vector2i lastPaintedTile;
-    bool showPallete;                     // whether to show pallete
-    bool isErasing;
-    sf::Vector2i lastErasedTile;
 
-    // Palette
-    std::vector<sf::Sprite> paletteSprites;   // tile previews using real textures
-    sf::RectangleShape paletteBackground;     // semi-transparent background
-    sf::RectangleShape selectionHighlight;    // outline around selected tile
-    int paletteTileSize = 32;                 // preview size in pixels
-    sf::Vector2f paletteOffset;
+    // Tile palette
+    int selectedTile = 1;
+    std::vector<sf::Sprite> paletteSprites;
+    sf::RectangleShape paletteBackground;
+    sf::RectangleShape selectionHighlight;
+    bool showPallete = true;
 
-    // Right‑click one‑level undo (per tile)
-    std::vector<int> previousTiles;
-    std::vector<bool> processedInDrag;        // marks tiles already handled in current right‑click drag
+    // Object palette
+    int selectedObject = 0;
+    float currentObjectScale = 1.0f;              // scale for new objects
+    std::vector<sf::Sprite> objectPaletteSprites;
+    sf::RectangleShape objectPaletteBackground;
+    sf::RectangleShape objectSelectionHighlight;
+    bool showObjectPallete = false;               // initially hidden
 
-    // Multi‑level undo/redo
+    // Cursor and hover info
+    sf::RectangleShape tileCursor;                // for tile mode
+    sf::Texture _tempTex;
+    sf::Sprite objectCursor;                      // for object mode (follows mouse)
+    sf::Vector2f mouseWorldPos;                   // latest world‑space mouse position
+    sf::Vector2i hoveredTile;                     // grid coords (tile mode)
+
+    // Tile undo/redo
     struct TileChange {
         int tx, ty;
         int oldTile;
         int newTile;
-        bool isPaint;   // <-- add this line
+        bool isPaint;
     };
-    struct UndoGroup {
+    struct TileUndoGroup {
         std::vector<TileChange> changes;
     };
-    std::vector<UndoGroup> undoStack;
-    std::vector<UndoGroup> redoStack;
-    UndoGroup currentGroup;
-    bool recording = false;
-    static constexpr size_t MAX_UNDO = 6;     // 5–6 levels
+    std::vector<TileUndoGroup> undoStackTiles, redoStackTiles;
+    TileUndoGroup currentGroupTiles;
+    bool recordingTiles = false;
+    static constexpr size_t MAX_UNDO = 6;
+
+    // Object undo/redo
+    struct ObjectChange {
+        float x, y;
+        ObjectProps oldProps;
+        ObjectProps newProps;
+        bool isPaint;
+    };
+    struct ObjectUndoGroup {
+        std::vector<ObjectChange> changes;
+    };
+    std::vector<ObjectUndoGroup> undoStackObjects, redoStackObjects;
+    ObjectUndoGroup currentGroupObjects;
+    bool recordingObjects = false;
+
+    // Per‑tile single‑step undo (right‑click revert)
+    std::vector<int> previousTiles;
+    std::vector<bool> processedInDrag;
+
+    // UI text
+    sf::Text tileInfo;
+    sf::Font font;
+
+    bool isPainting = false;
+    sf::Vector2i lastPaintedTile;
+    bool isErasing = false;
+    sf::Vector2i lastErasedTile;
 };
