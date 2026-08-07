@@ -79,8 +79,7 @@ public:
         Characters::load();
         Terrain::loadFromFile("assets/map.txt");
         Terrain::loadObjectsFromFile("assets/objects.txt");
-        editor.initPalette();
-        editor.initObjectPalette();
+        editor.init();
         updateScale();
     }
 
@@ -157,6 +156,7 @@ public:
 
     void run() {
         while (window.isOpen()) {
+            window.setView(view);
             while (const std::optional event = window.pollEvent()) {
                 if (event->is<sf::Event::Closed>()) {
                     window.close();
@@ -185,7 +185,6 @@ public:
             window.clear();
             
             float dt = clock.restart().asSeconds();
-            window.setView(view);
             
             if (editor.isActive()) {
                 bg.draw(window, dt);
