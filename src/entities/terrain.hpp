@@ -19,6 +19,7 @@ namespace Terrain {
     void eraseTile(int x, int y);
     // In Terrain namespace
     void setTileVector(int x, int y, const std::vector<int>& tiles);
+    bool isSolidTile(int x, int y); // Check if any tile at (x,y) is solid
 
     // Object functions
     const ObjectMap& getObjectMap();                         // for lookups (may be unordered)

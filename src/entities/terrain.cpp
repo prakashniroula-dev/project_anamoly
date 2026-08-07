@@ -275,3 +275,10 @@ void Terrain::setTileVector(int x, int y, const std::vector<int>& tiles) {
         terrain[{x, y + 1}] = tiles;
     }
 }
+
+bool Terrain::isSolidTile(int x, int y) {
+    if (Tiles::isSolidTile(terrain, x, y)) {
+        return true;
+    }
+    return false;
+}

@@ -11,6 +11,7 @@
 #include <editor/level_editor.hpp>
 #include <entities/objects.hpp> 
 #include <graphics/overlay.hpp>
+#include <entities/npc.hpp>
 
 using namespace std;
 
@@ -41,7 +42,8 @@ private:
     
     Background bg;
     Overlay overlay;
-    Character character;
+    Character character = Characters::Fighter_Detective;
+    NPC npc = Characters::Fighter_Boss;
     LevelEditor editor;
 
     // --- Vertical camera state (asymmetric dead‑zone) ---
@@ -142,10 +144,14 @@ public:
         bg.draw(window, dt);
         Terrain::draw(window, dt);
 
-        character.update(window, dt);
-        updateCamera(dt);
+        npc.patrolTo(character.getPosition() / Scale::get()); // Example patrol target
 
+        character.update(window, dt);
+        npc.update(window, dt);
+        updateCamera(dt);
+        
         overlay.draw(window, dt);
+        npc.draw(window, dt);
         character.draw(window, dt);
     }
 

@@ -87,10 +87,15 @@ namespace Tiles {
         );
     }
 
-    sf::Vector2i getTileGridPosition(sf::Vector2f pos) {
+    sf::Vector2i getTileGridPosition(sf::Vector2f scaled_pos) {
         float s = Scale::get();
-        int tx = static_cast<int>(std::floor(pos.x / (32.f * s)));
-        int ty = static_cast<int>(std::floor((32.f * Constants::WORLD_HEIGHT_TILES * s - pos.y) / (32.f * s)));
+        scaled_pos /= s; // Convert back to unscaled coordinates
+
+        const float EPSILON = 0.0001f;
+        scaled_pos.y -= EPSILON;
+        
+        int tx = static_cast<int>(std::floor(scaled_pos.x / Constants::TILE_SIZE));
+        int ty = static_cast<int>(std::floor((Constants::TILE_SIZE * Constants::WORLD_HEIGHT_TILES - scaled_pos.y) / Constants::TILE_SIZE));
         return sf::Vector2i(tx, ty);
     }
 }

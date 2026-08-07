@@ -50,8 +50,8 @@ namespace Characters {
             {Anim::Run, {"run.png", 10, 75}},
             {Anim::Jump, {"jump.png", 10, 80}},
             {Anim::Idle, {"idle.png", 6, 80}},
-            {Anim::Shoot, {"shoot.png", 11, 80}},
-            {Anim::Recharge, {"recharge.png", 6, 80}}
+            {Anim::Shoot, {"shot.png", 4, 80}},
+            {Anim::Recharge, {"recharge.png", 17, 80}}
         });
     }
 
@@ -61,7 +61,7 @@ namespace Characters {
 
 
 // ---------- CHARACTER IMPLEMENTATION ----------
-Character::Character(std::string c) : character(c) {
+Character::Character(std::string c, bool playerControls) : character(c), m_playerControls(playerControls) {
     vel = sf::Vector2f(0.f, 0.f);
     pos = SPAWN_POS();
 }
@@ -101,8 +101,7 @@ bool Character::onGround() {
 
     // Get the tile range that the feet rectangle covers
     sf::Vector2i topLeft = Tiles::getTileGridPosition(feet.position);
-    sf::Vector2f bottomRight = feet.position + feet.size - sf::Vector2f(0.001f, 0.001f);
-    sf::Vector2i bottomRightTile = Tiles::getTileGridPosition(bottomRight);
+    sf::Vector2i bottomRightTile = Tiles::getTileGridPosition(feet.position + feet.size);
 
     int minTileX = std::min(topLeft.x, bottomRightTile.x);
     int maxTileX = std::max(topLeft.x, bottomRightTile.x);
@@ -168,8 +167,7 @@ void Character::resolveCollision() {
 
         // Get the tile range covering the character's bounding box
         sf::Vector2i topLeft = Tiles::getTileGridPosition(charBox.position);
-        sf::Vector2f bottomRight = charBox.position + charBox.size - sf::Vector2f(0.001f, 0.001f);
-        sf::Vector2i bottomRightTile = Tiles::getTileGridPosition(bottomRight);
+        sf::Vector2i bottomRightTile = Tiles::getTileGridPosition(charBox.position + charBox.size);
 
         int minTileX = std::min(topLeft.x, bottomRightTile.x) - 1;
         int maxTileX = std::max(topLeft.x, bottomRightTile.x) + 1;
@@ -287,8 +285,8 @@ void Character::run() {
 }
 
 void Character::shoot() {
+    if ( state != CharacterState::None) return;
     if (state != CharacterState::Shooting) timer = 0;
-    vel.x = 0;
     state = CharacterState::Shooting;
 }
 
@@ -320,24 +318,24 @@ void Character::draw(sf::RenderWindow& win, float dt) {
 void Character::update(sf::RenderWindow& win, float dt) {
     m_screenHeight = static_cast<float>(win.getSize().y);
 
+    if (m_playerControls) {
+        bool shiftKey = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift);
+        vel.x = 0;
+        moving = CharacterMoving::Idle;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) walk(1);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) walk(-1);
 
-    bool shiftKey = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift);
-    vel.x = 0;
-    moving = CharacterMoving::Idle;
+        if (moving == CharacterMoving::Walking && shiftKey) run();
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) walk();
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) walk(-1);
+        if (state != CharacterState::Jumping && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+            jump();
 
-    if (moving == CharacterMoving::Walking && shiftKey) run();
+        if (state != CharacterState::Recharging && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+            shoot();
 
-    if (state != CharacterState::Jumping && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
-        jump();
-
-    if (state != CharacterState::Recharging && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-        shoot();
-
-    if (state != CharacterState::Recharging && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
-        recharge();
+        if (state != CharacterState::Recharging && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
+            recharge();
+    }
 
     physics(dt);
     if (pos.y + getSize().y > Constants::WORLD_HEIGHT_PIXELS) {

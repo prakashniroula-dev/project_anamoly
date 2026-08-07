@@ -1094,31 +1094,6 @@ void LevelEditor::draw(sf::RenderWindow &window)
         }
     }
 
-    // ---- Info text ----
-    float minScale = std::min(Scale::getVec().x, Scale::getVec().y);
-    tileInfo.setPosition(sf::Vector2f(10.f * minScale, 10.f * minScale));
-    std::string modeStr = (currentMode == EditorMode::Tile) ? "TILE" : "OBJECT";
-    std::string selectedStr;
-    std::string hoverStr;
-    if (currentMode == EditorMode::Tile)
-    {
-        selectedStr = "Tile ID: " + std::to_string(selectedTile);
-        hoverStr = "Hovered Tile: (" + std::to_string(hoveredTile.x) + ", " + std::to_string(hoveredTile.y) + ")";
-    }
-    else
-    {
-        selectedStr = "Object ID: " + std::to_string(selectedObject) + "  Scale: " + std::to_string(currentObjectScale);
-        hoverStr = "Mouse Pos: (" + std::to_string(mouseWorldPos.x) + ", " + std::to_string(mouseWorldPos.y) + ")";
-    }
-    tileInfo.setString(
-        "[F1: tiles] [F2: objects]  [E: toggle tile palette] [O: toggle object palette]\n"
-        "[U: undo] [R: redo]\n"
-        "Mode: " +
-        modeStr +
-        "\n" + selectedStr +
-        "\n" + hoverStr);
-    window.draw(tileInfo);
-
     window.setView(originalView);
 }
 

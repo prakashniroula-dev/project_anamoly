@@ -1,4 +1,4 @@
-// src/entities/Character.hpp
+// src/entities/characters.hpp
 #pragma once
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -33,9 +33,11 @@ namespace Characters {
 }
 
 class Character : public GameObject {
+    protected:
     enum CharacterMoving { Idle, Walking, Running };
     enum CharacterState { None, Jumping, Shooting, Recharging };
     bool m_grounded = false;
+    bool m_playerControls = true;
 
     // ---------- PHYSICS CONSTANTS ----------
     // ---------- PHYSICS CONSTANTS ----------
@@ -55,9 +57,8 @@ class Character : public GameObject {
     static constexpr float FEET_HEIGHT = 1.f;
 
     // Change this line:
-    inline sf::Vector2f SPAWN_POS() const { return sf::Vector2f(2.f * 32.f, 10.f * 32.f); }
-    private:
-
+    sf::Vector2f SPAWN_POS() { return sf::Vector2f(2.f * 32.f, 10.f * 32.f); }
+    protected:
     float timer = 0;
     CharacterState state = CharacterState::None;
     CharacterMoving moving = CharacterMoving::Idle;
@@ -83,7 +84,7 @@ class Character : public GameObject {
 public:
     sf::FloatRect getBounds();
     sf::FloatRect getFeetBounds();
-    Character(std::string c = Characters::Fighter_Boss);
+    Character(std::string c = Characters::Fighter_Boss, bool playerControls = true);
     
     inline sf::Vector2f getPosition() const { return pos * Scale::get(); }
     inline sf::Vector2f getSize() const { return sf::Vector2f(128.f, 128.f); } // Placeholder size
