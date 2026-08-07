@@ -30,7 +30,8 @@ namespace Objects
         {"industrial_zone/objects/ladder", 3},
         {"industrial_zone/objects/locker", 4},
         {"industrial_zone/objects/mop", 1},
-        {"industrial_zone/objects/pointer", 2}
+        {"industrial_zone/objects/pointer", 2},
+        {"industrial_zone/objects/numbers", 10}
     };
     
     for ( const auto& [path, count] : objectKeys) {
