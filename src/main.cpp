@@ -16,10 +16,10 @@
 using namespace std;
 
 void showInfoBox(const std::string& message) {
-    sf::RenderWindow box(sf::VideoMode({400, 150}), "Info");
+    sf::RenderWindow box(sf::VideoMode({800, 150}), "Info");
     sf::Font font;
     // Load a default system font or supply your own file path
-    if (!font.openFromFile("arial.ttf")) return; 
+    if (!font.openFromFile("assets/fonts/orbitron.ttf")) return; 
 
     sf::Text text(font, message, 16);
     text.setFillColor(sf::Color::White);
@@ -198,7 +198,7 @@ public:
                 else if (event->is<sf::Event::KeyPressed>()) {
                     const auto& key = event->getIf<sf::Event::KeyPressed>();
                     const bool ctrlHeld = key->control;
-                    if (key->code == sf::Keyboard::Key::F1 || key->code == sf::Keyboard::Key::F2) {
+                    if (key->code == sf::Keyboard::Key::F1 || key->code == sf::Keyboard::Key::F2 || key->code == sf::Keyboard::Key::F3) {
                         editor.setActive(true);
                     }
                     if (key->code == sf::Keyboard::Key::S && ctrlHeld) {
@@ -206,7 +206,7 @@ public:
                         Terrain::saveObjectsToFile("assets/objects.txt");
                         Terrain::saveSolidToFile("assets/solid_tiles.txt");
                         Log::info << "Map and objects saved to assets/map.txt and assets/objects.txt" << std::endl;
-                        showInfoBox("Map and objects saved to assets/map.txt and assets/objects.txt");
+                        showInfoBox("Saved!, assets/(map.txt, objects.txt, solid_tiles.txt)");
                     }
                 }
                 editor.handleEvent(*event, window);
