@@ -57,7 +57,7 @@ class Character : public GameObject {
     static constexpr float FEET_HEIGHT = 1.f;
 
     // Change this line:
-    sf::Vector2f SPAWN_POS() { return sf::Vector2f(2.f * 32.f, 10.f * 32.f); }
+    sf::Vector2f SPAWN_POS() { return sf::Vector2f(2.f, 2.f); }
     protected:
     float timer = 0;
     CharacterState state = CharacterState::None;

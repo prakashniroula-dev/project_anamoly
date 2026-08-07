@@ -7,6 +7,8 @@
 #include <graphics/tiles.hpp>
 #include <entities/objects.hpp>
 
+using SolidMap = std::map<std::pair<int, int>, int>;
+
 namespace Terrain {
     void draw(sf::RenderWindow& win, float dt);
     void setMap(const TileMap& new_map);
@@ -20,8 +22,16 @@ namespace Terrain {
     void setTileVector(int x, int y, const std::vector<int>& encodedTiles);
     std::vector<int> getTile(int x, int y);                   // returns encoded ints
     void eraseTile(int x, int y);
-    // In Terrain namespace
-    bool isSolidTile(int x, int y); // Check if any tile at (x,y) is solid
+
+    const SolidMap& getSolidMap();
+    void setSolidTile(int x, int y, int type);   // type > 0 = solid
+    void eraseSolidTile(int x, int y);
+    int getSolidTile(int x, int y);              // returns 0 if none
+    void loadSolidFromFile(const std::string& filename);
+    void saveSolidToFile(const std::string& filename);
+
+    // Update isSolidTile to check both normal tiles and solid layer
+    bool isSolidTile(int x, int y);  // already declared; we'll modify its implementation
 
     // Object functions
     const ObjectMap& getObjectMap();                         // for lookups (may be unordered)

@@ -23,8 +23,6 @@ namespace Tiles {
         return (it != map.end()) ? it->second : std::vector<int>();  // 0 = empty/no tile
     }
 
-    bool isSolidTile(const TileMap& terrain_map, int tx, int ty);
-
     sf::Vector2f getTilePosition(int tx, int ty);
 
     sf::Vector2i getTileGridPosition(sf::Vector2f pos);

@@ -27,12 +27,66 @@ namespace
 
     // Object storage (unordered for O(1) lookup)
     ObjectMap objectMap;
+
+    // Solid tile storage
+    SolidMap solidMap;
+
     // Insertion order (used for drawing and save/load order)
     std::vector<std::pair<float, float>> objectOrder;
 }
 
 namespace Terrain
 {
+
+     const SolidMap& getSolidMap() { return solidMap; }
+
+    void setSolidTile(int x, int y, int type) {
+        if (type <= 0)
+            solidMap.erase({x, y});
+        else
+            solidMap[{x, y}] = type;
+    }
+
+    void eraseSolidTile(int x, int y) {
+        solidMap.erase({x, y});
+    }
+
+    int getSolidTile(int x, int y) {
+        auto it = solidMap.find({x, y});
+        return (it != solidMap.end()) ? it->second : 0;
+    }
+
+    void loadSolidFromFile(const std::string& filename) {
+        std::ifstream file(filename);
+        if (!file.is_open()) return;
+        solidMap.clear();
+        std::string line;
+        while (std::getline(file, line)) {
+            if (line.empty()) continue;
+            std::istringstream iss(line);
+            int x, y, type;
+            char comma1, comma2;
+            if (iss >> x >> comma1 >> y >> comma2 >> type) {
+                if (comma1 == ',' && comma2 == ',') {
+                    solidMap[{x, y}] = type;
+                }
+            }
+        }
+    }
+
+    void saveSolidToFile(const std::string& filename) {
+        std::ofstream file(filename);
+        if (!file.is_open()) return;
+        for (const auto& [pos, type] : solidMap) {
+            file << pos.first << "," << pos.second << "," << type << "\n";
+        }
+    }
+
+    bool isSolidTile(int x, int y) {
+        if (getSolidTile(x, y) > 0)
+            return true;
+        return false;
+    }
 
     std::vector<int> getTile(int x, int y)
     {
@@ -324,13 +378,4 @@ namespace Terrain
                  << (props.flipY ? 1 : 0) << "\n";
         }
     }
-}
-
-bool Terrain::isSolidTile(int x, int y)
-{
-    if (Tiles::isSolidTile(terrain, x, y))
-    {
-        return true;
-    }
-    return false;
 }

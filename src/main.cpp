@@ -15,6 +15,27 @@
 
 using namespace std;
 
+void showInfoBox(const std::string& message) {
+    sf::RenderWindow box(sf::VideoMode({400, 150}), "Info");
+    sf::Font font;
+    // Load a default system font or supply your own file path
+    if (!font.openFromFile("arial.ttf")) return; 
+
+    sf::Text text(font, message, 16);
+    text.setFillColor(sf::Color::White);
+    text.setPosition({20, 50});
+
+    while (box.isOpen()) {
+        while (const std::optional event = box.pollEvent()) {
+            if (event->is<sf::Event::Closed>())
+                box.close();
+        }
+        box.clear(sf::Color(50, 50, 50));
+        box.draw(text);
+        box.display();
+    }
+}
+
 class FpsDisplay {
     float fpsDisplayTimer = 0.0f;
     int frameCount = 0;
@@ -43,7 +64,7 @@ private:
     Background bg;
     Overlay overlay;
     Character character = Characters::Fighter_Detective;
-    NPC npc = Characters::Fighter_Boss;
+//     NPC npc = Characters::Fighter_Boss;
     LevelEditor editor;
 
     // --- Vertical camera state (asymmetric dead‑zone) ---
@@ -79,6 +100,7 @@ public:
         Characters::load();
         Terrain::loadFromFile("assets/map.txt");
         Terrain::loadObjectsFromFile("assets/objects.txt");
+        Terrain::loadSolidFromFile("assets/solid_tiles.txt");
         editor.init();
         updateScale();
     }
@@ -123,6 +145,11 @@ public:
             targetY = Constants::WORLD_HEIGHT_PIXELS * Scale::get() - (height / 2.0f);
         }
 
+        // don't show above world bounds vertically
+        if ( targetY - (height / 2.0f) < 0.f ) {
+            targetY = height / 2.0f;
+        }
+
         // Linear interpolation with capped speed (gradual movement)
         float diff = targetY - viewY;
         float maxStep = smoothSpeed * dt;   // how far we can move this frame
@@ -143,14 +170,14 @@ public:
         bg.draw(window, dt);
         Terrain::draw(window, dt);
 
-        npc.patrolTo(character.getPosition() / Scale::get()); // Example patrol target
+//         npc.patrolTo(character.getPosition() / Scale::get()); // Example patrol target
 
         character.update(window, dt);
-        npc.update(window, dt);
+//         npc.update(window, dt);
         updateCamera(dt);
         
         overlay.draw(window, dt);
-        npc.draw(window, dt);
+//         npc.draw(window, dt);
         character.draw(window, dt);
     }
 
@@ -170,13 +197,16 @@ public:
                 }
                 else if (event->is<sf::Event::KeyPressed>()) {
                     const auto& key = event->getIf<sf::Event::KeyPressed>();
+                    const bool ctrlHeld = key->control;
                     if (key->code == sf::Keyboard::Key::F1 || key->code == sf::Keyboard::Key::F2) {
                         editor.setActive(true);
                     }
-                    if (key->code == sf::Keyboard::Key::F3) {
+                    if (key->code == sf::Keyboard::Key::S && ctrlHeld) {
                         Terrain::saveToFile("assets/map.txt");
                         Terrain::saveObjectsToFile("assets/objects.txt");
+                        Terrain::saveSolidToFile("assets/solid_tiles.txt");
                         Log::info << "Map and objects saved to assets/map.txt and assets/objects.txt" << std::endl;
+                        showInfoBox("Map and objects saved to assets/map.txt and assets/objects.txt");
                     }
                 }
                 editor.handleEvent(*event, window);

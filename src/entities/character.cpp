@@ -108,11 +108,9 @@ bool Character::onGround() {
     int minTileY = std::min(topLeft.y, bottomRightTile.y);
     int maxTileY = std::max(topLeft.y, bottomRightTile.y);
 
-    const TileMap& terrain_map = Terrain::getMap();
-
     for (int tx = minTileX; tx <= maxTileX; ++tx) {
         for (int ty = minTileY; ty <= maxTileY; ++ty) {
-            if (!Tiles::isSolidTile(terrain_map, tx, ty)) continue;
+            if (!Terrain::isSolidTile(tx, ty)) continue;
 
             sf::FloatRect tileRect(
                 Tiles::getTilePosition(tx, ty),
@@ -156,7 +154,6 @@ void Character::physics(float dt) {
 void Character::resolveCollision() {
     float s = Scale::get();
     float tileSize = 32.f * s;
-    const TileMap& terrain_map = Terrain::getMap();
 
     // We'll iterate a few times to handle cases where resolving one tile
     // pushes the character into another tile.
@@ -176,7 +173,7 @@ void Character::resolveCollision() {
 
         for (int tx = minTileX; tx <= maxTileX; ++tx) {
             for (int ty = minTileY; ty <= maxTileY; ++ty) {
-                if (!Tiles::isSolidTile(terrain_map, tx, ty)) continue;
+                if (!Terrain::isSolidTile(tx, ty)) continue;
 
                 sf::FloatRect tileRect(
                     Tiles::getTilePosition(tx, ty),

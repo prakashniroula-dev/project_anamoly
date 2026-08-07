@@ -60,7 +60,6 @@ private:
     sf::RectangleShape replaceBtn, stackBtn;
     sf::Text replaceText, stackText;
 
-    void paintTile(int tx, int ty);
     void handleRightClickTile(int tx, int ty, bool shiftHeld);
     void setTileWithUndo(int tx, int ty, int newTile, bool isPaint);
     void startRecording() { undoStack.beginGroup(); }

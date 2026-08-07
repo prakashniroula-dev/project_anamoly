@@ -6,6 +6,7 @@
 #include <vector>
 #include <core/constants.hpp>           // For Constants::WORLD_HEIGHT_TILES
 #include <unordered_map>
+#include <core/tile_encoding.hpp>
 
 namespace Tiles {
 
@@ -13,6 +14,18 @@ namespace Tiles {
         {"power_station", 64},
         {"industrial_zone", 81}
     };
+    
+    static const std::vector<int> non_solid_tiles = 
+    {
+        /* Power station */
+        4, 5, 9, 34, 35, 36, 37, 40, 41, 44, 45,
+        48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+        58, 59, 60, 61, 62, 63,
+
+        /* Industrial zone */
+        64, 73
+    };
+
     const int tile_width = 32;
     const int tile_height = 32;
 
@@ -23,11 +36,6 @@ namespace Tiles {
         }
         return total;
     }
-
-    static const std::vector<int> non_solid_tiles = 
-    {
-        9, 36
-    };
 
     void load() {
         for (const auto& [key, count] : tileKeys) {
@@ -54,29 +62,6 @@ namespace Tiles {
             sf::Vector2i(tile_width, tile_height)
         ));
         return s;
-    }
-
-    bool isSolidTile(const TileMap& terrain_map, int tx, int ty) {
-        auto it = terrain_map.find({tx, ty});
-        if (it == terrain_map.end()) {
-            return false;
-        }
-        bool isSolid = false;
-        for (int tile_id : it->second) {
-            if (tile_id <= 48 || tile_id >= 81) {
-                isSolid = true;
-                for (int nonSolidID : non_solid_tiles) {
-                    if (tile_id == nonSolidID) {
-                        isSolid = false;
-                        break;
-                    }
-                }
-                if (isSolid) {
-                    return true; // If any tile is solid, return true
-                }
-            }
-        }
-        return isSolid;
     }
 
     sf::Vector2f getTilePosition(int tx, int ty) {
