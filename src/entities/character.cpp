@@ -71,10 +71,11 @@ void Character::setCharacter(std::string c) { character = c; }
 // ---------- BOUNDS ----------
 sf::FloatRect Character::getBounds() {
     float s = Scale::get();
+    sf::Vector2f scaledPos = pos * s; // Scale the base position
     sf::Vector2f offset(OFFSET_X * s, OFFSET_Y * s);
-    // No direction check here – the box is always centered on pos
+    
     return sf::FloatRect(
-        pos + offset,
+        scaledPos + offset,
         sf::Vector2f(BASE_WIDTH * s, BASE_HEIGHT * s)
     );
 }
@@ -190,9 +191,13 @@ void Character::resolveCollision() {
 
                 anyCollision = true;
 
-                // Use the existing resolveCollision from collision.hpp
-                // It will adjust pos on the axis with the smaller overlap.
-                Collision::resolveCollision(charBox, tileRect, pos);
+                sf::Vector2f scaledPos = pos * s;
+                
+                // Adjust the scaled position
+                Collision::resolveCollision(charBox, tileRect, scaledPos);
+                
+                // Save it back to our unscaled character position!
+                pos = scaledPos / s;
 
                 // Update charBox to reflect new position for subsequent tile checks
                 charBox.position = pos + sf::Vector2f(OFFSET_X * s, OFFSET_Y * s);
@@ -228,7 +233,9 @@ void Character::animate(sf::RenderWindow& win, float dt) {
     
     s.setTextureRect(rect);
     s.scale(Scale::getVec());
-    sf::Vector2f drawPos = pos;
+    // Scale the drawing position
+    sf::Vector2f drawPos = pos * Scale::get();
+
     if (direction == -1) {
         drawPos.x -= 10.f * Scale::get();  // or whatever value matches your visual alignment
     }
@@ -334,7 +341,7 @@ void Character::update(sf::RenderWindow& win, float dt) {
         recharge();
 
     physics(dt);
-    if (pos.y + getSize().y > Constants::WORLD_HEIGHT_PIXELS * Scale::get()) {
+    if (pos.y + getSize().y > Constants::WORLD_HEIGHT_PIXELS) {
         // Reset to initial position
         pos = SPAWN_POS();
         vel = sf::Vector2f(0.f, 0.f);

@@ -40,14 +40,11 @@ class Character : public GameObject {
     // ---------- PHYSICS CONSTANTS ----------
     // ---------- PHYSICS CONSTANTS ----------
     public:
-    static constexpr float GRAVITY = 1200.f;        // was 600
-    static constexpr float MAX_FALL_SPEED = 600.f;  // was 350
-    static constexpr float JUMP_SPEED = -600.f;     // was -300
-    static constexpr float WALK_SPEED = 200.f;      // was 100
-    static constexpr float RUN_SPEED = 350.f;       // was 200
-
-    static constexpr float ACCELERATION = 900.f;    // how fast we reach full speed
-    static constexpr float FRICTION = 700.f;        // deceleration when no keys pressed
+    static constexpr float GRAVITY = 1000.f;        // was 600
+    static constexpr float MAX_FALL_SPEED = 400.f;  // was 350
+    static constexpr float JUMP_SPEED = -450.f;     // was -300
+    static constexpr float WALK_SPEED = 100.f;      // was 100
+    static constexpr float RUN_SPEED = 200.f;       // was 200
 
     // ---------- COLLISION BOX ----------
     static constexpr float BASE_WIDTH = 28.f;
@@ -57,7 +54,8 @@ class Character : public GameObject {
     static constexpr float FEET_WIDTH = 20.f;
     static constexpr float FEET_HEIGHT = 1.f;
 
-    inline sf::Vector2f SPAWN_POS() const { return Tiles::getTilePosition(2, 5); } // Starting position
+    // Change this line:
+    inline sf::Vector2f SPAWN_POS() const { return sf::Vector2f(2.f * 32.f, 10.f * 32.f); }
     private:
 
     float timer = 0;
@@ -87,7 +85,7 @@ public:
     sf::FloatRect getFeetBounds();
     Character(std::string c = Characters::Fighter_Boss);
     
-    inline sf::Vector2f getPosition() const { return pos; }
+    inline sf::Vector2f getPosition() const { return pos * Scale::get(); }
     inline sf::Vector2f getSize() const { return sf::Vector2f(128.f, 128.f); } // Placeholder size
     
     void setCharacter(std::string c);
