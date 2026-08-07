@@ -19,7 +19,15 @@ LevelEditor::LevelEditor()
       showObjectPallete(false),
       isErasing(false),
       lastErasedTile({-1, -1}),
-      objectCursor(_tempTex)
+      objectCursor(_tempTex),
+      tilePage(0),
+      objectPage(0),
+      prevTileText(font),
+      nextTileText(font),
+        prevObjectText(font),
+        nextObjectText(font),
+        replaceText(font),
+        stackText(font)
 {
     tileCursor.setSize(sf::Vector2f(Constants::TILE_SIZE, Constants::TILE_SIZE));
     tileCursor.setFillColor(sf::Color(255, 255, 255, 100));
@@ -31,8 +39,41 @@ LevelEditor::LevelEditor()
     tileInfo.setFillColor(sf::Color::White);
 
     int totalTiles = Constants::WORLD_WIDTH_TILES * Constants::WORLD_HEIGHT_TILES;
-    previousTiles.resize(totalTiles, -1);
+    previousTiles.resize(totalTiles);
+    for (auto &vec : previousTiles) vec.clear();
     processedInDrag.resize(totalTiles, false);
+
+    // Init navigation buttons
+    prevTileBtn.setFillColor(sf::Color(60, 60, 60));
+    prevTileBtn.setOutlineColor(sf::Color::White);
+    prevTileBtn.setOutlineThickness(1.f);
+    nextTileBtn.setFillColor(sf::Color(60, 60, 60));
+    nextTileBtn.setOutlineColor(sf::Color::White);
+    nextTileBtn.setOutlineThickness(1.f);
+    prevObjectBtn = prevTileBtn;
+    nextObjectBtn = nextTileBtn;
+
+    prevTileText.setFont(font);
+    prevTileText.setString("<");
+    prevTileText.setFillColor(sf::Color::White);
+    nextTileText.setFont(font);
+    nextTileText.setString(">");
+    nextTileText.setFillColor(sf::Color::White);
+    prevObjectText = prevTileText;
+    nextObjectText = nextTileText;
+
+     // Mode buttons
+    replaceBtn.setFillColor(sf::Color(60, 60, 60));
+    replaceBtn.setOutlineColor(sf::Color::White);
+    replaceBtn.setOutlineThickness(1.f);
+    stackBtn = replaceBtn;
+
+    replaceText.setFont(font);
+    replaceText.setString("Replace");
+    replaceText.setFillColor(sf::Color::White);
+    stackText.setFont(font);
+    stackText.setString("Stack");
+    stackText.setFillColor(sf::Color::White);
 }
 
 // ----------------------------------------------------------------------
@@ -40,7 +81,7 @@ LevelEditor::LevelEditor()
 // ----------------------------------------------------------------------
 void LevelEditor::initPalette()
 {
-    const int numTileTypes = 64 + 1;
+    const int numTileTypes = Tiles::getCount();
     float originalWidth = Constants::TILE_SIZE;
     float originalHeight = Constants::TILE_SIZE;
     float scaleX = basePaletteTileSize / originalWidth;
@@ -92,7 +133,7 @@ void LevelEditor::initObjectPalette()
 }
 
 // ----------------------------------------------------------------------
-// Layout updates
+// Layout updates (with pagination)
 // ----------------------------------------------------------------------
 void LevelEditor::updatePaletteLayout(const sf::Vector2u &windowSize)
 {
@@ -106,20 +147,38 @@ void LevelEditor::updatePaletteLayout(const sf::Vector2u &windowSize)
     float winWidth = static_cast<float>(windowSize.x);
     float winHeight = static_cast<float>(windowSize.y);
 
-    const int numTiles = static_cast<int>(paletteSprites.size());
-    const int columns = paletteColumns;
-    const int rows = (numTiles + columns - 1) / columns;
+    const int totalTiles = static_cast<int>(paletteSprites.size());
+    const int perPage = paletteColumns * tileRowsPerPage;
+    const int startIdx = tilePage * perPage;
+    const int endIdx = std::min(startIdx + perPage, totalTiles);
+    const int numDisplayed = endIdx - startIdx;
 
-    float totalWidth = columns * (tileSize + spacing) - spacing;
+    if (numDisplayed <= 0)
+    {
+        // If no tiles on this page, go to previous page
+        if (tilePage > 0)
+        {
+            tilePage--;
+            updatePaletteLayout(windowSize);
+        }
+        return;
+    }
+
+    // Calculate rows needed for this page
+    const int rows = (numDisplayed + paletteColumns - 1) / paletteColumns;
+
+    float totalWidth = paletteColumns * (tileSize + spacing) - spacing;
     float totalHeight = rows * (tileSize + spacing) - spacing;
 
     float startX = (winWidth - totalWidth) / 2.f;
     float startY = 20.f * std::min(scale.x, scale.y);
 
-    for (int i = 0; i < numTiles; ++i)
+    // Position only the visible sprites
+    for (int i = startIdx; i < endIdx; ++i)
     {
-        int row = i / columns;
-        int col = i % columns;
+        int localIdx = i - startIdx;
+        int row = localIdx / paletteColumns;
+        int col = localIdx % paletteColumns;
         float x = startX + col * (tileSize + spacing);
         float y = startY + row * (tileSize + spacing);
         paletteSprites[i].setPosition(sf::Vector2f(x, y));
@@ -127,29 +186,75 @@ void LevelEditor::updatePaletteLayout(const sf::Vector2u &windowSize)
         paletteSprites[i].setScale(sf::Vector2f(spriteScale, spriteScale));
     }
 
+    // Background
     float bgWidth = totalWidth + 20.f * std::min(scale.x, scale.y);
     float bgHeight = totalHeight + 20.f * std::min(scale.x, scale.y);
     paletteBackground.setSize(sf::Vector2f(bgWidth, bgHeight));
     paletteBackground.setPosition(sf::Vector2f(startX - 10.f * std::min(scale.x, scale.y),
                                                startY - 10.f * std::min(scale.x, scale.y)));
 
-    selectionHighlight.setSize(sf::Vector2f(tileSize, tileSize));
-    updateHighlightPosition();
+    // Navigation buttons: placed below the background
+    float btnSize = 30.f * std::min(scale.x, scale.y);
+    float btnSpacing = 10.f * std::min(scale.x, scale.y);
+    float totalBtnWidth = btnSize * 2 + btnSpacing;
+    float btnY = paletteBackground.getPosition().y + paletteBackground.getSize().y + 10.f * std::min(scale.x, scale.y);
 
-    int charSize = static_cast<int>(16 * std::min(scale.x, scale.y));
-    tileInfo.setCharacterSize(charSize);
-}
+    prevTileBtn.setSize(sf::Vector2f(btnSize, btnSize));
+    nextTileBtn.setSize(sf::Vector2f(btnSize, btnSize));
+    prevTileBtn.setPosition(sf::Vector2f(startX + (totalWidth - totalBtnWidth) / 2.f, btnY));
+    nextTileBtn.setPosition(sf::Vector2f(prevTileBtn.getPosition().x + btnSize + btnSpacing, btnY));
 
-void LevelEditor::updateHighlightPosition()
-{
-    if (selectedTile >= 0 && selectedTile < (int)paletteSprites.size())
+    // Button text
+    float charSize = btnSize * 0.6f;
+    prevTileText.setCharacterSize(static_cast<unsigned int>(charSize));
+    nextTileText.setCharacterSize(static_cast<unsigned int>(charSize));
+    sf::FloatRect prevBounds = prevTileText.getLocalBounds();
+    sf::FloatRect nextBounds = nextTileText.getLocalBounds();
+    prevTileText.setPosition(sf::Vector2f(prevTileBtn.getPosition().x + (btnSize - prevBounds.size.x) / 2.f,
+                                          prevTileBtn.getPosition().y + (btnSize - prevBounds.size.y) / 2.f - 2.f));
+    nextTileText.setPosition(sf::Vector2f(nextTileBtn.getPosition().x + (btnSize - nextBounds.size.x) / 2.f,
+                                          nextTileBtn.getPosition().y + (btnSize - nextBounds.size.y) / 2.f - 2.f));
+
+
+    // After nav buttons
+    float modeBtnSize = 40.f * std::min(scale.x, scale.y);
+    float modeSpacing = 10.f * std::min(scale.x, scale.y);
+    float modeY = prevTileBtn.getPosition().y; // same row as nav buttons
+    float modeX = nextTileBtn.getPosition().x + nextTileBtn.getSize().x + modeSpacing;
+
+    replaceBtn.setSize(sf::Vector2f(modeBtnSize, modeBtnSize));
+    stackBtn.setSize(sf::Vector2f(modeBtnSize, modeBtnSize));
+    replaceBtn.setPosition(sf::Vector2f(modeX, modeY));
+    stackBtn.setPosition(sf::Vector2f(modeX + modeBtnSize + modeSpacing, modeY));
+
+    // Text
+    replaceText.setCharacterSize(modeBtnSize * 0.5f);
+    stackText.setCharacterSize(modeBtnSize * 0.5f);
+    // Center text inside buttons
+    // (similar to previous text positioning)
+
+    // Highlight – only if selected tile is on this page
+    if (selectedTile >= startIdx && selectedTile < endIdx)
     {
         const sf::Sprite &spr = paletteSprites[selectedTile];
+        selectionHighlight.setSize(sf::Vector2f(tileSize, tileSize));
         selectionHighlight.setPosition(spr.getPosition());
+        selectionHighlight.setFillColor(sf::Color::Transparent);
+        selectionHighlight.setOutlineColor(sf::Color::Yellow);
+        selectionHighlight.setOutlineThickness(2.f);
     }
+    else
+    {
+        // Hide highlight by making it transparent and outline thin (or move offscreen)
+        selectionHighlight.setFillColor(sf::Color::Transparent);
+        selectionHighlight.setOutlineColor(sf::Color::Transparent);
+        selectionHighlight.setOutlineThickness(0.f);
+    }
+
+    int charSizeInfo = static_cast<int>(16 * std::min(scale.x, scale.y));
+    tileInfo.setCharacterSize(charSizeInfo);
 }
 
-// Object palette layout – smaller cells, sprites scaled to fit
 void LevelEditor::updateObjectPaletteLayout(const sf::Vector2u &windowSize)
 {
     if (objectPaletteSprites.empty())
@@ -162,25 +267,39 @@ void LevelEditor::updateObjectPaletteLayout(const sf::Vector2u &windowSize)
     float winWidth = static_cast<float>(windowSize.x);
     float winHeight = static_cast<float>(windowSize.y);
 
-    const int numObjects = static_cast<int>(objectPaletteSprites.size());
-    const int columns = objectPaletteColumns;
-    const int rows = (numObjects + columns - 1) / columns;
+    const int totalObjects = static_cast<int>(objectPaletteSprites.size());
+    const int perPage = objectPaletteColumns * objectRowsPerPage;
+    const int startIdx = objectPage * perPage;
+    const int endIdx = std::min(startIdx + perPage, totalObjects);
+    const int numDisplayed = endIdx - startIdx;
 
-    float totalWidth = columns * (cellSize + spacing) - spacing;
+    if (numDisplayed <= 0)
+    {
+        if (objectPage > 0)
+        {
+            objectPage--;
+            updateObjectPaletteLayout(windowSize);
+        }
+        return;
+    }
+
+    const int rows = (numDisplayed + objectPaletteColumns - 1) / objectPaletteColumns;
+
+    float totalWidth = objectPaletteColumns * (cellSize + spacing) - spacing;
     float totalHeight = rows * (cellSize + spacing) - spacing;
 
     float startX = (winWidth - totalWidth) / 2.f;
     float startY = 20.f * std::min(scale.x, scale.y);
 
-    for (int i = 0; i < numObjects; ++i)
+    for (int i = startIdx; i < endIdx; ++i)
     {
-        int row = i / columns;
-        int col = i % columns;
+        int localIdx = i - startIdx;
+        int row = localIdx / objectPaletteColumns;
+        int col = localIdx % objectPaletteColumns;
         float x = startX + col * (cellSize + spacing);
         float y = startY + row * (cellSize + spacing);
         objectPaletteSprites[i].setPosition(sf::Vector2f(x, y));
 
-        // Scale sprite to fit inside cell while preserving aspect
         sf::Sprite &spr = objectPaletteSprites[i];
         sf::FloatRect bounds = spr.getLocalBounds();
         float maxDim = std::max(bounds.size.x, bounds.size.y);
@@ -194,20 +313,71 @@ void LevelEditor::updateObjectPaletteLayout(const sf::Vector2u &windowSize)
     objectPaletteBackground.setPosition(sf::Vector2f(startX - 10.f * std::min(scale.x, scale.y),
                                                      startY - 10.f * std::min(scale.x, scale.y)));
 
-    objectSelectionHighlight.setSize(sf::Vector2f(cellSize, cellSize));
-    updateObjectHighlightPosition();
+    // Navigation buttons
+    float btnSize = 30.f * std::min(scale.x, scale.y);
+    float btnSpacing = 10.f * std::min(scale.x, scale.y);
+    float totalBtnWidth = btnSize * 2 + btnSpacing;
+    float btnY = objectPaletteBackground.getPosition().y + objectPaletteBackground.getSize().y + 10.f * std::min(scale.x, scale.y);
 
-    int charSize = static_cast<int>(16 * std::min(scale.x, scale.y));
-    tileInfo.setCharacterSize(charSize);
-}
+    prevObjectBtn.setSize(sf::Vector2f(btnSize, btnSize));
+    nextObjectBtn.setSize(sf::Vector2f(btnSize, btnSize));
+    prevObjectBtn.setPosition(sf::Vector2f(startX + (totalWidth - totalBtnWidth) / 2.f, btnY));
+    nextObjectBtn.setPosition(sf::Vector2f(prevObjectBtn.getPosition().x + btnSize + btnSpacing, btnY));
 
-void LevelEditor::updateObjectHighlightPosition()
-{
-    if (selectedObject >= 0 && selectedObject < (int)objectPaletteSprites.size())
+    float charSize = btnSize * 0.6f;
+    prevObjectText.setCharacterSize(static_cast<unsigned int>(charSize));
+    nextObjectText.setCharacterSize(static_cast<unsigned int>(charSize));
+    sf::FloatRect prevBounds = prevObjectText.getLocalBounds();
+    sf::FloatRect nextBounds = nextObjectText.getLocalBounds();
+    prevObjectText.setPosition(sf::Vector2f(prevObjectBtn.getPosition().x + (btnSize - prevBounds.size.x) / 2.f,
+                                            prevObjectBtn.getPosition().y + (btnSize - prevBounds.size.y) / 2.f - 2.f));
+    nextObjectText.setPosition(sf::Vector2f(nextObjectBtn.getPosition().x + (btnSize - nextBounds.size.x) / 2.f,
+                                            nextObjectBtn.getPosition().y + (btnSize - nextBounds.size.y) / 2.f - 2.f));
+
+    // Highlight – only if selected object is on this page
+    if (selectedObject >= startIdx && selectedObject < endIdx)
     {
         const sf::Sprite &spr = objectPaletteSprites[selectedObject];
-        // Highlight covers the cell (position is top‑left of cell)
+        objectSelectionHighlight.setSize(sf::Vector2f(cellSize, cellSize));
         objectSelectionHighlight.setPosition(spr.getPosition());
+        objectSelectionHighlight.setFillColor(sf::Color::Transparent);
+        objectSelectionHighlight.setOutlineColor(sf::Color::Yellow);
+        objectSelectionHighlight.setOutlineThickness(2.f);
+    }
+    else
+    {
+        objectSelectionHighlight.setFillColor(sf::Color::Transparent);
+        objectSelectionHighlight.setOutlineColor(sf::Color::Transparent);
+        objectSelectionHighlight.setOutlineThickness(0.f);
+    }
+
+    int charSizeInfo = static_cast<int>(16 * std::min(scale.x, scale.y));
+    tileInfo.setCharacterSize(charSizeInfo);
+}
+
+// ----------------------------------------------------------------------
+// Helper: ensure selected index is on its page
+// ----------------------------------------------------------------------
+void LevelEditor::ensureTilePageForIndex(int idx)
+{
+    if (paletteSprites.empty()) return;
+    const int perPage = paletteColumns * tileRowsPerPage;
+    int newPage = idx / perPage;
+    if (newPage != tilePage)
+    {
+        tilePage = newPage;
+        // Re-layout will happen in draw via updatePaletteLayout
+    }
+}
+
+void LevelEditor::ensureObjectPageForIndex(int idx)
+{
+    if (objectPaletteSprites.empty()) return;
+    const int perPage = objectPaletteColumns * objectRowsPerPage;
+    int newPage = idx / perPage;
+    if (newPage != objectPage)
+    {
+        objectPage = newPage;
     }
 }
 
@@ -219,51 +389,70 @@ void LevelEditor::paintTile(int tx, int ty)
     setTileWithUndo(tx, ty, selectedTile, true);
 }
 
-void LevelEditor::setTileDirect(int tx, int ty, int newTile)
-{
-    Terrain::setTile(tx, ty, newTile);
+void LevelEditor::setTileDirect(int tx, int ty, const std::vector<int>& tiles) {
+    Terrain::setTileVector(tx, ty, tiles);
 }
 
-void LevelEditor::setTileWithUndo(int tx, int ty, int newTile, bool isPaint)
-{
-    int oldTile = Terrain::getTile(tx, ty);
-    if (oldTile == newTile)
-        return;
+void LevelEditor::setTileWithUndo(int tx, int ty, int newTile, bool isPaint) {
+    // Get current vector
+    std::vector<int> oldTiles = Terrain::getTile(tx, ty); // returns vector
+    std::vector<int> newTiles;
 
-    if (recordingTiles)
-        currentGroupTiles.changes.push_back({tx, ty, oldTile, newTile, isPaint});
-
-    Terrain::setTile(tx, ty, newTile);
-
-    int index = ty * Constants::WORLD_WIDTH_TILES + tx;
-    if (isPaint)
-        previousTiles[index] = oldTile;
-    else
-        previousTiles[index] = -1;
-}
-
-void LevelEditor::handleRightClickTile(int tx, int ty, bool shiftHeld)
-{
-    int index = ty * Constants::WORLD_WIDTH_TILES + tx;
-    int currentTile = Terrain::getTile(tx, ty);
-
-    int newTileId;
-    if (shiftHeld)
-    {
-        newTileId = -1;
-        previousTiles[index] = -1;
-    }
-    else
-    {
-        if (currentTile != -1 && previousTiles[index] != -1)
-        {
-            newTileId = previousTiles[index];
-            previousTiles[index] = -1;
+    if (stackMode) {
+        newTiles = oldTiles;
+        if (newTile == -1) {
+            if (!newTiles.empty()) newTiles.pop_back();
+        } else {
+            newTiles.push_back(newTile);
         }
-        else
-            return;
+    } else {
+        // Replace mode
+        if (newTile == -1) {
+            newTiles.clear();
+        } else {
+            newTiles = { newTile };
+        }
     }
-    setTileWithUndo(tx, ty, newTileId, false);
+
+    if (oldTiles == newTiles) return;
+
+    // ---- Save to undo stack ----
+    if (recordingTiles) {
+        currentGroupTiles.changes.push_back({tx, ty, oldTiles, newTiles, isPaint});
+    }
+
+    // ---- Store previous vector for right-click restore ----
+    if (isPaint) {
+        int idx = ty * Constants::WORLD_WIDTH_TILES + tx;
+        previousTiles[idx] = oldTiles;   // Save the old stack
+    }
+
+    // Apply to terrain
+    Terrain::setTileVector(tx, ty, newTiles);
+}
+
+void LevelEditor::handleRightClickTile(int tx, int ty, bool shiftHeld) {
+    int idx = ty * Constants::WORLD_WIDTH_TILES + tx;
+
+    if (shiftHeld) {
+        // Shift+Right-click: erase all tiles (like before)
+        std::vector<int> empty;
+        setTileWithUndo(tx, ty, -1, false); // force replace with empty
+        previousTiles[idx].clear();         // clear backup
+        return;
+    }
+
+    // Normal right-click: restore previous vector if available
+    if (!previousTiles[idx].empty()) {
+        // Get current vector
+        std::vector<int> current = Terrain::getTile(tx, ty);
+        // Record this as an undoable action
+        if (recordingTiles) {
+            currentGroupTiles.changes.push_back({tx, ty, current, previousTiles[idx], false});
+        }
+        Terrain::setTileVector(tx, ty, previousTiles[idx]);
+        previousTiles[idx].clear();
+    }
 }
 
 void LevelEditor::startRecordingTiles()
@@ -286,46 +475,29 @@ void LevelEditor::stopRecordingAndPushTiles()
     redoStackTiles.clear();
 }
 
-void LevelEditor::undoTile()
-{
-    if (undoStackTiles.empty())
-        return;
+void LevelEditor::undoTile() {
+    if (undoStackTiles.empty()) return;
     TileUndoGroup group = std::move(undoStackTiles.back());
     undoStackTiles.pop_back();
 
-    for (auto it = group.changes.rbegin(); it != group.changes.rend(); ++it)
-    {
+    for (auto it = group.changes.rbegin(); it != group.changes.rend(); ++it) {
         const auto &change = *it;
-        setTileDirect(change.tx, change.ty, change.oldTile);
-
-        int index = change.ty * Constants::WORLD_WIDTH_TILES + change.tx;
-        if (change.isPaint)
-            previousTiles[index] = -1;
-        else
-            previousTiles[index] = change.newTile;
+        Terrain::setTileVector(change.tx, change.ty, change.oldTiles);
     }
     redoStackTiles.push_back(std::move(group));
 }
 
-void LevelEditor::redoTile()
-{
-    if (redoStackTiles.empty())
-        return;
+void LevelEditor::redoTile() {
+    if (redoStackTiles.empty()) return;
     TileUndoGroup group = std::move(redoStackTiles.back());
     redoStackTiles.pop_back();
 
-    for (auto &change : group.changes)
-    {
-        setTileDirect(change.tx, change.ty, change.newTile);
-
-        int index = change.ty * Constants::WORLD_WIDTH_TILES + change.tx;
-        if (change.isPaint)
-            previousTiles[index] = change.oldTile;
-        else
-            previousTiles[index] = -1;
+    for (auto &change : group.changes) {
+        Terrain::setTileVector(change.tx, change.ty, change.newTiles);
     }
     undoStackTiles.push_back(std::move(group));
 }
+
 
 // ----------------------------------------------------------------------
 // Object manipulation (with separate undo stacks)
@@ -334,7 +506,6 @@ void LevelEditor::paintObject(float x, float y)
 {
     float s = Scale::get();
     ObjectProps newProps{currentObjectScale, selectedObject};
-    // Store normalized coordinates
     setObjectWithUndo(x / s, y / s, newProps, true);
 }
 
@@ -437,7 +608,13 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
     if (!active)
         return;
 
+    if (currentMode == EditorMode::Tile && showPallete)
+        updatePaletteLayout(window.getSize());
+    else if (currentMode == EditorMode::Object && showObjectPallete)
+        updateObjectPaletteLayout(window.getSize());
+
     sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+    sf::Vector2f mouseDefault = window.mapPixelToCoords(mousePixel, window.getDefaultView());
     sf::Vector2f mouseWorld = window.mapPixelToCoords(mousePixel);
     mouseWorldPos = mouseWorld;
 
@@ -514,6 +691,8 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
                     stopRecordingAndPushObjects();
                 redoObject();
             }
+        } else if (keyPressed->scancode == sf::Keyboard::Scancode::M) {
+            stackMode = !stackMode;
         }
     }
 
@@ -527,14 +706,68 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
                 bool clickedPalette = false;
                 if (showPallete)
                 {
-                    for (size_t i = 0; i < paletteSprites.size(); ++i)
+                    // Check navigation buttons first
+                    sf::FloatRect prevBounds = prevTileBtn.getGlobalBounds();
+                    sf::FloatRect nextBounds = nextTileBtn.getGlobalBounds();
+                    if (prevBounds.contains(static_cast<sf::Vector2f>(mouseDefault)))
                     {
-                        if (paletteSprites[i].getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePixel)))
+                        if (tilePage > 0)
                         {
-                            selectedTile = static_cast<int>(i);
-                            updateHighlightPosition();
-                            clickedPalette = true;
-                            break;
+                            tilePage--;
+                            // Ensure selected tile is on new page if possible
+                            int perPage = paletteColumns * tileRowsPerPage;
+                            if (selectedTile >= tilePage * perPage && selectedTile < (tilePage + 1) * perPage)
+                            {
+                                // keep selection
+                            }
+                            else
+                            {
+                                // Select first tile of new page
+                                int newStart = tilePage * perPage;
+                                if (newStart < (int)paletteSprites.size())
+                                    selectedTile = newStart;
+                                else
+                                    selectedTile = 0;
+                            }
+                        }
+                        clickedPalette = true;
+                    }
+                    else if (nextBounds.contains(static_cast<sf::Vector2f>(mouseDefault)))
+                    {
+                        int totalTiles = paletteSprites.size();
+                        int perPage = paletteColumns * tileRowsPerPage;
+                        if ((tilePage + 1) * perPage < totalTiles)
+                        {
+                            tilePage++;
+                            int newStart = tilePage * perPage;
+                            if (newStart < totalTiles)
+                                selectedTile = newStart;
+                        }
+                        clickedPalette = true;
+                    }
+                    // After handling nav buttons, before palette sprite checks
+                    else if (replaceBtn.getGlobalBounds().contains(mouseDefault)) {
+                        stackMode = false;
+                        clickedPalette = true; // to prevent painting
+                    }
+                    else if (stackBtn.getGlobalBounds().contains(mouseDefault)) {
+                        stackMode = true;
+                        clickedPalette = true;
+                    }
+                    else
+                    {
+                        const int perPage = paletteColumns * tileRowsPerPage;
+                        const int startIdx = tilePage * perPage;
+                        const int endIdx = std::min(startIdx + perPage, (int)paletteSprites.size());
+
+                        for (int i = startIdx; i < endIdx; ++i)
+                        {
+                            if (paletteSprites[i].getGlobalBounds().contains(static_cast<sf::Vector2f>(mouseDefault)))
+                            {
+                                selectedTile = i;
+                                clickedPalette = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -553,15 +786,58 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
                 bool clickedObjectPalette = false;
                 if (showObjectPallete)
                 {
-                    for (size_t i = 0; i < objectPaletteSprites.size(); ++i)
+                    // Check object nav buttons
+                    sf::FloatRect prevBounds = prevObjectBtn.getGlobalBounds();
+                    sf::FloatRect nextBounds = nextObjectBtn.getGlobalBounds();
+                    if (prevBounds.contains(static_cast<sf::Vector2f>(mouseDefault)))
                     {
-                        if (objectPaletteSprites[i].getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePixel)))
+                        if (objectPage > 0)
                         {
-                            selectedObject = static_cast<int>(i);
-                            updateObjectHighlightPosition();
-                            updateObjectCursor();
-                            clickedObjectPalette = true;
-                            break;
+                            objectPage--;
+                            int perPage = objectPaletteColumns * objectRowsPerPage;
+                            if (selectedObject >= objectPage * perPage && selectedObject < (objectPage + 1) * perPage)
+                            {
+                                // keep
+                            }
+                            else
+                            {
+                                int newStart = objectPage * perPage;
+                                if (newStart < (int)objectPaletteSprites.size())
+                                    selectedObject = newStart;
+                                else
+                                    selectedObject = 0;
+                            }
+                        }
+                        clickedObjectPalette = true;
+                    }
+                    else if (nextBounds.contains(static_cast<sf::Vector2f>(mouseDefault)))
+                    {
+                        int totalObjects = objectPaletteSprites.size();
+                        int perPage = objectPaletteColumns * objectRowsPerPage;
+                        if ((objectPage + 1) * perPage < totalObjects)
+                        {
+                            objectPage++;
+                            int newStart = objectPage * perPage;
+                            if (newStart < totalObjects)
+                                selectedObject = newStart;
+                        }
+                        clickedObjectPalette = true;
+                    }
+                    else
+                    {
+                        const int perPage = objectPaletteColumns * objectRowsPerPage;
+                        const int startIdx = objectPage * perPage;
+                        const int endIdx = std::min(startIdx + perPage, (int)objectPaletteSprites.size());
+
+                        for (int i = startIdx; i < endIdx; ++i)
+                        {
+                            if (objectPaletteSprites[i].getGlobalBounds().contains(static_cast<sf::Vector2f>(mouseDefault)))
+                            {
+                                selectedObject = i;
+                                updateObjectCursor(); // if you want immediate cursor update
+                                clickedObjectPalette = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -589,7 +865,6 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
             }
             else // Object mode erase
             {
-                // Iterate reverse order (newest first) to pick topmost object
                 const auto &order = Terrain::getObjectOrder();
                 for (auto it = order.rbegin(); it != order.rend(); ++it)
                 {
@@ -667,7 +942,6 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
                 }
             }
         }
-        // Object mode cursor updates automatically via mouseWorldPos in draw
     }
 
     // --- Mouse wheel ---
@@ -679,14 +953,14 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
             {
                 selectedTile += static_cast<int>(scroll->delta);
                 selectedTile = std::clamp(selectedTile, 0, (int)paletteSprites.size() - 1);
-                updateHighlightPosition();
+                ensureTilePageForIndex(selectedTile);
+                // updateHighlightPosition();
             }
         }
         else // Object mode
         {
             if (shiftHeld)
             {
-                // Change placement scale
                 currentObjectScale += scroll->delta * 0.1f;
                 currentObjectScale = std::clamp(currentObjectScale, 0.1f, 5.0f);
             }
@@ -694,7 +968,8 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
             {
                 selectedObject += static_cast<int>(scroll->delta);
                 selectedObject = std::clamp(selectedObject, 0, (int)objectPaletteSprites.size() - 1);
-                updateObjectHighlightPosition();
+                ensureObjectPageForIndex(selectedObject);
+                // updateObjectHighlightPosition();
                 updateObjectCursor();
             }
         }
@@ -717,7 +992,6 @@ void LevelEditor::draw(sf::RenderWindow &window)
     {
         if (!showPallete)
         {
-            // Draw grid lines
             for (int x = 0; x <= Constants::WORLD_WIDTH_TILES; ++x)
             {
                 sf::Vertex line[] = {
@@ -734,19 +1008,37 @@ void LevelEditor::draw(sf::RenderWindow &window)
             }
         }
 
-        // Tile cursor
-        sf::Vector2f cursorPos(hoveredTile.x * Constants::TILE_SIZE * s,
-                               Constants::WORLD_HEIGHT_PIXELS * s - (hoveredTile.y + 1) * Constants::TILE_SIZE * s);
-        tileCursor.setPosition(cursorPos);
-        tileCursor.setScale(Scale::getVec());
-        window.draw(tileCursor);
+         sf::Vector2f cursorPos(
+            hoveredTile.x * Constants::TILE_SIZE * s,
+            Constants::WORLD_HEIGHT_PIXELS * s - (hoveredTile.y + 1) * Constants::TILE_SIZE * s
+        );
+
+        bool shiftHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift) ||
+                        sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RShift);
+
+        if (selectedTile >= 0 && !shiftHeld)  // show ghost tile
+        {
+            sf::Sprite ghost = Tiles::getTileSprite(selectedTile);
+            ghost.setPosition(cursorPos);
+            ghost.setScale(Scale::getVec());
+            ghost.setColor(sf::Color(255, 255, 255, 150)); // ~60% opacity
+            window.draw(ghost);
+        }
+        else  // erasing mode – show red rectangle
+        {
+            tileCursor.setPosition(cursorPos);
+            tileCursor.setScale(Scale::getVec());
+            tileCursor.setFillColor(sf::Color(255, 0, 0, 100));
+            tileCursor.setOutlineColor(sf::Color::Red);
+            tileCursor.setOutlineThickness(2.f);
+            window.draw(tileCursor);
+        }
     }
     else // Object mode
     {
         if (selectedObject >= 0 && selectedObject < Objects::getCount())
         {
             objectCursor.setPosition(mouseWorldPos);
-            // Apply world scale and the current object scale
             sf::Vector2f worldScale = Scale::getVec();
             objectCursor.setScale(worldScale * currentObjectScale);
             window.draw(objectCursor);
@@ -762,9 +1054,25 @@ void LevelEditor::draw(sf::RenderWindow &window)
         if (showPallete)
         {
             window.draw(paletteBackground);
-            for (const auto &sprite : paletteSprites)
-                window.draw(sprite);
+            const int perPage = paletteColumns * tileRowsPerPage;
+            const int startIdx = tilePage * perPage;
+            const int endIdx = std::min(startIdx + perPage, (int)paletteSprites.size());
+            for (int i = startIdx; i < endIdx; ++i)
+                window.draw(paletteSprites[i]);
             window.draw(selectionHighlight);
+            // Draw navigation buttons
+            window.draw(prevTileBtn);
+            window.draw(nextTileBtn);
+            window.draw(prevTileText);
+            window.draw(nextTileText);
+
+            // In the tile palette drawing block, after nav buttons:
+            replaceBtn.setFillColor(stackMode ? sf::Color(60,60,60) : sf::Color(100,100,200));
+            stackBtn.setFillColor(stackMode ? sf::Color(100,100,200) : sf::Color(60,60,60));
+            window.draw(replaceBtn);
+            window.draw(stackBtn);
+            window.draw(replaceText);
+            window.draw(stackText);
         }
     }
     else
@@ -773,9 +1081,16 @@ void LevelEditor::draw(sf::RenderWindow &window)
         if (showObjectPallete)
         {
             window.draw(objectPaletteBackground);
-            for (const auto &sprite : objectPaletteSprites)
-                window.draw(sprite);
+            const int perPage = objectPaletteColumns * objectRowsPerPage;
+            const int startIdx = objectPage * perPage;
+            const int endIdx = std::min(startIdx + perPage, (int)objectPaletteSprites.size());
+            for (int i = startIdx; i < endIdx; ++i)
+                window.draw(objectPaletteSprites[i]);
             window.draw(objectSelectionHighlight);
+            window.draw(prevObjectBtn);
+            window.draw(nextObjectBtn);
+            window.draw(prevObjectText);
+            window.draw(nextObjectText);
         }
     }
 

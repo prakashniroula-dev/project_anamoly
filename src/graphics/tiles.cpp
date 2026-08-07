@@ -5,13 +5,24 @@
 #include <cmath>               // for std::floor
 #include <vector>
 #include <core/constants.hpp>           // For Constants::WORLD_HEIGHT_TILES
+#include <unordered_map>
 
 namespace Tiles {
 
-    // This variable now lives ONLY in this .cpp file. No linker errors!
-    std::string tileset_key = "tileset";
+    const std::vector<std::pair<std::string, int>> tileKeys = {
+        {"power_station", 64},
+        {"industrial_zone", 81}
+    };
     const int tile_width = 32;
     const int tile_height = 32;
+
+    int getCount() {
+        int total = 0;
+        for (const auto& [key, count] : tileKeys) {
+            total += count;
+        }
+        return total;
+    }
 
     static const std::vector<int> non_solid_tiles = 
     {
@@ -19,13 +30,23 @@ namespace Tiles {
     };
 
     void load() {
-        static std::string tiles_path = "power_station/tile/tileset.png";
-        Textures::load("tileset", tiles_path);
+        for (const auto& [key, count] : tileKeys) {
+            std::string path = key + "/tile/tileset.png";
+            Textures::load(key, path);
+        }
     }
 
     sf::Sprite getTileSprite(int tile_id) {
-        sf::Sprite s(Textures::get(tileset_key));
-        int tiles_per_row = Textures::get(tileset_key).getSize().x / tile_width;
+        std::string tileKey;
+        for (const auto& [key, count] : tileKeys) {
+            if (tile_id < count) {
+                tileKey = key;
+                break;
+            }
+            tile_id -= count;
+        }
+        sf::Sprite s(Textures::get(tileKey));
+        int tiles_per_row = Textures::get(tileKey).getSize().x / tile_width;
         int row = tile_id / tiles_per_row;
         int col = tile_id % tiles_per_row;
         s.setTextureRect(sf::IntRect(
@@ -40,12 +61,18 @@ namespace Tiles {
         if (it == terrain_map.end()) {
             return false;
         }
-        bool isSolid = it != terrain_map.end() && it->second <= 48;
-        if ( isSolid ) {
-            for (int nonSolidID : non_solid_tiles) {
-                if (it->second == nonSolidID) {
-                    isSolid = false;
-                    break;
+        bool isSolid = false;
+        for (int tile_id : it->second) {
+            if (tile_id <= 48 || tile_id >= 81) {
+                isSolid = true;
+                for (int nonSolidID : non_solid_tiles) {
+                    if (tile_id == nonSolidID) {
+                        isSolid = false;
+                        break;
+                    }
+                }
+                if (isSolid) {
+                    return true; // If any tile is solid, return true
                 }
             }
         }

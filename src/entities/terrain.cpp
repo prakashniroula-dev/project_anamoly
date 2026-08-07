@@ -12,16 +12,16 @@ namespace
 {
     // Tile map
     TileMap terrain = {
-        {{0, 1}, 1},
-        {{1, 1}, 1},
-        {{2, 1}, 1},
-        {{3, 1}, 1},
-        {{4, 1}, 10},
-        {{5, 1}, 10},
-        {{6, 1}, 10},
-        {{4, 2}, 1},
-        {{5, 2}, 1},
-        {{6, 2}, 1},
+        {{0, 1}, {1}},
+        {{1, 1}, {1}},
+        {{2, 1}, {1}},
+        {{3, 1}, {1}},
+        {{4, 1}, {10}},
+        {{5, 1}, {10}},
+        {{6, 1}, {10}},
+        {{4, 2}, {1}},
+        {{5, 2}, {1}},
+        {{6, 2}, {1}},
     };
 
     // Object storage (unordered for O(1) lookup)
@@ -36,13 +36,16 @@ namespace Terrain
     void draw(sf::RenderWindow &win, float dt)
     {
         // Draw tiles
-        for (const auto &[pos, tile_id] : terrain)
+        for (const auto &[pos, tile_ids] : terrain)
         {
-            sf::Sprite s = Tiles::getTileSprite(tile_id);
-            auto [x, y] = pos;
-            s.setPosition(Tiles::getTilePosition(x, y));
-            s.setScale(Scale::getVec());
-            win.draw(s);
+            for (int tile_id : tile_ids)
+            {
+                sf::Sprite s = Tiles::getTileSprite(tile_id);
+                auto [x, y] = pos;
+                s.setPosition(Tiles::getTilePosition(x, y));
+                s.setScale(Scale::getVec());
+                win.draw(s);
+            }
         }
 
         // Draw objects in insertion order (oldest first, newest last = on top)
@@ -96,7 +99,7 @@ namespace Terrain
             {
                 if (comma1 == ',' && comma2 == ',')
                 {
-                    terrain[{x, y}] = id;
+                    terrain[{x, y}].push_back(id);
                 }
             }
         }
@@ -107,9 +110,11 @@ namespace Terrain
         std::ofstream file(filename);
         if (!file.is_open())
             return;
-        for (const auto &[pos, id] : terrain)
+        for (const auto &[pos, ids] : terrain)
         {
-            file << pos.first << "," << pos.second << "," << id << "\n";
+            for (const auto& id: ids ) {
+                file << pos.first << "," << pos.second << "," << id << "\n";
+            }
         }
     }
 
@@ -121,7 +126,16 @@ namespace Terrain
         }
         else
         {
-            terrain[{x, y + 1}] = id;
+            terrain[{x, y + 1}] = {id};
+        }
+    }
+
+    void addTile(int x, int y, int id) {
+        std::vector<int>& vec = terrain[{x, y+1}];
+        if (id < 0) {
+            vec.erase(std::remove(vec.begin(), vec.end(), id), vec.end());
+        } else {
+            vec.push_back(id);
         }
     }
 
@@ -130,14 +144,14 @@ namespace Terrain
         terrain.erase({x, y + 1});
     }
 
-    int getTile(int x, int y)
+    std::vector<int> getTile(int x, int y)
     {
         auto it = terrain.find({x, y + 1});
         if (it != terrain.end())
         {
             return it->second;
         }
-        return -1;
+        return {};
     }
 
     // ------------------ Object management (with order) ------------------
@@ -251,5 +265,13 @@ namespace Terrain
             const auto &props = it->second;
             file << key.first << "," << key.second << "," << props.index << "," << props.scale << "\n";
         }
+    }
+}
+
+void Terrain::setTileVector(int x, int y, const std::vector<int>& tiles) {
+    if (tiles.empty()) {
+        terrain.erase({x, y + 1});
+    } else {
+        terrain[{x, y + 1}] = tiles;
     }
 }

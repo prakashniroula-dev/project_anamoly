@@ -10,6 +10,7 @@
 #include <core/scale.hpp>
 #include <editor/level_editor.hpp>
 #include <entities/objects.hpp> 
+#include <graphics/overlay.hpp>
 
 using namespace std;
 
@@ -39,6 +40,7 @@ private:
     sf::View view;
     
     Background bg;
+    Overlay overlay;
     Character character;
     LevelEditor editor;
 
@@ -63,7 +65,7 @@ public:
         // Camera parameters – more gradual movement
         viewY = height / 2.f;
         targetY = viewY;
-        smoothSpeed = Character::MAX_FALL_SPEED;      // pixels per second – slow enough to be smooth
+        smoothSpeed = Character::GRAVITY * 0.7;      // pixels per second – slow enough to be smooth
         topDeadZone = 80.f;      // larger safe zone at the top
         bottomDeadZone = 200.f;   // smaller safe zone at the bottom
 
@@ -71,6 +73,7 @@ public:
         Tiles::load();
         Objects::load();
         Background::load(window);
+        Overlay::load(window);
         Characters::load();
         Terrain::loadFromFile("assets/map.txt");
         Terrain::loadObjectsFromFile("assets/objects.txt");
@@ -142,6 +145,7 @@ public:
         character.update(window, dt);
         updateCamera(dt);
 
+        overlay.draw(window, dt);
         character.draw(window, dt);
     }
 
@@ -181,15 +185,18 @@ public:
                 bg.draw(window, dt);
                 Terrain::draw(window, clock.restart().asSeconds());
                 editor.draw(window);
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-                    view.move(sf::Vector2f(200.f * dt, 0.f));
-                } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-                    view.move(sf::Vector2f(-200.f * dt, 0.f));
-                } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-                    view.move(sf::Vector2f(0.f, -200.f * dt));
-                } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-                    view.move(sf::Vector2f(0.f, 200.f * dt));
+                float speed = 200.f; // pixels per second
+                if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ) {
+                    speed *= 2.f; // double speed when shift is held
                 }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+                    view.move(sf::Vector2f(speed * dt, 0.f));
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+                    view.move(sf::Vector2f(-speed * dt, 0.f));
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+                    view.move(sf::Vector2f(0.f, -speed * dt));
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+                    view.move(sf::Vector2f(0.f, speed * dt));
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
                     editor.setActive(false);
                 }

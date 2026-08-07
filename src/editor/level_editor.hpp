@@ -17,13 +17,32 @@ public:
 private:
     enum class EditorMode { Tile, Object };
     EditorMode currentMode = EditorMode::Tile;
+    // Pagination
+    int tilePage = 0;
+    int objectPage = 0;
+    int tileRowsPerPage = 4;
+    int objectRowsPerPage = 3;
+
+    bool stackMode = false;   // false = Replace, true = Stack
+    // Mode toggle buttons (UI)
+    sf::RectangleShape replaceBtn, stackBtn;
+    sf::Text replaceText, stackText;
+
+
+    // Navigation buttons
+    sf::RectangleShape prevTileBtn, nextTileBtn;
+    sf::RectangleShape prevObjectBtn, nextObjectBtn;
+    sf::Text prevTileText, nextTileText, prevObjectText, nextObjectText;
+
+    void ensureTilePageForIndex(int idx);
+    void ensureObjectPageForIndex(int idx);
 
     // --- Tile editing ---
     void updatePaletteLayout(const sf::Vector2u& windowSize);
-    void updateHighlightPosition();
+    // void updateHighlightPosition();
     void paintTile(int tx, int ty);
     void handleRightClickTile(int tx, int ty, bool shiftHeld);
-    void setTileDirect(int tx, int ty, int newTile);
+    void setTileDirect(int tx, int ty, const std::vector<int>& tiles);
     void setTileWithUndo(int tx, int ty, int newTile, bool isPaint);
     void undoTile();
     void redoTile();
@@ -32,7 +51,7 @@ private:
 
     // --- Object editing ---
     void updateObjectPaletteLayout(const sf::Vector2u& windowSize);
-    void updateObjectHighlightPosition();
+    // void updateObjectHighlightPosition();
     void paintObject(float x, float y);
     void eraseObject(float x, float y);
     void setObjectDirect(float x, float y, const ObjectProps& props);
@@ -43,7 +62,7 @@ private:
     void stopRecordingAndPushObjects();
 
     // --- General UI ---
-    void drawPalette(sf::RenderWindow& window);
+    // void drawPalette(sf::RenderWindow& window);
     void updateObjectCursor();
 
     // Base (unscaled) palette parameters
@@ -83,9 +102,9 @@ private:
     // Tile undo/redo
     struct TileChange {
         int tx, ty;
-        int oldTile;
-        int newTile;
-        bool isPaint;
+        std::vector<int> oldTiles;
+        std::vector<int> newTiles;
+        bool isPaint;   // or a flag to distinguish operation
     };
     struct TileUndoGroup {
         std::vector<TileChange> changes;
@@ -110,7 +129,7 @@ private:
     bool recordingObjects = false;
 
     // Per‑tile single‑step undo (right‑click revert)
-    std::vector<int> previousTiles;
+    std::vector<std::vector<int>> previousTiles; // per-cell stack backup
     std::vector<bool> processedInDrag;
 
     // UI text

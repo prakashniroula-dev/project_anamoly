@@ -314,13 +314,12 @@ void Character::jump() {
 
 void Character::draw(sf::RenderWindow& win, float dt) {
     animate(win, dt);
-    // drawDebugBounds(win);  // Comment out when happy with bounds
+    // drawDebugBounds(win);
 }
 
 void Character::update(sf::RenderWindow& win, float dt) {
     m_screenHeight = static_cast<float>(win.getSize().y);
 
-    drawDebugBounds(win);
 
     bool shiftKey = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift);
     vel.x = 0;

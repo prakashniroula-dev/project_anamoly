@@ -15,7 +15,10 @@ namespace Terrain {
     void loadFromFile(const std::string& filename);
     void saveToFile(const std::string& filename);
     void setTile(int x, int y, int id);
+    void addTile(int x, int y, int id);
     void eraseTile(int x, int y);
+    // In Terrain namespace
+    void setTileVector(int x, int y, const std::vector<int>& tiles);
 
     // Object functions
     const ObjectMap& getObjectMap();                         // for lookups (may be unordered)
@@ -26,5 +29,5 @@ namespace Terrain {
     void saveObjectsToFile(const std::string& filename);
     ObjectProps getObject(float x, float y);
 
-    int getTile(int x, int y);
+    std::vector<int> getTile(int x, int y);
 }

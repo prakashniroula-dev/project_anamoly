@@ -42,7 +42,7 @@ class Character : public GameObject {
     public:
     static constexpr float GRAVITY = 1000.f;        // was 600
     static constexpr float MAX_FALL_SPEED = 400.f;  // was 350
-    static constexpr float JUMP_SPEED = -450.f;     // was -300
+    static constexpr float JUMP_SPEED = -400.f;     // was -300
     static constexpr float WALK_SPEED = 100.f;      // was 100
     static constexpr float RUN_SPEED = 200.f;       // was 200
 

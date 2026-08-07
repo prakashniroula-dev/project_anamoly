@@ -50,17 +50,20 @@ void Background::draw(sf::RenderWindow& win, float dt) {
     const sf::View& view = win.getView();
     sf::Vector2f viewCenter = view.getCenter();
     sf::Vector2f viewSize = view.getSize();
+    float viewLeftEdge = viewCenter.x - viewSize.x / 2.f;
     for (int i = 0; i < 5; i++) {
         std::string sidx = std::to_string(i + 1);
-        sf::Texture& tex = Textures::get(currentBg + sidx);
+        std::string texKey = currentBg + sidx;
+        sf::Texture& tex = Textures::get(texKey);
         tex.setRepeated(true);
         sf::Sprite s(tex);
         float local_scale = static_cast<float>(winSize.y) / static_cast<float>(tex.getSize().y);
         float viewYBottom = viewCenter.y + viewSize.y / 2.f;
         float y = viewYBottom - tex.getSize().y * local_scale; // bottom‑align
         s.setScale(sf::Vector2f(local_scale, local_scale));
-        float viewLeftEdge = viewCenter.x - viewSize.x / 2.f;
-        float pos = viewLeftEdge * (1.0f - 0.2f * i); // Parallax factor(0.2f * i)
+
+        float parallaxFactor = 0.14f * (i + 1);
+        float pos = viewLeftEdge * (1.0f - parallaxFactor);
         float textureWidth = tex.getSize().x;
         sf::IntRect texRect(sf::Vector2i(0, 0), sf::Vector2i(tex.getSize().x * 500, tex.getSize().y));
         s.setTextureRect(texRect);
