@@ -22,7 +22,6 @@ void NPC::update(sf::RenderWindow& win, float dt) {
     sf::FloatRect charBox = getBounds();
     auto [tileX, tileY] = Tiles::getTileGridPosition(charBox.position + charBox.size); // Bottom-right corner of the character's bounding box
     tileX += direction * 0.01f;
-    Log::info << "NPC tileX: " << tileX << ", tileY: " << tileY << "SolidTile?" << Terrain::isSolidTile(tileX + direction, tileY + 1) << "\n";
     bool isSolidTileAhead = (
       Terrain::isSolidTile(tileX, tileY + 1) ||
       Terrain::isSolidTile(tileX, tileY + 2)

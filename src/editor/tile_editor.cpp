@@ -5,6 +5,7 @@
 #include <entities/terrain.hpp>
 #include <algorithm>
 #include <cmath>
+#include <core/tile_encoding.hpp>
 
 void applyTileChange(TileChange& change, bool forward) {
     const auto& tiles = forward ? change.newTiles : change.oldTiles;
@@ -110,6 +111,32 @@ void TileEditor::handleEvent(const sf::Event& event, const sf::RenderWindow& win
     bool shiftHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift) ||
                      sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RShift);
 
+    bool control = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl) ||
+                   sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RControl);
+
+    if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
+      switch (key->scancode) {
+        case sf::Keyboard::Scancode::R:
+              if (control) {
+                  rotation = 0;
+                  flip = 0;
+                  break;
+              }
+              if (shiftHeld)
+                  rotation = (rotation - 1 + 4) % 4; // CCW
+              else
+                  rotation = (rotation + 1) % 4;     // CW
+              break;
+          case sf::Keyboard::Scancode::F:
+              if (shiftHeld)
+                  flip ^= 2; // toggle vertical
+              else
+                  flip ^= 1; // toggle horizontal
+              break;
+          // ... other keys (maybe reset to 0 with Ctrl+R?)
+      }
+   }
+
     if (const auto* btn = event.getIf<sf::Event::MouseButtonPressed>()) {
         if (btn->button == sf::Mouse::Button::Left) {
             startRecording();
@@ -192,17 +219,21 @@ void TileEditor::draw(sf::RenderWindow& window) {
     }
 
     // Ghost / cursor
-    sf::Vector2f cursorPos(
-        hoveredTile.x * Constants::TILE_SIZE * s,
-        Constants::WORLD_HEIGHT_PIXELS * s - (hoveredTile.y + 1) * Constants::TILE_SIZE * s
-    );
+    sf::Vector2f cursorPos = Tiles::getTilePosition(hoveredTile.x, hoveredTile.y);
     bool shiftHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift) ||
                      sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RShift);
 
     if (selectedTile >= 0 && !shiftHeld) {
         sf::Sprite ghost = Tiles::getTileSprite(selectedTile);
-        ghost.setPosition(cursorPos);
+        sf::FloatRect bounds = ghost.getLocalBounds();
+        ghost.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
+        sf::Vector2f tilePos = Tiles::getTilePosition(hoveredTile.x, hoveredTile.y);
+        ghost.setPosition(tilePos + sf::Vector2f(bounds.size.x / 2.f * Scale::get(),
+                                                  bounds.size.y / 2.f * Scale::get()));
         ghost.setScale(Scale::getVec());
+        ghost.setRotation(sf::Angle(sf::degrees(rotation * 90.f)));
+        if (flip & 1) ghost.scale({-1.f, 1.f});
+        if (flip & 2) ghost.scale({1.f, -1.f});
         ghost.setColor(sf::Color(255, 255, 255, 150));
         window.draw(ghost);
     } else {
@@ -223,21 +254,22 @@ void TileEditor::draw(sf::RenderWindow& window) {
         // Mode buttons: place to the right of palette's next button
         sf::FloatRect nextBounds = palette.getNextBtnBounds();
         sf::Vector2f scale = Scale::getVec();
-        float modeBtnSize = 40.f * std::min(scale.x, scale.y);
-        float modeSpacing = 10.f * std::min(scale.x, scale.y);
+        float minScale = std::min(scale.x, scale.y);
+        sf::Vector2f modeBtnSize = sf::Vector2f(std::min(100.f, 100.f * minScale), std::min(50.f, 50.f * minScale));
+        float modeSpacing = 30.f * minScale;
         float modeX = nextBounds.position.x + nextBounds.size.x + modeSpacing;
         float modeY = nextBounds.position.y;
 
-        replaceBtn.setSize({modeBtnSize, modeBtnSize});
-        stackBtn.setSize({modeBtnSize, modeBtnSize});
+        replaceBtn.setSize(modeBtnSize);
+        stackBtn.setSize(modeBtnSize);
         replaceBtn.setPosition({modeX, modeY});
-        stackBtn.setPosition({modeX + modeBtnSize + modeSpacing, modeY});
+        stackBtn.setPosition({modeX + modeBtnSize.y + modeSpacing, modeY});
 
         replaceBtn.setFillColor(stackMode ? sf::Color(60,60,60) : sf::Color(100,100,200));
         stackBtn.setFillColor(stackMode ? sf::Color(100,100,200) : sf::Color(60,60,60));
 
-        replaceText.setCharacterSize(static_cast<unsigned>(modeBtnSize * 0.5f));
-        stackText.setCharacterSize(static_cast<unsigned>(modeBtnSize * 0.5f));
+        replaceText.setCharacterSize(static_cast<unsigned>(std::min(modeBtnSize.y * 0.4f, 20.f)));
+        stackText.setCharacterSize(static_cast<unsigned>(modeBtnSize.y * 0.5f));
         auto centerText = [&](sf::Text& text, const sf::RectangleShape& btn) {
             sf::FloatRect b = text.getLocalBounds();
             text.setPosition({
@@ -260,16 +292,19 @@ void TileEditor::draw(sf::RenderWindow& window) {
 void TileEditor::setTileWithUndo(int tx, int ty, int newTile, bool isPaint) {
     std::vector<int> oldTiles = Terrain::getTile(tx, ty);
     std::vector<int> newTiles;
+    int encodedNew = encodeTile(newTile, rotation, flip);
+  // use encodedNew instead of raw newTile
+  // change the TileChange struct to store encoded ints (already int)
     if (stackMode) {
         newTiles = oldTiles;
         if (newTile == -1) {
             if (!newTiles.empty()) newTiles.pop_back();
         } else {
-            newTiles.push_back(newTile);
+            newTiles.push_back(encodedNew);
         }
     } else {
         if (newTile == -1) newTiles.clear();
-        else newTiles = {newTile};
+        else newTiles = {encodedNew};
     }
     if (oldTiles == newTiles) return;
 

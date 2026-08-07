@@ -78,10 +78,53 @@ void ObjectEditor::handleEvent(const sf::Event& event, const sf::RenderWindow& w
     bool shiftHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift) ||
                      sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RShift);
 
-    if (const auto* btn = event.getIf<sf::Event::MouseButtonPressed>()) {
-        if (btn->button == sf::Mouse::Button::Left) {
+    bool ctrlHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl) ||
+                    sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RControl);
+
+
+    bool shouldPaintObject = false;
+
+    if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
+      switch (key->scancode) {
+        case sf::Keyboard::Scancode::Up:    cursorOffset.y -= 1.f; break; // 1 pixel step
+        case sf::Keyboard::Scancode::Down:  cursorOffset.y += 1.f; break;
+        case sf::Keyboard::Scancode::Left:  cursorOffset.x -= 1.f; break;
+        case sf::Keyboard::Scancode::Right: cursorOffset.x += 1.f; break;
+        case sf::Keyboard::Scancode::R:
+            if (ctrlHeld) {
+                // Reset rotation and flips
+                rotation = 0.f;
+                flipX = false;
+                flipY = false;
+                cursorOffset = {0.f, 0.f};
+            } else if (shiftHeld) {
+                rotation -= 45.f; // CCW
+            } else {
+                rotation += 45.f; // CW
+            }
+            // Keep rotation in [0, 360)
+            rotation = std::fmod(rotation, 360.f);
+            if (rotation < 0) rotation += 360.f;
+            break;
+        case sf::Keyboard::Scancode::Enter:
+            shouldPaintObject = true;
+            break;
+
+        case sf::Keyboard::Scancode::F:
+            if (shiftHeld) {
+                flipY = !flipY;   // vertical flip
+            } else {
+                flipX = !flipX;   // horizontal flip
+            }
+            break;
+      }
+    }
+
+    const auto* btn = event.getIf<sf::Event::MouseButtonPressed>();
+    if (shouldPaintObject || btn) {
+        if (shouldPaintObject || btn->button == sf::Mouse::Button::Left) {
             startRecording();
-            paintObject(mouseWorldPos.x, mouseWorldPos.y);
+            paintObject(mouseWorldPos.x + cursorOffset.x, mouseWorldPos.y + cursorOffset.y);
             stopRecording();
         } else if (btn->button == sf::Mouse::Button::Right) {
             const auto& order = Terrain::getObjectOrder();
@@ -124,9 +167,12 @@ void ObjectEditor::draw(sf::RenderWindow& window) {
 
     // Draw cursor
     if (selectedObject >= 0 && selectedObject < Objects::getCount()) {
-        objectCursor.setPosition(mouseWorldPos);
+        objectCursor.setPosition(mouseWorldPos + cursorOffset);
         sf::Vector2f worldScale = Scale::getVec();
         objectCursor.setScale(worldScale * currentObjectScale);
+        objectCursor.setRotation(sf::Angle(sf::degrees(rotation)));
+        if (flipX) objectCursor.scale({-1.f, 1.f});
+        if (flipY) objectCursor.scale({1.f, -1.f});
         window.draw(objectCursor);
     }
 
@@ -142,7 +188,12 @@ void ObjectEditor::draw(sf::RenderWindow& window) {
 
 void ObjectEditor::paintObject(float x, float y) {
     float s = Scale::get();
-    ObjectProps newProps{currentObjectScale, selectedObject};
+    ObjectProps newProps;
+    newProps.scale = currentObjectScale;
+    newProps.index = selectedObject;
+    newProps.rotation = rotation;
+    newProps.flipX = flipX;
+    newProps.flipY = flipY;
     setObjectWithUndo(x / s, y / s, newProps, true);
 }
 

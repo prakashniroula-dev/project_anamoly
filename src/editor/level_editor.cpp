@@ -54,6 +54,10 @@ void LevelEditor::handleEvent(const sf::Event& event, sf::RenderWindow& window) 
 
     // Global shortcuts
     if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
+        bool ctrl = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl) ||
+                sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RControl);
+        bool shift = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift) ||
+                    sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RShift);
         switch (key->scancode) {
             case sf::Keyboard::Scancode::F1:
                 switchMode(Mode::Tile);
@@ -67,20 +71,22 @@ void LevelEditor::handleEvent(const sf::Event& event, sf::RenderWindow& window) 
             case sf::Keyboard::Scancode::O:
                 if (currentMode == Mode::Object) objectEditor.togglePaletteVisibility();
                 break;
-            case sf::Keyboard::Scancode::U:
-                if (currentMode == Mode::Tile) tileEditor.undo();
-                else objectEditor.undo();
-                break;
-            case sf::Keyboard::Scancode::R:
-                if (currentMode == Mode::Tile) tileEditor.redo();
-                else objectEditor.redo();
-                break;
             case sf::Keyboard::Scancode::M:
                 if (currentMode == Mode::Tile) tileEditor.toggleStackMode();
                 break;
             default: break;
         }
+        if (ctrl && key->scancode == sf::Keyboard::Scancode::Z) {
+            if (currentMode == Mode::Tile) tileEditor.undo();
+            else objectEditor.undo();
+        }
+        // Redo: Ctrl+Y  (or Ctrl+Shift+Z)
+        if (ctrl && key->scancode == sf::Keyboard::Scancode::Y) {
+            if (currentMode == Mode::Tile) tileEditor.redo();
+            else objectEditor.redo();
+        }
     }
+
 
     // Forward event to the active editor
     if (currentMode == Mode::Tile)

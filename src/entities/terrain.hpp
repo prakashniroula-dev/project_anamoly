@@ -14,11 +14,13 @@ namespace Terrain {
     void update(float dt);
     void loadFromFile(const std::string& filename);
     void saveToFile(const std::string& filename);
-    void setTile(int x, int y, int id);
-    void addTile(int x, int y, int id);
+    // New overloads – keep existing ones for backward compatibility if needed
+    void setTile(int x, int y, int encodedTile);              // replaces old setTile
+    void addTile(int x, int y, int encodedTile);              // replaces old addTile
+    void setTileVector(int x, int y, const std::vector<int>& encodedTiles);
+    std::vector<int> getTile(int x, int y);                   // returns encoded ints
     void eraseTile(int x, int y);
     // In Terrain namespace
-    void setTileVector(int x, int y, const std::vector<int>& tiles);
     bool isSolidTile(int x, int y); // Check if any tile at (x,y) is solid
 
     // Object functions
@@ -30,5 +32,4 @@ namespace Terrain {
     void saveObjectsToFile(const std::string& filename);
     ObjectProps getObject(float x, float y);
 
-    std::vector<int> getTile(int x, int y);
 }

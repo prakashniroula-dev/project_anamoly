@@ -34,6 +34,8 @@ public:
     void updatePaletteLayout(const sf::Vector2u& windowSize);
 
 private:
+    int rotation = 0;   // 0..3
+    int flip = 0;       // 0..3
     bool active = false;
     bool stackMode = false;
     bool showPalette = true;

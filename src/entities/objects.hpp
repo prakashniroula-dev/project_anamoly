@@ -7,6 +7,9 @@
 struct ObjectProps {
   float scale;
   int index;
+  float rotation = 0.f;   // degrees
+  bool flipX = false;
+  bool flipY = false;
 };
 
 #include <unordered_map>

@@ -32,8 +32,12 @@ public:
     void updatePaletteLayout(const sf::Vector2u& windowSize);
 
 private:
+    float rotation = 0.f;
+    bool flipX = false;
+    bool flipY = false;
     bool active = false;
     bool showPalette = true;
+    sf::Vector2f cursorOffset = {0.f, 0.f};
 
     Palette palette;
     int selectedObject = 0;

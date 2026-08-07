@@ -82,8 +82,8 @@ namespace Tiles {
     sf::Vector2f getTilePosition(int tx, int ty) {
         float s = Scale::get();
         return sf::Vector2f(
-            tx * 32.f * s,
-            32.f * Constants::WORLD_HEIGHT_TILES * s - ty * 32.f * s
+            tx * Constants::TILE_SIZE * s,
+            (Constants::WORLD_HEIGHT_TILES - 1 - ty) * Constants::TILE_SIZE * s
         );
     }
 
@@ -93,9 +93,9 @@ namespace Tiles {
 
         const float EPSILON = 0.0001f;
         scaled_pos.y -= EPSILON;
-        
+
         int tx = static_cast<int>(std::floor(scaled_pos.x / Constants::TILE_SIZE));
         int ty = static_cast<int>(std::floor((Constants::TILE_SIZE * Constants::WORLD_HEIGHT_TILES - scaled_pos.y) / Constants::TILE_SIZE));
-        return sf::Vector2i(tx, ty);
+        return sf::Vector2i(tx, ty - 1);
     }
 }

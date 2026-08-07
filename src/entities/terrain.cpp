@@ -7,6 +7,7 @@
 #include <sstream>
 #include <core/constants.hpp>
 #include <algorithm> // for std::find
+#include <core/tile_encoding.hpp>
 
 namespace
 {
@@ -32,18 +33,75 @@ namespace
 
 namespace Terrain
 {
+
+    std::vector<int> getTile(int x, int y)
+    {
+        auto it = terrain.find({x, y});
+        if (it != terrain.end())
+        {
+            return it->second;
+        }
+        return {};
+    }
+
+    void setTile(int x, int y, int encodedTile)
+    {
+        if (encodedTile < 0 || getTileIndex(encodedTile) < 0)
+        {
+            terrain.erase({x, y});
+        }
+        else
+        {
+            terrain[{x, y}] = {encodedTile};
+        }
+    }
+
+    void addTile(int x, int y, int encodedTile)
+    {
+        auto &vec = terrain[{x, y}];
+        if (encodedTile < 0 || getTileIndex(encodedTile) < 0)
+        {
+            vec.erase(std::remove(vec.begin(), vec.end(), encodedTile), vec.end());
+        }
+        else
+        {
+            vec.push_back(encodedTile);
+        }
+    }
+
+    void setTileVector(int x, int y, const std::vector<int> &encodedTiles)
+    {
+        if (encodedTiles.empty())
+        {
+            terrain.erase({x, y});
+        }
+        else
+        {
+            terrain[{x, y}] = encodedTiles;
+        }
+    }
+
     // ------------------ Tile functions (unchanged) ------------------
     void draw(sf::RenderWindow &win, float dt)
     {
-        // Draw tiles
         for (const auto &[pos, tile_ids] : terrain)
         {
-            for (int tile_id : tile_ids)
+            for (int encoded : tile_ids)
             {
-                sf::Sprite s = Tiles::getTileSprite(tile_id);
+                int idx = getTileIndex(encoded);
+                int rot = getTileRotation(encoded);
+                int flip = getTileFlip(encoded);
+                sf::Sprite s = Tiles::getTileSprite(idx);
                 auto [x, y] = pos;
-                s.setPosition(Tiles::getTilePosition(x, y));
+                sf::FloatRect bounds = s.getLocalBounds();
+                s.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
+                sf::Vector2f tilePos = Tiles::getTilePosition(x, y);
+                s.setPosition(tilePos + sf::Vector2f(bounds.size.x / 2.f * Scale::get(),
+                                                    bounds.size.y / 2.f * Scale::get()));
                 s.setScale(Scale::getVec());
+                s.setRotation(sf::Angle(sf::degrees(rot * 90.f)));
+                if (flip & 1) s.scale({-1.f, 1.f});
+                if (flip & 2) s.scale({1.f, -1.f});
                 win.draw(s);
             }
         }
@@ -57,10 +115,15 @@ namespace Terrain
             const auto &props = it->second;
             sf::Sprite s = Objects::getObjectSprite(props.index);
             sf::FloatRect bounds = s.getLocalBounds();
-            s.setOrigin(sf::Vector2f(bounds.size.x / 2.f, bounds.size.y / 2.f));
             sf::Vector2f worldPos(key.first * Scale::get(), key.second * Scale::get());
+            s.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
             s.setPosition(worldPos);
             s.setScale(Scale::getVec() * props.scale);
+            s.setRotation(sf::Angle(sf::degrees(props.rotation)));
+            if (props.flipX)
+                s.scale({-1.f, 1.f});
+            if (props.flipY)
+                s.scale({1.f, -1.f});
             win.draw(s);
         }
     }
@@ -112,46 +175,16 @@ namespace Terrain
             return;
         for (const auto &[pos, ids] : terrain)
         {
-            for (const auto& id: ids ) {
+            for (const auto &id : ids)
+            {
                 file << pos.first << "," << pos.second << "," << id << "\n";
             }
         }
     }
 
-    void setTile(int x, int y, int id)
-    {
-        if (id < 0)
-        {
-            terrain.erase({x, y + 1});
-        }
-        else
-        {
-            terrain[{x, y + 1}] = {id};
-        }
-    }
-
-    void addTile(int x, int y, int id) {
-        std::vector<int>& vec = terrain[{x, y+1}];
-        if (id < 0) {
-            vec.erase(std::remove(vec.begin(), vec.end(), id), vec.end());
-        } else {
-            vec.push_back(id);
-        }
-    }
-
     void eraseTile(int x, int y)
     {
-        terrain.erase({x, y + 1});
-    }
-
-    std::vector<int> getTile(int x, int y)
-    {
-        auto it = terrain.find({x, y + 1});
-        if (it != terrain.end())
-        {
-            return it->second;
-        }
-        return {};
+        terrain.erase({x, y});
     }
 
     // ------------------ Object management (with order) ------------------
@@ -213,10 +246,8 @@ namespace Terrain
         std::string line;
         while (std::getline(file, line))
         {
-            // Skip empty lines
             if (line.empty())
                 continue;
-            // Remove carriage return if present
             if (!line.empty() && line.back() == '\r')
                 line.pop_back();
 
@@ -228,19 +259,41 @@ namespace Terrain
             {
                 tokens.push_back(token);
             }
-            if (tokens.size() != 4)
+
+            if (tokens.size() != 4 && tokens.size() != 7)
             {
-                Log::warn << "Invalid object line (expected 4 tokens): " << line << std::endl;
+                Log::warn << "Invalid object line (expected 4 or 7 tokens): " << line << std::endl;
                 continue;
             }
+
             try
             {
                 float x = std::stof(tokens[0]);
                 float y = std::stof(tokens[1]);
                 int index = std::stoi(tokens[2]);
                 float scale = std::stof(tokens[3]);
+
+                ObjectProps props;
+                props.scale = scale;
+                props.index = index;
+
+                if (tokens.size() == 7)
+                {
+                    // New format: rotation, flipX, flipY
+                    props.rotation = std::stof(tokens[4]);
+                    props.flipX = (std::stoi(tokens[5]) != 0);
+                    props.flipY = (std::stoi(tokens[6]) != 0);
+                }
+                else
+                {
+                    // Old format: default rotation=0, no flips
+                    props.rotation = 0.f;
+                    props.flipX = false;
+                    props.flipY = false;
+                }
+
                 std::pair<float, float> key = {x, y};
-                objectMap[key] = {scale, index};
+                objectMap[key] = props;
                 objectOrder.push_back(key);
             }
             catch (const std::exception &e)
@@ -256,28 +309,27 @@ namespace Terrain
         std::ofstream file(filename);
         if (!file.is_open())
             return;
-        // Save in insertion order
         for (const auto &key : objectOrder)
         {
             auto it = objectMap.find(key);
             if (it == objectMap.end())
                 continue;
             const auto &props = it->second;
-            file << key.first << "," << key.second << "," << props.index << "," << props.scale << "\n";
+            file << key.first << ","
+                 << key.second << ","
+                 << props.index << ","
+                 << props.scale << ","
+                 << props.rotation << ","
+                 << (props.flipX ? 1 : 0) << ","
+                 << (props.flipY ? 1 : 0) << "\n";
         }
     }
 }
 
-void Terrain::setTileVector(int x, int y, const std::vector<int>& tiles) {
-    if (tiles.empty()) {
-        terrain.erase({x, y + 1});
-    } else {
-        terrain[{x, y + 1}] = tiles;
-    }
-}
-
-bool Terrain::isSolidTile(int x, int y) {
-    if (Tiles::isSolidTile(terrain, x, y)) {
+bool Terrain::isSolidTile(int x, int y)
+{
+    if (Tiles::isSolidTile(terrain, x, y))
+    {
         return true;
     }
     return false;
