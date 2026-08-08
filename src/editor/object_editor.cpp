@@ -18,9 +18,13 @@ ObjectEditor::ObjectEditor(const sf::Font& font)
 
 void ObjectEditor::updatePaletteLayout(const sf::RenderWindow& window) {
     if (showPalette) {
-      sf::Vector2f size = window.getDefaultView().getSize();
-      sf::Vector2u viewSize = {static_cast<unsigned int>(size.x), static_cast<unsigned int>(size.y)};
-      palette.updateLayout(viewSize);
+        // Use the default view size (matches where the palette is drawn)
+        sf::Vector2f size = window.getDefaultView().getSize();
+        sf::Vector2u viewSize = {
+            static_cast<unsigned int>(size.x),
+            static_cast<unsigned int>(size.y)
+        };
+        palette.updateLayout(viewSize);
     }
 }
 
@@ -33,7 +37,9 @@ void ObjectEditor::init() {
         sprites.back().setOrigin({0.f, 0.f});
     }
     palette.setSprites(sprites);
-    palette.setLayout(8, 3, 24.f, 3.f);
+
+    // ---- Bigger layout: more columns, fewer rows, larger cells ----
+    palette.setLayout(10, 2, 48.f, 6.f);   // columns=10, rows=2, cellSize=48, spacing=6
     palette.setSelected(selectedObject);
     updateCursor();
 }
@@ -55,15 +61,15 @@ void ObjectEditor::updateCursor() {
 void ObjectEditor::handleEvent(const sf::Event& event, const sf::RenderWindow& window) {
     if (!active) return;
 
-    // ★ Update palette layout NOW so sprite positions are current for hit-testing ★
+    // ★ Update palette layout NOW (using default view) for hit-testing ★
     if (showPalette) {
-        palette.updateLayout(window.getSize());
+        updatePaletteLayout(window);
     }
 
     sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
     mouseWorldPos = window.mapPixelToCoords(mousePixel);
 
-    // Palette interaction
+    // Palette interaction (mouse positions must be in default view coords)
     if (showPalette) {
         sf::Vector2f mouseDefault = window.mapPixelToCoords(mousePixel, window.getDefaultView());
         if (const auto* btn = event.getIf<sf::Event::MouseButtonPressed>()) {
@@ -75,51 +81,53 @@ void ObjectEditor::handleEvent(const sf::Event& event, const sf::RenderWindow& w
                 }
             }
         }
+        // Handle scroll on palette (optional)
+        if (const auto* scroll = event.getIf<sf::Event::MouseWheelScrolled>()) {
+            if (palette.handleMouseScroll(scroll->delta)) {
+                selectedObject = palette.getSelected();
+                updateCursor();
+                // Don't return; allow scrolling also to change object if not over palette
+            }
+        }
     }
 
     bool shiftHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift) ||
                      sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RShift);
-
     bool ctrlHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl) ||
                     sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RControl);
-
 
     bool shouldPaintObject = false;
 
     if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
-      switch (key->scancode) {
-        case sf::Keyboard::Scancode::Up:    cursorOffset.y -= 1.f; break; // 1 pixel step
-        case sf::Keyboard::Scancode::Down:  cursorOffset.y += 1.f; break;
-        case sf::Keyboard::Scancode::Left:  cursorOffset.x -= 1.f; break;
-        case sf::Keyboard::Scancode::Right: cursorOffset.x += 1.f; break;
-        case sf::Keyboard::Scancode::R:
-            if (ctrlHeld) {
-                // Reset rotation and flips
-                rotation = 0.f;
-                flipX = false;
-                flipY = false;
-                cursorOffset = {0.f, 0.f};
-            } else if (shiftHeld) {
-                rotation -= 45.f; // CCW
-            } else {
-                rotation += 45.f; // CW
-            }
-            // Keep rotation in [0, 360)
-            rotation = std::fmod(rotation, 360.f);
-            if (rotation < 0) rotation += 360.f;
-            break;
-        case sf::Keyboard::Scancode::Enter:
-            shouldPaintObject = true;
-            break;
-
-        case sf::Keyboard::Scancode::F:
-            if (shiftHeld) {
-                flipY = !flipY;   // vertical flip
-            } else {
-                flipX = !flipX;   // horizontal flip
-            }
-            break;
-      }
+        switch (key->scancode) {
+            case sf::Keyboard::Scancode::Up:    cursorOffset.y -= 1.f; break;
+            case sf::Keyboard::Scancode::Down:  cursorOffset.y += 1.f; break;
+            case sf::Keyboard::Scancode::Left:  cursorOffset.x -= 1.f; break;
+            case sf::Keyboard::Scancode::Right: cursorOffset.x += 1.f; break;
+            case sf::Keyboard::Scancode::R:
+                if (ctrlHeld) {
+                    rotation = 0.f;
+                    flipX = false;
+                    flipY = false;
+                    cursorOffset = {0.f, 0.f};
+                } else if (shiftHeld) {
+                    rotation -= 45.f;
+                } else {
+                    rotation += 45.f;
+                }
+                rotation = std::fmod(rotation, 360.f);
+                if (rotation < 0) rotation += 360.f;
+                break;
+            case sf::Keyboard::Scancode::Enter:
+                shouldPaintObject = true;
+                break;
+            case sf::Keyboard::Scancode::F:
+                if (shiftHeld)
+                    flipY = !flipY;
+                else
+                    flipX = !flipX;
+                break;
+        }
     }
 
     const auto* btn = event.getIf<sf::Event::MouseButtonPressed>();
@@ -149,8 +157,7 @@ void ObjectEditor::handleEvent(const sf::Event& event, const sf::RenderWindow& w
                     break;
                 }
             }
-        } else
-        if (shouldPaintObject || btn->button == sf::Mouse::Button::Left) {
+        } else if (shouldPaintObject || btn->button == sf::Mouse::Button::Left) {
             startRecording();
             paintObject(mouseWorldPos.x + cursorOffset.x, mouseWorldPos.y + cursorOffset.y);
             stopRecording();
@@ -181,11 +188,13 @@ void ObjectEditor::handleEvent(const sf::Event& event, const sf::RenderWindow& w
         if (shiftHeld) {
             currentObjectScale = std::clamp(currentObjectScale + scroll->delta * 0.1f, 0.1f, 5.0f);
         } else {
-            
-            int total = Objects::getCount();
-            selectedObject = std::clamp(selectedObject + static_cast<int>(scroll->delta), 0, total - 1);
-            palette.setSelected(selectedObject);
-            updateCursor();
+            // Only if palette didn't already handle it
+            if (!showPalette || !palette.isVisible() || !palette.handleMouseScroll(scroll->delta)) {
+                int total = Objects::getCount();
+                selectedObject = std::clamp(selectedObject + static_cast<int>(scroll->delta), 0, total - 1);
+                palette.setSelected(selectedObject);
+                updateCursor();
+            }
         }
     }
 }
@@ -193,7 +202,7 @@ void ObjectEditor::handleEvent(const sf::Event& event, const sf::RenderWindow& w
 void ObjectEditor::draw(sf::RenderWindow& window) {
     if (!active) return;
 
-    // Draw cursor
+    // Draw cursor in world view
     if (selectedObject >= 0 && selectedObject < Objects::getCount()) {
         objectCursor.setPosition(mouseWorldPos + cursorOffset);
         sf::Vector2f worldScale = Scale::getVec();
@@ -204,14 +213,14 @@ void ObjectEditor::draw(sf::RenderWindow& window) {
         window.draw(objectCursor);
     }
 
-    // UI
+    // ---- UI (palette) ----
     sf::View defaultView = window.getDefaultView();
     window.setView(defaultView);
     if (showPalette) {
-        palette.updateLayout(window.getSize());
+        updatePaletteLayout(window);   // update before drawing
         palette.draw(window);
     }
-    window.setView(defaultView);
+    window.setView(defaultView);       // restore (usually the world view)
 }
 
 void ObjectEditor::paintObject(float x, float y) {
