@@ -55,8 +55,17 @@ void Palette::updateLayout(const sf::Vector2u& windowSize) {
     }
 
     int rows = (numDisplayed + columns - 1) / columns;
-    float totalWidth = 0.8f * winWidth;  // Use 80% of window width for palette
-    float totalHeight = totalWidth * rows / columns; // Maintain aspect ratio based on number of rows and columns
+    
+    float maxWidth  = 0.8f * windowSize.x;
+    float maxHeight = 0.5f * windowSize.y;
+
+    // Cell size limited by each dimension
+    float cellSizeByWidth  = maxWidth  / columns;
+    float cellSizeByHeight = maxHeight / rows;
+    float cellSize = std::min(cellSizeByWidth, cellSizeByHeight); // use the tighter constraint
+
+    float totalWidth  = columns * cellSize;
+    float totalHeight = rows    * cellSize;
 
     float startX = (winWidth - totalWidth) / 2.f;
     float startY = 20.f * std::min(scale.x, scale.y);
