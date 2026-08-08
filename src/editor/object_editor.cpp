@@ -4,6 +4,7 @@
 #include <core/scale.hpp>
 #include <core/constants.hpp>
 #include <algorithm>
+#include <cmath>
 
 void applyObjectChange(ObjectChange& change, bool forward) {
     const auto& props = forward ? change.newProps : change.oldProps;
