@@ -31,7 +31,27 @@ namespace Objects
         {"industrial_zone/objects/locker", 4},
         {"industrial_zone/objects/mop", 1},
         {"industrial_zone/objects/pointer", 2},
-        {"industrial_zone/objects/numbers", 10}
+        {"industrial_zone/objects/numbers", 10},
+
+      // exclusion zone
+        {"exclusion_zone/objects/grass", 24},
+        {"exclusion_zone/objects/stones", 6},
+        {"exclusion_zone/objects/trees", 18},
+        {"exclusion_zone/objects/other/box", 4},
+        {"exclusion_zone/objects/other/pointer", 3},
+
+      // factory
+        {"factory/objects/barrel", 4},
+        {"factory/objects/boxes", 6},
+        {"factory/objects/icons", 12},
+        {"factory/objects/ladders", 8},
+        {"factory/objects/monitors", 9},
+
+      // billboards
+        {"billboards/billboards", 8},
+        {"billboards/ads/22x40", 15},
+        {"billboards/ads/64x64", 15},
+        {"billboards/ads/128x64", 15},
     };
     
     for ( const auto& [path, count] : objectKeys) {

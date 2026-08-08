@@ -122,6 +122,32 @@ void ObjectEditor::handleEvent(const sf::Event& event, const sf::RenderWindow& w
 
     const auto* btn = event.getIf<sf::Event::MouseButtonPressed>();
     if (shouldPaintObject || btn) {
+        if (ctrlHeld) {
+            // Ctrl+click to pick object from world
+            const auto& order = Terrain::getObjectOrder();
+            for (auto it = order.rbegin(); it != order.rend(); ++it) {
+                const auto& key = *it;
+                auto mapIt = Terrain::getObjectMap().find(key);
+                if (mapIt == Terrain::getObjectMap().end()) continue;
+                const auto& props = mapIt->second;
+                sf::Sprite spr = Objects::getObjectSprite(props.index);
+                sf::FloatRect bounds = spr.getLocalBounds();
+                spr.setOrigin(sf::Vector2f(bounds.size.x / 2.f, bounds.size.y / 2.f));
+                sf::Vector2f worldPos(key.first * Scale::get(), key.second * Scale::get());
+                spr.setPosition(worldPos);
+                spr.setScale(Scale::getVec() * props.scale);
+                if (spr.getGlobalBounds().contains(mouseWorldPos)) {
+                    selectedObject = props.index;
+                    currentObjectScale = props.scale;
+                    rotation = props.rotation;
+                    flipX = props.flipX;
+                    flipY = props.flipY;
+                    palette.setSelected(selectedObject);
+                    updateCursor();
+                    break;
+                }
+            }
+        } else
         if (shouldPaintObject || btn->button == sf::Mouse::Button::Left) {
             startRecording();
             paintObject(mouseWorldPos.x + cursorOffset.x, mouseWorldPos.y + cursorOffset.y);

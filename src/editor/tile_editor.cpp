@@ -139,6 +139,18 @@ void TileEditor::handleEvent(const sf::Event& event, const sf::RenderWindow& win
 
     if (const auto* btn = event.getIf<sf::Event::MouseButtonPressed>()) {
         if (btn->button == sf::Mouse::Button::Left) {
+            if (control) {
+                // Ctrl+click to pick tile from world
+                std::vector<int> tileStack = Terrain::getTile(tx, ty);
+                if (!tileStack.empty()) {
+                  int encoded = tileStack.back();
+                  selectedTile = getTileIndex(encoded);      // extract raw index
+                  rotation = getTileRotation(encoded);       // also copy rotation
+                  flip = getTileFlip(encoded);               // and flip
+                  palette.setSelected(selectedTile);
+                }
+                return;
+            }
             startRecording();
             isPainting = true;
             lastPaintedTile = {-1, -1};

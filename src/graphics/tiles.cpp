@@ -12,18 +12,10 @@ namespace Tiles {
 
     const std::vector<std::pair<std::string, int>> tileKeys = {
         {"power_station", 64},
-        {"industrial_zone", 81}
-    };
-    
-    static const std::vector<int> non_solid_tiles = 
-    {
-        /* Power station */
-        4, 5, 9, 34, 35, 36, 37, 40, 41, 44, 45,
-        48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
-        58, 59, 60, 61, 62, 63,
-
-        /* Industrial zone */
-        64, 73
+        {"industrial_zone", 81},
+        {"exclusion_zone", 54},
+        {"factory", 64},
+        {"factory_back", 9},
     };
 
     const int tile_width = 32;
