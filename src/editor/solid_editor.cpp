@@ -4,6 +4,7 @@
 #include <core/scale.hpp>
 #include <graphics/tiles.hpp>
 #include <algorithm>
+#include <cmath>
 
 void applySolidChange(SolidChange& change, bool forward) {
     const int& type = forward ? change.newType : change.oldType;
