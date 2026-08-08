@@ -36,22 +36,22 @@ namespace Characters {
         
         scope.info << "Adding Fighter_Boss animations...\n";
         Animations::addList(Fighter_Boss, "characters/fighter_boss/", {
-            {Anim::Walk, {"walk.png", 10, 80}},
-            {Anim::Run, {"run.png", 10, 75}},
-            {Anim::Jump, {"jump.png", 10, 80}},
-            {Anim::Idle, {"idle.png", 6, 80}},
-            {Anim::Shoot, {"shot.png", 11, 80}},
-            {Anim::Recharge, {"recharge.png", 6, 80}}
+            {Anim::Walk, {"Walk.png", 10, 80}},
+            {Anim::Run, {"Run.png", 10, 75}},
+            {Anim::Jump, {"Jump.png", 10, 80}},
+            {Anim::Idle, {"Idle.png", 6, 80}},
+            {Anim::Shoot, {"Shot.png", 11, 80}},
+            {Anim::Recharge, {"Recharge.png", 6, 80}}
         });
         
         scope.info << "Adding Fighter_Detective animations...\n";
         Animations::addList(Fighter_Detective, "characters/fighter_detective/", {
-            {Anim::Walk, {"walk.png", 10, 80}},
-            {Anim::Run, {"run.png", 10, 75}},
-            {Anim::Jump, {"jump.png", 10, 80}},
-            {Anim::Idle, {"idle.png", 6, 80}},
-            {Anim::Shoot, {"shot.png", 4, 80}},
-            {Anim::Recharge, {"recharge.png", 17, 80}}
+            {Anim::Walk, {"Walk.png", 10, 80}},
+            {Anim::Run, {"Run.png", 10, 75}},
+            {Anim::Jump, {"Jump.png", 10, 80}},
+            {Anim::Idle, {"Idle.png", 6, 80}},
+            {Anim::Shoot, {"Shot.png", 4, 80}},
+            {Anim::Recharge, {"Recharge.png", 17, 80}}
         });
     }
 

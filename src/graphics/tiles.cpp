@@ -31,7 +31,7 @@ namespace Tiles {
 
     void load() {
         for (const auto& [key, count] : tileKeys) {
-            std::string path = key + "/tile/tileset.png";
+            std::string path = key + "/tile/Tileset.png";
             Textures::load(key, path);
         }
     }
