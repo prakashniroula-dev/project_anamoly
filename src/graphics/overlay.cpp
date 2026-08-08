@@ -1,4 +1,4 @@
-#include <graphics/Overlay.hpp>
+#include <graphics/overlay.hpp>
 #include <graphics/textures.hpp>
 #include <debug/logs.hpp>
 #include <SFML/Graphics/Sprite.hpp>
