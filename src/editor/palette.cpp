@@ -36,13 +36,12 @@ void Palette::setLayout(int cols, int rows, float cSize, float sp) {
     spacing = sp;
 }
 
-void Palette::updateLayout(const sf::Vector2u& windowSize) {
+void Palette::updateLayout(const sf::Vector2u& viewSize) {
     if (sprites.empty()) return;
 
     sf::Vector2f scale = Scale::getVec();
     float uniformScale = std::min(scale.x, scale.y);
 
-    // Spacing ratio from setLayout values
     float spacingRatio = (cellSize > 0.f) ? (spacing / cellSize) : 0.1f;
 
     int total = static_cast<int>(sprites.size());
@@ -50,54 +49,67 @@ void Palette::updateLayout(const sf::Vector2u& windowSize) {
     int endIdx = getEndIdx();
     int numDisplayed = endIdx - startIdx;
     if (numDisplayed <= 0) {
-        if (page > 0) { --page; updateLayout(windowSize); }
+        if (page > 0) { --page; updateLayout(viewSize); }
         return;
     }
 
     int rows = (numDisplayed + columns - 1) / columns;
 
-    // ---- UI elements sizes (must match later code) ----
-    float topMargin   = 20.f * uniformScale;
-    float pad         = 10.f * uniformScale;
+    // ---- Fixed UI element sizes (scaled) ----
+    float topMargin = 10.f * uniformScale;   // from 20 to 10
+    float pad          = 10.f * uniformScale;
     float gapToButtons = 10.f * uniformScale;
-    float btnSize     = 30.f * uniformScale;   // should match later btnSize
+    float btnSize      = 30.f * uniformScale;
     float bottomMargin = 10.f * uniformScale;
 
-    // Total height we want the entire palette (grid + padding + buttons) to occupy
-    float maxTotalHeight = 0.5f * static_cast<float>(windowSize.y);  // 50% of window
+    // ---- Overall limits (fractions of the view) ----
+    
+    float maxTotalWidth  = 0.9f * static_cast<float>(viewSize.x);   // 90% of window width
+    float maxTotalHeight = 0.65f * static_cast<float>(viewSize.y);  // 65% of window height
 
-    // Height reserved for non-grid elements
-    float fixedNonGridHeight = topMargin + 2 * pad + gapToButtons + btnSize + bottomMargin;
-    float maxGridHeight = maxTotalHeight - fixedNonGridHeight;
-    if (maxGridHeight < 0) maxGridHeight = 0;   // guard against too-small window
+    // Height reserved for grid background after subtracting UI elements
+    float availableForBgHeight = maxTotalHeight - topMargin - gapToButtons - btnSize - bottomMargin;
+    if (availableForBgHeight < 0) availableForBgHeight = 0;
 
-    // Width limit for the grid
-    float maxWidth = 0.8f * static_cast<float>(windowSize.x);
+    // Background itself has padding, so grid must be smaller
+    float maxGridWidth  = maxTotalWidth  - 2.f * pad;
+    float maxGridHeight = availableForBgHeight - 2.f * pad;
+    if (maxGridWidth < 0)  maxGridWidth = 0;
+    if (maxGridHeight < 0) maxGridHeight = 0;
 
-    // Compute the largest cell size that fits within both width and grid-height
-    // total width = columns * cellSize + (columns-1) * spacing
-    // spacing = spacingRatio * cellSize
-    float cellByWidth  = maxWidth / (columns + (columns - 1) * spacingRatio);
-    float cellByHeight = maxGridHeight / (rows + (rows - 1) * spacingRatio);
-
+    // Compute cell size from both constraints
+    float cellByWidth  = (columns > 0) ? maxGridWidth / (columns + (columns - 1) * spacingRatio) : 0;
+    float cellByHeight = (rows > 0)    ? maxGridHeight / (rows    + (rows    - 1) * spacingRatio) : 0;
     float cellSizeFinal = std::min(cellByWidth, cellByHeight);
+    if (cellSizeFinal < 0) cellSizeFinal = 0;
     float spacingFinal = spacingRatio * cellSizeFinal;
 
-    // Actual grid dimensions
+    // Actual grid dimensions (without padding)
     float totalWidth  = columns * cellSizeFinal + (columns - 1) * spacingFinal;
     float totalHeight = rows    * cellSizeFinal + (rows    - 1) * spacingFinal;
 
-    // Position the grid: centered horizontally, with topMargin
-    float startX = (static_cast<float>(windowSize.x) - totalWidth) / 2.f;
-    float startY = topMargin;
+    // Background dimensions (with padding)
+    float bgWidth  = totalWidth  + 2.f * pad;
+    float bgHeight = totalHeight + 2.f * pad;
 
-    // Place sprites
+    // Center the background in the view
+    float viewW = static_cast<float>(viewSize.x);
+    float viewH = static_cast<float>(viewSize.y);
+    float startX = (viewW - bgWidth)  / 2.f;
+    float startY = topMargin;   // fixed top margin
+
+    // (Optional) Clamp to ensure it never goes off-screen
+    // But with the constraints above, it should already be inside.
+
+    // Place sprites inside the padded area
+    float gridStartX = startX + pad;
+    float gridStartY = startY + pad;
     for (int i = startIdx; i < endIdx; ++i) {
         int local = i - startIdx;
         int row = local / columns;
         int col = local % columns;
-        float x = startX + col * (cellSizeFinal + spacingFinal);
-        float y = startY + row * (cellSizeFinal + spacingFinal);
+        float x = gridStartX + col * (cellSizeFinal + spacingFinal);
+        float y = gridStartY + row * (cellSizeFinal + spacingFinal);
         sprites[i].setPosition({x, y});
 
         sf::FloatRect bounds = sprites[i].getLocalBounds();
@@ -106,9 +118,9 @@ void Palette::updateLayout(const sf::Vector2u& windowSize) {
         sprites[i].setScale({s, s});
     }
 
-    // Background (with padding)
-    background.setSize({totalWidth + pad * 2, totalHeight + pad * 2});
-    background.setPosition({startX - pad, startY - pad});
+    // Background
+    background.setSize({bgWidth, bgHeight});
+    background.setPosition({startX, startY});
 
     // Highlight
     if (selected >= startIdx && selected < endIdx) {
@@ -124,14 +136,14 @@ void Palette::updateLayout(const sf::Vector2u& windowSize) {
         highlight.setOutlineThickness(0.f);
     }
 
-    // Navigation buttons (placed below background)
+    // Navigation buttons (centered below background)
     float btnSpacing = 10.f * uniformScale;
     float totalBtnWidth = btnSize * 2 + btnSpacing;
-    float btnY = background.getPosition().y + background.getSize().y + gapToButtons;
+    float btnY = startY + bgHeight + gapToButtons;
 
     prevBtn.setSize({btnSize, btnSize});
     nextBtn.setSize({btnSize, btnSize});
-    float startBtnX = startX + (totalWidth - totalBtnWidth) / 2.f;
+    float startBtnX = startX + (bgWidth - totalBtnWidth) / 2.f;
     prevBtn.setPosition({startBtnX, btnY});
     nextBtn.setPosition({startBtnX + btnSize + btnSpacing, btnY});
 

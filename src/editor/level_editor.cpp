@@ -60,11 +60,11 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
     // This ensures mouse click hit‑testing works correctly.
     if (currentMode == Mode::Tile)
     {
-        tileEditor.updatePaletteLayout(window.getSize());
+        tileEditor.updatePaletteLayout(window);
     }
     else
     {
-        objectEditor.updatePaletteLayout(window.getSize());
+        objectEditor.updatePaletteLayout(window);
     }
 
     // Global shortcuts

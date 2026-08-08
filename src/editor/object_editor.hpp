@@ -29,7 +29,7 @@ public:
     void togglePaletteVisibility();
 
     // Exposed so LevelEditor can force an update before event handling
-    void updatePaletteLayout(const sf::Vector2u& windowSize);
+    void updatePaletteLayout(const sf::RenderWindow& window);
 
 private:
     float rotation = 0.f;

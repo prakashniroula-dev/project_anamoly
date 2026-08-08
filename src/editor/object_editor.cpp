@@ -16,9 +16,11 @@ void applyObjectChange(ObjectChange& change, bool forward) {
 ObjectEditor::ObjectEditor(const sf::Font& font)
     : palette(font), objectCursor(dummyTexture) {}
 
-void ObjectEditor::updatePaletteLayout(const sf::Vector2u& windowSize) {
+void ObjectEditor::updatePaletteLayout(const sf::RenderWindow& window) {
     if (showPalette) {
-        palette.updateLayout(windowSize);
+      sf::Vector2f size = window.getDefaultView().getSize();
+      sf::Vector2u viewSize = {static_cast<unsigned int>(size.x), static_cast<unsigned int>(size.y)};
+      palette.updateLayout(viewSize);
     }
 }
 

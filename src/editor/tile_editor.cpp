@@ -56,9 +56,12 @@ void TileEditor::toggleStackMode() { stackMode = !stackMode; }
 bool TileEditor::isStackMode() const { return stackMode; }
 void TileEditor::togglePaletteVisibility() { showPalette = !showPalette; }
 
-void TileEditor::updatePaletteLayout(const sf::Vector2u& windowSize) {
-    palette.updateLayout(windowSize);
-    selectedTile = palette.getSelected();
+void TileEditor::updatePaletteLayout(const sf::RenderWindow& window) {
+    if (showPalette) {
+        sf::Vector2f size = window.getDefaultView().getSize();
+        sf::Vector2u viewSize = {static_cast<unsigned int>(size.x), static_cast<unsigned int>(size.y)};
+        palette.updateLayout(viewSize);
+    }
 }
 
 void TileEditor::handleEvent(const sf::Event& event, const sf::RenderWindow& window) {
@@ -66,7 +69,7 @@ void TileEditor::handleEvent(const sf::Event& event, const sf::RenderWindow& win
 
     // ★ Update palette layout NOW so sprite positions are current for hit-testing ★
     if (showPalette) {
-        updatePaletteLayout(window.getSize());
+        updatePaletteLayout(window);
     }
 
     sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
@@ -260,7 +263,7 @@ void TileEditor::draw(sf::RenderWindow& window) {
 
     if (showPalette) {
         // Layout already updated in handleEvent, but update again for drawing
-        updatePaletteLayout(window.getSize());
+        updatePaletteLayout(window);
         palette.draw(window);
 
         // Mode buttons: place to the right of palette's next button
