@@ -198,7 +198,14 @@ public:
                 else if (event->is<sf::Event::KeyPressed>()) {
                     const auto& key = event->getIf<sf::Event::KeyPressed>();
                     const bool ctrlHeld = key->control;
-                    if (key->code == sf::Keyboard::Key::F1 || key->code == sf::Keyboard::Key::F2 || key->code == sf::Keyboard::Key::F3) {
+                    if (
+                        key->code == sf::Keyboard::Key::F1 ||
+                        key->code == sf::Keyboard::Key::F2 ||
+                        key->code == sf::Keyboard::Key::F3 ||
+                        key->code == sf::Keyboard::Key::Num1 ||
+                        key->code == sf::Keyboard::Key::Num2 ||
+                        key->code == sf::Keyboard::Key::Num3
+                    ) {
                         editor.setActive(true);
                     }
                     if (key->code == sf::Keyboard::Key::S && ctrlHeld) {

@@ -77,12 +77,15 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
         switch (key->scancode)
         {
         case sf::Keyboard::Scancode::F1:
+        case sf::Keyboard::Scancode::Num1:
             switchMode(Mode::Tile);
             break;
         case sf::Keyboard::Scancode::F2:
+        case sf::Keyboard::Scancode::Num2:
             switchMode(Mode::Object);
             break;
         case sf::Keyboard::Scancode::F3:
+        case sf::Keyboard::Scancode::Num3:
             switchMode(Mode::Solid);
             break;
         case sf::Keyboard::Scancode::E:
