@@ -40,10 +40,11 @@ void Palette::updateLayout(const sf::Vector2u& windowSize) {
     if (sprites.empty()) return;
 
     sf::Vector2f scale = Scale::getVec();
-    float scaledCell = cellSize * std::min(scale.x, scale.y);
-    float scaledSpacing = spacing * std::min(scale.x, scale.y);
+    float uniformScale = std::min(scale.x, scale.y);
 
-    float winWidth = static_cast<float>(windowSize.x);
+    // Desired cell size and spacing, scaled by UI factor
+    float baseCellSize = cellSize * uniformScale;
+    float baseSpacing = spacing * uniformScale;
 
     int total = static_cast<int>(sprites.size());
     int startIdx = getStartIdx();
@@ -54,50 +55,61 @@ void Palette::updateLayout(const sf::Vector2u& windowSize) {
         return;
     }
 
-    int rows = (numDisplayed + columns - 1) / columns;
-    
-    float maxWidth  = 0.8f * windowSize.x;
-    float maxHeight = 0.5f * windowSize.y;
+    int rows = (numDisplayed + columns - 1) / columns;  // rows needed for this page
 
-    // Cell size limited by each dimension
-    float cellSizeByWidth  = maxWidth  / columns;
-    float cellSizeByHeight = maxHeight / rows;
-    float cellSize = std::min(cellSizeByWidth, cellSizeByHeight); // use the tighter constraint
+    float maxWidth  = 0.8f * static_cast<float>(windowSize.x);
+    float maxHeight = 0.5f * static_cast<float>(windowSize.y);
 
-    float totalWidth  = columns * cellSize;
-    float totalHeight = rows    * cellSize;
+    // Compute required grid size with base values
+    float requiredWidth = columns * baseCellSize + (columns - 1) * baseSpacing;
+    float requiredHeight = rows * baseCellSize + (rows - 1) * baseSpacing;
 
-    float startX = (winWidth - totalWidth) / 2.f;
-    float startY = 20.f * std::min(scale.x, scale.y);
+    // Fit within constraints, if needed (uniform scaling)
+    float fitScale = 1.0f;
+    if (requiredWidth > maxWidth)
+        fitScale = std::min(fitScale, maxWidth / requiredWidth);
+    if (requiredHeight > maxHeight)
+        fitScale = std::min(fitScale, maxHeight / requiredHeight);
 
+    float finalCellSize = baseCellSize * fitScale;
+    float finalSpacing = baseSpacing * fitScale;
+
+    // Actual grid dimensions
+    float totalWidth = columns * finalCellSize + (columns - 1) * finalSpacing;
+    float totalHeight = rows * finalCellSize + (rows - 1) * finalSpacing;
+
+    // Centered horizontally, with a top offset
+    float startX = (static_cast<float>(windowSize.x) - totalWidth) / 2.f;
+    float startY = 20.f * uniformScale;
+
+    // Place sprites and scale them to fit their cells
     for (int i = startIdx; i < endIdx; ++i) {
         int local = i - startIdx;
         int row = local / columns;
         int col = local % columns;
-        float x = startX + col * (scaledCell + scaledSpacing);
-        float y = startY + row * (scaledCell + scaledSpacing);
+        float x = startX + col * (finalCellSize + finalSpacing);
+        float y = startY + row * (finalCellSize + finalSpacing);
         sprites[i].setPosition({x, y});
 
-        // Scale sprite to fit cell
         sf::FloatRect bounds = sprites[i].getLocalBounds();
         float maxDim = std::max(bounds.size.x, bounds.size.y);
-        float s = (maxDim > 0) ? scaledCell / maxDim : 1.f;
+        float s = (maxDim > 0) ? finalCellSize / maxDim : 1.f;
         sprites[i].setScale({s, s});
     }
 
-    // Background
-    float pad = 10.f * std::min(scale.x, scale.y);
+    // Background (with padding)
+    float pad = 10.f * uniformScale;
     background.setSize({totalWidth + pad * 2, totalHeight + pad * 2});
     background.setPosition({startX - pad, startY - pad});
 
-    // Highlight
+    // Highlight selection
     if (selected >= startIdx && selected < endIdx) {
         const auto& spr = sprites[selected];
-        highlight.setSize({scaledCell, scaledCell});
+        highlight.setSize({finalCellSize, finalCellSize});
         highlight.setPosition(spr.getPosition());
         highlight.setFillColor(sf::Color::Transparent);
         highlight.setOutlineColor(sf::Color::Yellow);
-        highlight.setOutlineThickness(2.f);
+        highlight.setOutlineThickness(2.f * uniformScale);
     } else {
         highlight.setFillColor(sf::Color::Transparent);
         highlight.setOutlineColor(sf::Color::Transparent);
@@ -105,10 +117,10 @@ void Palette::updateLayout(const sf::Vector2u& windowSize) {
     }
 
     // Navigation buttons
-    float btnSize = 30.f * std::min(scale.x, scale.y);
-    float btnSpacing = 10.f * std::min(scale.x, scale.y);
+    float btnSize = 30.f * uniformScale;
+    float btnSpacing = 10.f * uniformScale;
     float totalBtnWidth = btnSize * 2 + btnSpacing;
-    float btnY = background.getPosition().y + background.getSize().y + 10.f * std::min(scale.x, scale.y);
+    float btnY = background.getPosition().y + background.getSize().y + 10.f * uniformScale;
 
     prevBtn.setSize({btnSize, btnSize});
     nextBtn.setSize({btnSize, btnSize});
@@ -116,6 +128,7 @@ void Palette::updateLayout(const sf::Vector2u& windowSize) {
     prevBtn.setPosition({startBtnX, btnY});
     nextBtn.setPosition({startBtnX + btnSize + btnSpacing, btnY});
 
+    // Center text inside buttons
     float charSize = btnSize * 0.6f;
     prevText.setCharacterSize(static_cast<unsigned>(charSize));
     nextText.setCharacterSize(static_cast<unsigned>(charSize));
@@ -129,7 +142,6 @@ void Palette::updateLayout(const sf::Vector2u& windowSize) {
     centerText(prevText, prevBtn);
     centerText(nextText, nextBtn);
 }
-
 void Palette::draw(sf::RenderWindow& window) const {
     if (!visible || sprites.empty()) return;
 
