@@ -58,5 +58,5 @@ private:
     std::vector<Group> undoStack, redoStack;
     Group currentGroup;
     bool recording = false;
-    static constexpr size_t MAX_UNDO = 6;
+    static constexpr size_t MAX_UNDO = 20;
 };
