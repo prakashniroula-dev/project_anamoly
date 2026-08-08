@@ -13,7 +13,7 @@ Overlay::Overlay(const std::string& texKey, const sf::Color& color)
 void Overlay::load(sf::RenderWindow& win) {
     static Log::Scope scope("Overlay::Load()");
     scope.info << "Load PowerStationOverlay texture...\n";
-    Textures::load(OverlayKeys::PowerStationOverlay, "power_station/bg/Overlay.png");
+    Textures::load(OverlayKeys::PowerStationOverlay, "power_station/bg/overlay.png");
 }
 
 void Overlay::draw(sf::RenderWindow& win, float dt) {
