@@ -16,6 +16,7 @@ namespace Tiles {
         {"exclusion_zone", 54},
         {"factory", 64},
         {"factory_back", 9},
+        {"exclusion_zone", 81},
     };
 
     const int tile_width = 32;
