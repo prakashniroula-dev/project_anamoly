@@ -57,6 +57,8 @@ void Palette::updateLayout(const sf::Vector2u& windowSize) {
     int rows = (numDisplayed + columns - 1) / columns;
     float totalWidth = columns * (scaledCell + scaledSpacing) - scaledSpacing;
     float totalHeight = rows * (scaledCell + scaledSpacing) - scaledSpacing;
+    totalWidth = std::min(totalWidth, winWidth - 20.f * std::min(scale.x, scale.y));
+    totalHeight = std::min(totalHeight, windowSize.y - 100.f * std::min(scale.x, scale.y));
 
     float startX = (winWidth - totalWidth) / 2.f;
     float startY = 20.f * std::min(scale.x, scale.y);
