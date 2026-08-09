@@ -1,0 +1,4 @@
+# Spawns: x y characterKey scale rotation flipX flipY npcTypeId uniqueID
+44.3278 488.484 fighter_detective 1 0 0 0 detective_explainer 
+164.539 479.406 fighter_detective 1 0 0 0 player 
+294.631 479.866 fighter_boss 1 0 0 0 generic_guard 

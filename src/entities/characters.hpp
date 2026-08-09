@@ -10,7 +10,7 @@
 #include <core/constants.hpp>
 #include <core/scale.hpp>
 #include <graphics/tiles.hpp>
-
+#include <entities/terrain.hpp>
 
 // Animation key constants (declared as extern)
 namespace Anim {
@@ -27,7 +27,17 @@ namespace Characters {
     extern const std::string Fighter_Detective;
     extern const std::string Fighter_Boxer;
     extern const std::string Fighter_Boss;
-    
+
+    // player is just a storage
+    extern std::string Player; // Added for player character
+
+    sf::Sprite getCharacterSprite(const std::string& characterKey);
+
+    inline std::vector<std::string> getAllKeys() {
+        return {Fighter_Detective, Fighter_Boxer, Fighter_Boss};
+    }
+
+    void setPlayerCharacter(const std::string& characterKey);
     // Declaration only
     void load();
 }
@@ -55,9 +65,7 @@ class Character : public GameObject {
     static constexpr float OFFSET_Y = 58.f;
     static constexpr float FEET_WIDTH = 20.f;
     static constexpr float FEET_HEIGHT = 1.f;
-
-    // Change this line:
-    sf::Vector2f SPAWN_POS() { return sf::Vector2f(2.f, 2.f); }
+    sf::Vector2f SPAWN_POS() { return Terrain::getPlayerSpawnPosition(); }
     protected:
     float timer = 0;
     CharacterState state = CharacterState::None;
@@ -82,6 +90,7 @@ class Character : public GameObject {
     void drawDebugBounds(sf::RenderWindow& win);
 
 public:
+    void init();
     sf::FloatRect getBounds();
     sf::FloatRect getFeetBounds();
     Character(std::string c = Characters::Fighter_Boss, bool playerControls = true);

@@ -3,6 +3,7 @@
 #include "tile_editor.hpp"
 #include "object_editor.hpp"
 #include "solid_editor.hpp"
+#include "spawn_editor.hpp"
 
 class LevelEditor {
 public:
@@ -15,7 +16,7 @@ public:
     void init(); // calls tileEditor.init() and objectEditor.init()
 
 private:
-    enum class Mode { Tile, Object, Solid };
+    enum class Mode { Tile, Object, Solid, Spawn };
     Mode currentMode = Mode::Tile;
     bool active = false;
 
@@ -23,6 +24,7 @@ private:
     TileEditor tileEditor;
     ObjectEditor objectEditor;
     SolidEditor solidEditor;
+    SpawnEditor spawnEditor;
 
     void switchMode(Mode mode);
 };

@@ -11,7 +11,8 @@
 #include <editor/level_editor.hpp>
 #include <entities/objects.hpp> 
 #include <graphics/overlay.hpp>
-#include <entities/npc.hpp>
+#include <entities/npc_manager.hpp>
+#include <ui/ui_manager.hpp>
 
 using namespace std;
 
@@ -97,12 +98,19 @@ public:
         Objects::load();
         Background::load(window);
         Overlay::load(window);
-        Characters::load();
+        Terrain::loadSpawnsFromFile("assets/spawns.txt");
         Terrain::loadFromFile("assets/map.txt");
         Terrain::loadObjectsFromFile("assets/objects.txt");
         Terrain::loadSolidFromFile("assets/solid_tiles.txt");
+        Characters::load();
+        character.init();
+        UIManager::get().init();
+        NPCManager::get().loadDefinitions();
+        NPCManager::spawnAllNPCs(); // Spawn all NPCs from the loaded definitions
         editor.init();
         updateScale();
+        NPCManager::get().setPlayer(&character);
+        // NPCManager::get().processAutoTalks();
     }
 
     void updateScale() {
@@ -173,11 +181,14 @@ public:
 //         npc.patrolTo(character.getPosition() / Scale::get()); // Example patrol target
 
         character.update(window, dt);
-//         npc.update(window, dt);
+        NPCManager::get().update(window, dt);
+        //         npc.update(window, dt);
         updateCamera(dt);
         
+        
         overlay.draw(window, dt);
-//         npc.draw(window, dt);
+        //         npc.draw(window, dt);
+        NPCManager::get().draw(window, dt);
         character.draw(window, dt);
     }
 
@@ -185,6 +196,7 @@ public:
         while (window.isOpen()) {
             window.setView(view);
             while (const std::optional event = window.pollEvent()) {
+                bool uiConsumed = UIManager::get().handleEvent(*event, window);
                 if (event->is<sf::Event::Closed>()) {
                     window.close();
                 }
@@ -202,9 +214,11 @@ public:
                         key->code == sf::Keyboard::Key::F1 ||
                         key->code == sf::Keyboard::Key::F2 ||
                         key->code == sf::Keyboard::Key::F3 ||
+                        key->code == sf::Keyboard::Key::F4 ||
                         key->code == sf::Keyboard::Key::Num1 ||
                         key->code == sf::Keyboard::Key::Num2 ||
-                        key->code == sf::Keyboard::Key::Num3
+                        key->code == sf::Keyboard::Key::Num3 ||
+                        key->code == sf::Keyboard::Key::Num4
                     ) {
                         editor.setActive(true);
                     }
@@ -212,11 +226,21 @@ public:
                         Terrain::saveToFile("assets/map.txt");
                         Terrain::saveObjectsToFile("assets/objects.txt");
                         Terrain::saveSolidToFile("assets/solid_tiles.txt");
+                        Terrain::saveSpawnsToFile("assets/spawns.txt");
                         Log::info << "Map and objects saved to assets/map.txt and assets/objects.txt" << std::endl;
                         showInfoBox("Saved!, assets/(map.txt, objects.txt, solid_tiles.txt)");
                     }
+                    
+                    if (key->code == sf::Keyboard::Key::E) {
+                        if (!editor.isActive()) {
+                            NPCManager::get().interact();
+                        }
+                    }
                 }
-                editor.handleEvent(*event, window);
+
+                if ( editor.isActive() ) {
+                    editor.handleEvent(*event, window);
+                }
             }
 
             window.clear();
@@ -242,8 +266,27 @@ public:
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
                     editor.setActive(false);
                 }
+
             } else {
-                update(dt);
+                bool gameShouldUpdate = true;
+                UIManager::get().update(dt, gameShouldUpdate);
+                if (gameShouldUpdate) {
+                    // Update game logic only if UI allows
+                    update(dt);
+                } else {
+                    // UI blocks game update, but we still draw the world (optional)
+                    // Draw the game world without updating it (paused)
+                    // view.setCenter(sf::Vector2f(character.getPosition().x, viewY)); // Keep camera on character
+                    window.setView(view);
+                    bg.draw(window, dt);
+                    Terrain::draw(window, dt);
+                    // Draw characters, NPCs, etc. (they won't move because not updated)
+                    NPCManager::get().draw(window, dt);
+                    character.draw(window, dt);
+                    overlay.draw(window, dt);
+                }
+                window.setView(window.getDefaultView());   // <-- switch to pixel-perfect view
+                UIManager::get().draw(window);
             }
             
             fpsDisplay.update(dt, window);

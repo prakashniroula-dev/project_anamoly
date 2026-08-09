@@ -8,6 +8,23 @@
 #include <entities/objects.hpp>
 
 using SolidMap = std::map<std::pair<int, int>, int>;
+struct NpcSpawn {
+    sf::Vector2f position;
+    std::string characterKey;   // matches Characters::... constants
+};
+
+struct SpawnProps {
+    std::string characterKey;
+    float scale = 1.f;
+    float rotation = 0.f;
+    bool flipX = false;
+    bool flipY = false;
+    // New:
+    std::string npcTypeId;      // e.g., "detective_explainer"
+    std::string uniqueID;       // optional, e.g., "Detective_1"
+};
+
+using SpawnMap = std::map<std::pair<float, float>, SpawnProps>;
 
 namespace Terrain {
     void draw(sf::RenderWindow& win, float dt);
@@ -41,5 +58,22 @@ namespace Terrain {
     void loadObjectsFromFile(const std::string& filename);
     void saveObjectsToFile(const std::string& filename);
     ObjectProps getObject(float x, float y);
+
+    const SpawnMap& getSpawnMap();
+    void setSpawn(float x, float y, const SpawnProps& props);
+    void eraseSpawn(float x, float y);
+    SpawnProps getSpawn(float x, float y);  // returns empty key if not found
+    void clearSpawns();
+
+    void loadSpawnsFromFile(const std::string& filename);
+    void saveSpawnsToFile(const std::string& filename);
+
+    // Unified load/save for all spawns (replaces the old single-spawn functions)
+    void loadSpawnsFromFile(const std::string& filename);
+    void saveSpawnsToFile(const std::string& filename);
+
+    sf::Vector2f getPlayerSpawnPosition();  // returns default if none set
+    void setPlayerSpawnPosition(const sf::Vector2f& pos);
+
 
 }

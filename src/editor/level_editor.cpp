@@ -3,7 +3,7 @@
 #include <iostream>
 
 LevelEditor::LevelEditor()
-    : tileEditor(font), objectEditor(font), solidEditor(font)
+    : tileEditor(font), objectEditor(font), solidEditor(font), spawnEditor(font)
 {
     if (!font.openFromFile("assets/fonts/orbitron.ttf"))
     {
@@ -13,6 +13,8 @@ LevelEditor::LevelEditor()
     objectEditor.setActive(false);
     tileEditor.setPaletteVisible(true);
     objectEditor.setPaletteVisible(false);
+    spawnEditor.setActive(false);
+    spawnEditor.setPaletteVisible(false);
 }
 
 void LevelEditor::init()
@@ -20,6 +22,7 @@ void LevelEditor::init()
     tileEditor.init();
     objectEditor.init();
     solidEditor.init();
+    spawnEditor.init();
 }
 
 void LevelEditor::setActive(bool a)
@@ -29,11 +32,15 @@ void LevelEditor::setActive(bool a)
     {
         tileEditor.setActive(currentMode == Mode::Tile);
         objectEditor.setActive(currentMode == Mode::Object);
+        solidEditor.setActive(currentMode == Mode::Solid);
+        spawnEditor.setActive(currentMode == Mode::Spawn);
     }
     else
     {
         tileEditor.setActive(false);
         objectEditor.setActive(false);
+        solidEditor.setActive(false);
+        spawnEditor.setActive(false);
     }
 }
 
@@ -46,9 +53,11 @@ void LevelEditor::switchMode(Mode mode)
     currentMode = mode;
     tileEditor.setActive(mode == Mode::Tile);
     objectEditor.setActive(mode == Mode::Object);
+    solidEditor.setActive(mode == Mode::Solid);
+    spawnEditor.setActive(mode == Mode::Spawn);
     tileEditor.setPaletteVisible(mode == Mode::Tile);
     objectEditor.setPaletteVisible(mode == Mode::Object);
-    solidEditor.setActive(mode == Mode::Solid);
+    spawnEditor.setPaletteVisible(mode == Mode::Spawn);
 }
 
 void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
@@ -62,9 +71,11 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
     {
         tileEditor.updatePaletteLayout(window);
     }
-    else
+    else if (currentMode == Mode::Object)
     {
         objectEditor.updatePaletteLayout(window);
+    } else if (currentMode == Mode::Spawn) {
+        spawnEditor.updatePaletteLayout(window);
     }
 
     // Global shortcuts
@@ -87,6 +98,10 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
         case sf::Keyboard::Scancode::F3:
         case sf::Keyboard::Scancode::Num3:
             switchMode(Mode::Solid);
+            break;
+        case sf::Keyboard::Scancode::F4:
+        case sf::Keyboard::Scancode::Num4:
+            switchMode(Mode::Spawn);
             break;
         case sf::Keyboard::Scancode::E:
             if (currentMode == Mode::Tile)
@@ -112,6 +127,8 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
                 objectEditor.undo();
             else if (currentMode == Mode::Solid)
                 solidEditor.undo();
+            else if (currentMode == Mode::Spawn)
+                spawnEditor.undo();
         }
         // Redo: Ctrl+Y
         if (ctrl && key->scancode == sf::Keyboard::Scancode::Y)
@@ -122,6 +139,8 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
                 objectEditor.redo();
             else if (currentMode == Mode::Solid)
                 solidEditor.redo();
+            else if (currentMode == Mode::Spawn)
+                spawnEditor.redo();
         }
     }
 
@@ -130,6 +149,8 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
         tileEditor.handleEvent(event, window);
     else if (currentMode == Mode::Solid)
         solidEditor.handleEvent(event, window);
+    else if (currentMode == Mode::Spawn)
+        spawnEditor.handleEvent(event, window);
     else
         objectEditor.handleEvent(event, window);
 }
@@ -142,6 +163,8 @@ void LevelEditor::draw(sf::RenderWindow &window)
         tileEditor.draw(window);
     else if (currentMode == Mode::Solid)
         solidEditor.draw(window);
+    else if (currentMode == Mode::Spawn)
+        spawnEditor.draw(window);
     else
         objectEditor.draw(window);
 }

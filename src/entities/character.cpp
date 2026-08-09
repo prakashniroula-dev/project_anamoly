@@ -31,6 +31,9 @@ namespace Characters {
     const std::string Fighter_Boxer = "fighter_boxer";
     const std::string Fighter_Boss = "fighter_boss";
 
+
+    std::string Player = std::string(Fighter_Detective); // Added for player character
+
     void load() {
         static Log::Scope scope("Characters::Load()");
         
@@ -63,7 +66,10 @@ namespace Characters {
 // ---------- CHARACTER IMPLEMENTATION ----------
 Character::Character(std::string c, bool playerControls) : character(c), m_playerControls(playerControls) {
     vel = sf::Vector2f(0.f, 0.f);
-    pos = SPAWN_POS();
+}
+
+void Character::init() {
+    pos = Terrain::getPlayerSpawnPosition();
 }
 
 void Character::setCharacter(std::string c) { character = c; }
@@ -346,4 +352,17 @@ void Character::update(sf::RenderWindow& win, float dt) {
     }
 
     timer += dt;
+}
+
+sf::Sprite Characters::getCharacterSprite(const std::string& characterKey) {
+    Log::info << "Getting character sprite for key: " << characterKey << "\n";
+    auto info = Animations::get(characterKey + Anim::Idle);
+    sf::Sprite s(Textures::get(info.textureKey));
+    s.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(128, 128)));
+    s.scale(Scale::getVec());
+    return s;
+}
+
+void Characters::setPlayerCharacter(const std::string& characterKey) {
+    Player = characterKey;
 }

@@ -8,6 +8,7 @@
 #include <core/constants.hpp>
 #include <algorithm> // for std::find
 #include <core/tile_encoding.hpp>
+#include <entities/characters.hpp>
 
 namespace
 {
@@ -33,56 +34,204 @@ namespace
 
     // Insertion order (used for drawing and save/load order)
     std::vector<std::pair<float, float>> objectOrder;
+
+    sf::Vector2f playerSpawnPosition = {2.f, 2.f}; // Default spawn position for the player
+    SpawnMap spawnMap;                             // Map for NPC spawns
 }
 
 namespace Terrain
 {
 
-     const SolidMap& getSolidMap() { return solidMap; }
+    const SolidMap &getSolidMap() { return solidMap; }
 
-    void setSolidTile(int x, int y, int type) {
+    void setSolidTile(int x, int y, int type)
+    {
         if (type <= 0)
             solidMap.erase({x, y});
         else
             solidMap[{x, y}] = type;
     }
 
-    void eraseSolidTile(int x, int y) {
+    void eraseSolidTile(int x, int y)
+    {
         solidMap.erase({x, y});
     }
 
-    int getSolidTile(int x, int y) {
+    int getSolidTile(int x, int y)
+    {
         auto it = solidMap.find({x, y});
         return (it != solidMap.end()) ? it->second : 0;
     }
 
-    void loadSolidFromFile(const std::string& filename) {
+    const SpawnMap &getSpawnMap() { return spawnMap; }
+
+    void setSpawn(float x, float y, const SpawnProps &props)
+    {
+        auto key = std::make_pair(x, y);
+        spawnMap[key] = props;
+    }
+
+    void eraseSpawn(float x, float y)
+    {
+        spawnMap.erase({x, y});
+    }
+
+    SpawnProps getSpawn(float x, float y)
+    {
+        auto it = spawnMap.find({x, y});
+        return (it != spawnMap.end()) ? it->second : SpawnProps{};
+    }
+
+    sf::Vector2f getPlayerSpawnPosition() { return playerSpawnPosition; }
+
+    void clearSpawns() { spawnMap.clear(); }
+
+    // ---- Unified file I/O ----
+    // ------------------ Spawn I/O (extended) ------------------
+    void loadSpawnsFromFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        Log::error << "Failed to open spawn file for reading: " << filename << std::endl;
+        return;
+    }
+
+    // Clear existing spawns
+    spawnMap.clear();
+
+    std::string line;
+    int lineNum = 0;
+    while (std::getline(file, line)) {
+        lineNum++;
+        // Skip empty lines and comments
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        float x, y;
+        std::string characterKey;
+        float scale = 1.f;
+        float rotation = 0.f;
+        bool flipX = false, flipY = false;
+        std::string npcTypeId;
+        std::string uniqueID;
+
+        // Read mandatory fields: x, y, characterKey
+        if (!(iss >> x >> y >> characterKey)) {
+            Log::error << "Spawn load: invalid line " << lineNum << ": " << line << std::endl;
+            continue;
+        }
+
+        // Read optional fields if present
+        // We'll try to read scale, rotation, flipX, flipY, npcTypeId, uniqueID
+        // But they might be missing, so we read them conditionally.
+        // Use a temporary string for reading boolean as int.
+        int flipX_int = 0, flipY_int = 0;
+        if (iss >> scale) {
+            if (iss >> rotation) {
+                if (iss >> flipX_int) {
+                    flipX = (flipX_int != 0);
+                    if (iss >> flipY_int) {
+                        flipY = (flipY_int != 0);
+                        if (iss >> npcTypeId) {
+                            if (iss >> uniqueID) {
+                                // all fields read
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // If any of the optional fields are missing, they keep default values.
+
+        if ( npcTypeId == "player" ) {
+            Log::info << "Loaded player spawn position from file: (" << x << ", " << y << ")" << std::endl;
+            playerSpawnPosition = sf::Vector2f(x, y);
+        }
+
+        // Insert into spawnMap
+        SpawnProps props;
+        props.characterKey = characterKey;
+        props.scale = scale;
+        props.rotation = rotation;
+        props.flipX = flipX;
+        props.flipY = flipY;
+        props.npcTypeId = npcTypeId;
+        props.uniqueID = uniqueID;
+
+        spawnMap[{x, y}] = props;
+    }
+
+    file.close();
+    Log::info << "Loaded " << spawnMap.size() << " spawns from " << filename << std::endl;
+}
+
+    void setPlayerSpawnPosition(const sf::Vector2f &pos)
+    {
+        playerSpawnPosition = pos;
+    }
+
+    void saveSpawnsToFile(const std::string& filename) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        Log::error << "Failed to open spawn file for writing: " << filename << std::endl;
+        return;
+    }
+
+    // Write header (optional, for debugging)
+    file << "# Spawns: x y characterKey scale rotation flipX flipY npcTypeId uniqueID\n";
+
+    for (const auto& [pos, props] : spawnMap) {
+        // pos is a pair<float,float>; use .first, .second
+        file << pos.first << ' ' << pos.second << ' '
+             << props.characterKey << ' '
+             << props.scale << ' '
+             << props.rotation << ' '
+             << (props.flipX ? 1 : 0) << ' '
+             << (props.flipY ? 1 : 0) << ' '
+             << props.npcTypeId << ' '
+             << props.uniqueID << '\n';
+    }
+
+    file.close();
+    Log::info << "Spawns saved to " << filename << std::endl;
+}
+
+    void loadSolidFromFile(const std::string &filename)
+    {
         std::ifstream file(filename);
-        if (!file.is_open()) return;
+        if (!file.is_open())
+            return;
         solidMap.clear();
         std::string line;
-        while (std::getline(file, line)) {
-            if (line.empty()) continue;
+        while (std::getline(file, line))
+        {
+            if (line.empty())
+                continue;
             std::istringstream iss(line);
             int x, y, type;
             char comma1, comma2;
-            if (iss >> x >> comma1 >> y >> comma2 >> type) {
-                if (comma1 == ',' && comma2 == ',') {
+            if (iss >> x >> comma1 >> y >> comma2 >> type)
+            {
+                if (comma1 == ',' && comma2 == ',')
+                {
                     solidMap[{x, y}] = type;
                 }
             }
         }
     }
 
-    void saveSolidToFile(const std::string& filename) {
+    void saveSolidToFile(const std::string &filename)
+    {
         std::ofstream file(filename);
-        if (!file.is_open()) return;
-        for (const auto& [pos, type] : solidMap) {
+        if (!file.is_open())
+            return;
+        for (const auto &[pos, type] : solidMap)
+        {
             file << pos.first << "," << pos.second << "," << type << "\n";
         }
     }
 
-    bool isSolidTile(int x, int y) {
+    bool isSolidTile(int x, int y)
+    {
         if (getSolidTile(x, y) > 0)
             return true;
         return false;
@@ -151,11 +300,13 @@ namespace Terrain
                 s.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
                 sf::Vector2f tilePos = Tiles::getTilePosition(x, y);
                 s.setPosition(tilePos + sf::Vector2f(bounds.size.x / 2.f * Scale::get(),
-                                                    bounds.size.y / 2.f * Scale::get()));
+                                                     bounds.size.y / 2.f * Scale::get()));
                 s.setScale(Scale::getVec());
                 s.setRotation(sf::Angle(sf::degrees(rot * 90.f)));
-                if (flip & 1) s.scale({-1.f, 1.f});
-                if (flip & 2) s.scale({1.f, -1.f});
+                if (flip & 1)
+                    s.scale({-1.f, 1.f});
+                if (flip & 2)
+                    s.scale({1.f, -1.f});
                 win.draw(s);
             }
         }
