@@ -19,9 +19,10 @@ struct SpawnProps {
     float rotation = 0.f;
     bool flipX = false;
     bool flipY = false;
-    // New:
-    std::string npcTypeId;      // e.g., "detective_explainer"
-    std::string uniqueID;       // optional, e.g., "Detective_1"
+    std::string npcTypeId;
+    std::string uniqueID;
+    std::string scriptName;   // NEW: if not empty, this NPC will run this script on spawn/trigger
+    std::vector<sf::Vector2f> waypoints;
 };
 
 using SpawnMap = std::map<std::pair<float, float>, SpawnProps>;

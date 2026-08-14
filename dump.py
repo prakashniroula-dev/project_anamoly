@@ -38,7 +38,8 @@ def dump_text_files(root_dir, output_file='dump.txt'):
 
     # Overwrite any existing dump file
     with open(output_file, 'w', encoding='utf-8') as out:
-        out.write(f"/* Root directory : {root_dir} */")   # truncate
+        last_dir_name = os.path.basename(root_dir)
+        out.write(f"/* Root directory : {last_dir_name} */\n")   # truncate
 
     count = 0
     for dirpath, _, filenames in os.walk(root_dir):
@@ -81,7 +82,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         folder = sys.argv[1]
     else:
-        folder = '.'   # current directory
+        folder = './src'   # current directory
 
     if not os.path.isdir(folder):
         print(f"Error: '{folder}' is not a valid directory.", file=sys.stderr)

@@ -88,112 +88,155 @@ namespace Terrain
 
     // ---- Unified file I/O ----
     // ------------------ Spawn I/O (extended) ------------------
-    void loadSpawnsFromFile(const std::string& filename) {
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        Log::error << "Failed to open spawn file for reading: " << filename << std::endl;
-        return;
-    }
-
-    // Clear existing spawns
-    spawnMap.clear();
-
-    std::string line;
-    int lineNum = 0;
-    while (std::getline(file, line)) {
-        lineNum++;
-        // Skip empty lines and comments
-        if (line.empty() || line[0] == '#') continue;
-
-        std::istringstream iss(line);
-        float x, y;
-        std::string characterKey;
-        float scale = 1.f;
-        float rotation = 0.f;
-        bool flipX = false, flipY = false;
-        std::string npcTypeId;
-        std::string uniqueID;
-
-        // Read mandatory fields: x, y, characterKey
-        if (!(iss >> x >> y >> characterKey)) {
-            Log::error << "Spawn load: invalid line " << lineNum << ": " << line << std::endl;
-            continue;
+    void loadSpawnsFromFile(const std::string &filename)
+    {
+        std::ifstream file(filename);
+        if (!file.is_open())
+        {
+            Log::error << "Failed to open spawn file for reading: " << filename << std::endl;
+            return;
         }
 
-        // Read optional fields if present
-        // We'll try to read scale, rotation, flipX, flipY, npcTypeId, uniqueID
-        // But they might be missing, so we read them conditionally.
-        // Use a temporary string for reading boolean as int.
-        int flipX_int = 0, flipY_int = 0;
-        if (iss >> scale) {
-            if (iss >> rotation) {
-                if (iss >> flipX_int) {
-                    flipX = (flipX_int != 0);
-                    if (iss >> flipY_int) {
-                        flipY = (flipY_int != 0);
-                        if (iss >> npcTypeId) {
-                            if (iss >> uniqueID) {
-                                // all fields read
-                            }
+        spawnMap.clear();
+        playerSpawnPosition = {0.f, 0.f}; // reset
+
+        std::string line;
+        int lineNum = 0;
+        while (std::getline(file, line))
+        {
+            lineNum++;
+            if (line.empty() || line[0] == '#')
+                continue;
+
+            // Remove trailing CR if any
+            if (!line.empty() && line.back() == '\r')
+                line.pop_back();
+
+            std::istringstream iss(line);
+            std::vector<std::string> tokens;
+            std::string token;
+            while (iss >> token)
+                tokens.push_back(token);
+
+            // We expect exactly 11 tokens (x, y, key, scale, rot, flipX, flipY, npcTypeId, uniqueID, scriptName, waypoints)
+            if (tokens.size() != 11)
+            {
+                Log::warn << "Spawn load: skipping line " << lineNum << " (expected 11 tokens, got " << tokens.size() << ")" << std::endl;
+                continue;
+            }
+
+            try
+            {
+                float x = std::stof(tokens[0]);
+                float y = std::stof(tokens[1]);
+                std::string characterKey = tokens[2];
+                float scale = std::stof(tokens[3]);
+                float rotation = std::stof(tokens[4]);
+                bool flipX = (std::stoi(tokens[5]) != 0);
+                bool flipY = (std::stoi(tokens[6]) != 0);
+                std::string npcTypeId = tokens[7];
+                // Replace placeholders with empty strings
+                std::string uniqueID = (tokens[8] == "_") ? "" : tokens[8];
+                std::string scriptName = (tokens[9] == "_") ? "" : tokens[9];
+                std::string waypointStr = tokens[10];
+
+                SpawnProps props;
+                props.characterKey = characterKey;
+                props.scale = scale;
+                props.rotation = rotation;
+                props.flipX = flipX;
+                props.flipY = flipY;
+                props.npcTypeId = npcTypeId;
+                props.uniqueID = uniqueID;
+                props.scriptName = scriptName;
+
+                // Parse waypoints from waypointStr
+                if (!waypointStr.empty() && waypointStr != "_")
+                {
+                    std::stringstream wss(waypointStr);
+                    std::string pair;
+                    while (std::getline(wss, pair, ';'))
+                    {
+                        if (pair.empty())
+                            continue;
+                        float wx, wy;
+                        char comma;
+                        std::stringstream ps(pair);
+                        if (ps >> wx >> comma >> wy && comma == ',')
+                        {
+                            props.waypoints.push_back(sf::Vector2f(wx, wy));
                         }
                     }
                 }
+
+                if (props.npcTypeId == "player")
+                {
+                    Log::info << "Loaded player spawn position from file: (" << x << ", " << y << ")" << std::endl;
+                    playerSpawnPosition = sf::Vector2f(x, y);
+                }
+
+                spawnMap[{x, y}] = props;
+            }
+            catch (const std::exception &e)
+            {
+                Log::error << "Spawn load: error parsing line " << lineNum << ": " << e.what() << std::endl;
             }
         }
-        // If any of the optional fields are missing, they keep default values.
 
-        if ( npcTypeId == "player" ) {
-            Log::info << "Loaded player spawn position from file: (" << x << ", " << y << ")" << std::endl;
-            playerSpawnPosition = sf::Vector2f(x, y);
-        }
-
-        // Insert into spawnMap
-        SpawnProps props;
-        props.characterKey = characterKey;
-        props.scale = scale;
-        props.rotation = rotation;
-        props.flipX = flipX;
-        props.flipY = flipY;
-        props.npcTypeId = npcTypeId;
-        props.uniqueID = uniqueID;
-
-        spawnMap[{x, y}] = props;
+        file.close();
+        Log::info << "Loaded " << spawnMap.size() << " spawns from " << filename << std::endl;
     }
 
-    file.close();
-    Log::info << "Loaded " << spawnMap.size() << " spawns from " << filename << std::endl;
-}
+    void saveSpawnsToFile(const std::string &filename)
+    {
+        std::ofstream file(filename);
+        if (!file.is_open())
+        {
+            Log::error << "Failed to open spawn file for writing: " << filename << std::endl;
+            return;
+        }
+
+        file << "# Spawns: x y characterKey scale rotation flipX flipY npcTypeId uniqueID scriptName waypoints\n";
+        file << "# waypoints format: x1,y1;x2,y2;... (semicolon separated, no spaces)\n";
+        file << "# Empty uniqueID or scriptName are stored as '_'\n";
+
+        for (const auto &[pos, props] : spawnMap)
+        {
+            // Build waypoint string (no spaces)
+            std::string waypointStr;
+            for (size_t i = 0; i < props.waypoints.size(); ++i)
+            {
+                if (i > 0)
+                    waypointStr += ";";
+                waypointStr += std::to_string(props.waypoints[i].x) + "," + std::to_string(props.waypoints[i].y);
+            }
+            if (waypointStr.empty())
+                waypointStr = "_"; // placeholder for empty waypoints
+
+            // Use '_' for empty strings
+            std::string uid = props.uniqueID.empty() ? "_" : props.uniqueID;
+            std::string scr = props.scriptName.empty() ? "_" : props.scriptName;
+
+            file << pos.first << ' ' << pos.second << ' '
+                 << props.characterKey << ' '
+                 << props.scale << ' '
+                 << props.rotation << ' '
+                 << (props.flipX ? 1 : 0) << ' '
+                 << (props.flipY ? 1 : 0) << ' '
+                 << props.npcTypeId << ' '
+                 << uid << ' '
+                 << scr << ' '
+                 << waypointStr << '\n';
+        }
+
+        file.close();
+        Log::info << "Spawns saved to " << filename << std::endl;
+    }
 
     void setPlayerSpawnPosition(const sf::Vector2f &pos)
     {
         playerSpawnPosition = pos;
     }
-
-    void saveSpawnsToFile(const std::string& filename) {
-    std::ofstream file(filename);
-    if (!file.is_open()) {
-        Log::error << "Failed to open spawn file for writing: " << filename << std::endl;
-        return;
-    }
-
-    // Write header (optional, for debugging)
-    file << "# Spawns: x y characterKey scale rotation flipX flipY npcTypeId uniqueID\n";
-
-    for (const auto& [pos, props] : spawnMap) {
-        // pos is a pair<float,float>; use .first, .second
-        file << pos.first << ' ' << pos.second << ' '
-             << props.characterKey << ' '
-             << props.scale << ' '
-             << props.rotation << ' '
-             << (props.flipX ? 1 : 0) << ' '
-             << (props.flipY ? 1 : 0) << ' '
-             << props.npcTypeId << ' '
-             << props.uniqueID << '\n';
-    }
-
-    file.close();
-    Log::info << "Spawns saved to " << filename << std::endl;
-}
 
     void loadSolidFromFile(const std::string &filename)
     {

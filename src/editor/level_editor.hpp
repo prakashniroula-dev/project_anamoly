@@ -4,6 +4,7 @@
 #include "object_editor.hpp"
 #include "solid_editor.hpp"
 #include "spawn_editor.hpp"
+#include "waypoint_editor.hpp"
 
 class LevelEditor {
 public:
@@ -16,7 +17,7 @@ public:
     void init(); // calls tileEditor.init() and objectEditor.init()
 
 private:
-    enum class Mode { Tile, Object, Solid, Spawn };
+    enum class Mode { Tile, Object, Solid, Spawn, Waypoint };
     Mode currentMode = Mode::Tile;
     bool active = false;
 
@@ -25,6 +26,7 @@ private:
     ObjectEditor objectEditor;
     SolidEditor solidEditor;
     SpawnEditor spawnEditor;
+    WaypointEditor waypointEditor;
 
     void switchMode(Mode mode);
 };

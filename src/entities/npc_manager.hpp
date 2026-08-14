@@ -19,6 +19,7 @@ public:
 
     // ---- Create / lookup ----
     NPC* createNPC(const std::string& typeId, const sf::Vector2f& pos, const std::string& uniqueID = "");
+    NPC* createNPC(const SpawnProps& props, const sf::Vector2f& pos);
     NPC* getNPC(const std::string& uniqueID);
     const std::vector<NPC*>& getAllNPCs() const { return npcList; }
     const NPCType* getType(const std::string& typeId) const;

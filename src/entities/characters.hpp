@@ -107,6 +107,9 @@ public:
     void recharge();
     void idle();
     void jump();
+    void lockControls() { m_playerControls = false; }
+    void unlockControls() { m_playerControls = true; }
+    bool controlsLocked() const { return !m_playerControls; }
 
     // GameObject interface
     void draw(sf::RenderWindow& win, float dt) override;

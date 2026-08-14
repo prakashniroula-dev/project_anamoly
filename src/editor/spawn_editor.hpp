@@ -67,4 +67,29 @@ private:
     void stopRecording() { undoStack.commitGroup(); }
 
     friend void applySpawnChange(SpawnChange& change, bool forward);
+
+    // Property editing state
+    bool m_editingProps = false;
+    std::pair<float, float> m_selectedSpawnKey; // selected spawn for editing
+    SpawnProps* m_selectedSpawnProps = nullptr;
+
+    // UI elements for property editing
+    sf::RectangleShape m_propPanel;
+    sf::Text m_propTitle;
+    sf::Text m_propNpcType;
+    sf::Text m_propUniqueID;
+    sf::Text m_propScript;
+    sf::Text m_propHelp;
+
+    // Input focus states
+    enum class InputField { None, NpcType, UniqueID, Script };
+    InputField m_focusedField = InputField::None;
+    std::string m_inputBuffer;
+
+    void selectSpawnForEditing(const std::pair<float, float>& key);
+    void updatePropertyTexts();
+    void savePropertyChanges();
+
+    // Helper to get character sprite for a given spawn
+    sf::Sprite getSpawnSprite(const std::pair<float,float>& pos, const SpawnProps& props);
 };

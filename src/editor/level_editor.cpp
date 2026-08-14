@@ -3,7 +3,7 @@
 #include <iostream>
 
 LevelEditor::LevelEditor()
-    : tileEditor(font), objectEditor(font), solidEditor(font), spawnEditor(font)
+    : tileEditor(font), objectEditor(font), solidEditor(font), spawnEditor(font), waypointEditor(font)
 {
     if (!font.openFromFile("assets/fonts/orbitron.ttf"))
     {
@@ -15,6 +15,7 @@ LevelEditor::LevelEditor()
     objectEditor.setPaletteVisible(false);
     spawnEditor.setActive(false);
     spawnEditor.setPaletteVisible(false);
+    waypointEditor.setActive(false);
 }
 
 void LevelEditor::init()
@@ -23,6 +24,7 @@ void LevelEditor::init()
     objectEditor.init();
     solidEditor.init();
     spawnEditor.init();
+    waypointEditor.init();
 }
 
 void LevelEditor::setActive(bool a)
@@ -34,6 +36,7 @@ void LevelEditor::setActive(bool a)
         objectEditor.setActive(currentMode == Mode::Object);
         solidEditor.setActive(currentMode == Mode::Solid);
         spawnEditor.setActive(currentMode == Mode::Spawn);
+        waypointEditor.setActive(currentMode == Mode::Waypoint);
     }
     else
     {
@@ -41,6 +44,7 @@ void LevelEditor::setActive(bool a)
         objectEditor.setActive(false);
         solidEditor.setActive(false);
         spawnEditor.setActive(false);
+        waypointEditor.setActive(false);
     }
 }
 
@@ -58,6 +62,7 @@ void LevelEditor::switchMode(Mode mode)
     tileEditor.setPaletteVisible(mode == Mode::Tile);
     objectEditor.setPaletteVisible(mode == Mode::Object);
     spawnEditor.setPaletteVisible(mode == Mode::Spawn);
+    waypointEditor.setActive(mode == Mode::Waypoint);
 }
 
 void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
@@ -103,6 +108,10 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
         case sf::Keyboard::Scancode::Num4:
             switchMode(Mode::Spawn);
             break;
+        case sf::Keyboard::Scancode::F5:
+        case sf::Keyboard::Scancode::Num5:
+            switchMode(Mode::Waypoint);
+            break;
         case sf::Keyboard::Scancode::E:
             if (currentMode == Mode::Tile)
                 tileEditor.togglePaletteVisibility();
@@ -129,6 +138,8 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
                 solidEditor.undo();
             else if (currentMode == Mode::Spawn)
                 spawnEditor.undo();
+            else if (currentMode == Mode::Waypoint)
+                waypointEditor.undo();
         }
         // Redo: Ctrl+Y
         if (ctrl && key->scancode == sf::Keyboard::Scancode::Y)
@@ -141,6 +152,8 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
                 solidEditor.redo();
             else if (currentMode == Mode::Spawn)
                 spawnEditor.redo();
+            else if (currentMode == Mode::Waypoint)
+                waypointEditor.redo();
         }
     }
 
@@ -151,6 +164,9 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
         solidEditor.handleEvent(event, window);
     else if (currentMode == Mode::Spawn)
         spawnEditor.handleEvent(event, window);
+    // Forward event
+    else if (currentMode == Mode::Waypoint)
+        waypointEditor.handleEvent(event, window);
     else
         objectEditor.handleEvent(event, window);
 }
@@ -165,6 +181,8 @@ void LevelEditor::draw(sf::RenderWindow &window)
         solidEditor.draw(window);
     else if (currentMode == Mode::Spawn)
         spawnEditor.draw(window);
+    else if (currentMode == Mode::Waypoint)
+        waypointEditor.draw(window);
     else
         objectEditor.draw(window);
 }

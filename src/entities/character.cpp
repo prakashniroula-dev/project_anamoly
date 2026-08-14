@@ -227,18 +227,22 @@ void Character::animate(sf::RenderWindow& win, float dt) {
     unsigned int currentFrame = static_cast<unsigned int>(time_cycle / info.duration * 1000.0f) % info.totalFrames;
 
     sf::IntRect rect(sf::Vector2i(currentFrame * 128, 0), sf::Vector2i(128, 128));
+    sf::Vector2f scale = Scale::getVec();
     if (direction == -1) {
-        rect.position.x += rect.size.x;
-        rect.size.x = -rect.size.x;
+        scale.x *= -1.f;          // horizontal flip
     }
     
     s.setTextureRect(rect);
-    s.scale(Scale::getVec());
-    // Scale the drawing position
+    s.scale(scale);
+    const float originX = OFFSET_X + BASE_WIDTH / 2.f;   // 44 + 14 = 58
+    const float originY = OFFSET_Y + BASE_HEIGHT;        // 58 + 62 = 120
+    s.setOrigin({0.f, 0.f});
+
+    // 2. Place the origin at the logical position.
     sf::Vector2f drawPos = pos * Scale::get();
 
     if (direction == -1) {
-        drawPos.x -= 10.f * Scale::get();  // or whatever value matches your visual alignment
+        drawPos.x += 120.f * Scale::get();  // or whatever value matches your visual alignment
     }
     s.setPosition(drawPos);
 
@@ -315,7 +319,7 @@ void Character::jump() {
 
 void Character::draw(sf::RenderWindow& win, float dt) {
     animate(win, dt);
-    // drawDebugBounds(win);
+    drawDebugBounds(win);
 }
 
 void Character::update(sf::RenderWindow& win, float dt) {

@@ -1,5 +1,6 @@
 #include "npc_manager.hpp"
 #include <debug/logs.hpp>
+#include <entities/script_registry.hpp>
 
 NPCManager& NPCManager::get() {
     static NPCManager instance;
@@ -8,6 +9,41 @@ NPCManager& NPCManager::get() {
 
 void NPCManager::registerType(const NPCType& type) {
     typeRegistry[type.id] = type;
+}
+
+NPC* NPCManager::createNPC(const SpawnProps& props, const sf::Vector2f& pos) {
+    // Use props.npcTypeId as typeId
+    auto it = typeRegistry.find(props.npcTypeId);
+    if (it == typeRegistry.end()) {
+        Log::error << "Unknown NPC type: " << props.npcTypeId << std::endl;
+        return nullptr;
+    }
+    const NPCType& type = it->second;
+    std::string id = props.uniqueID.empty() ? (props.npcTypeId + "_" + std::to_string(npcStorage.size())) : props.uniqueID;
+    auto npc = std::make_unique<NPC>(type, pos, id);
+    NPC* raw = npc.get();
+    npcStorage.push_back(std::move(npc));
+    npcList.push_back(raw);
+    npcMap[id] = raw;
+
+    // Apply transform properties
+    // You may want to add setScale, setRotation to Character or NPC
+    // For now, ignore flips.
+
+    // Run script if present
+    if (!props.scriptName.empty()) {
+        auto scriptIt = ScriptRegistry::scripts.find(props.scriptName);
+        if (scriptIt != ScriptRegistry::scripts.end()) {
+            raw->runSequence(scriptIt->second);
+        } else {
+            Log::warn << "Script '" << props.scriptName << "' not found in registry." << std::endl;
+        }
+    }
+    if (!props.waypoints.empty()) {
+        raw->setWaypoints(props.waypoints);
+    }
+
+    return raw;
 }
 
 void NPCManager::loadDefinitions() {
@@ -130,28 +166,17 @@ void NPCManager::draw(sf::RenderWindow& win, float dt) {
 
 void NPCManager::spawnAllNPCs() {
     for (const auto& [pos, props] : Terrain::getSpawnMap()) {
-    sf::Vector2f worldPos(pos.first, pos.second);
-    if (props.characterKey == "Player" || props.npcTypeId == "player") {
-        Terrain::setPlayerSpawnPosition(worldPos);
-    } else {
-        // NPC spawn
-        std::string npcType = props.npcTypeId;
-        if (!npcType.empty()) {
-            NPC* npc = NPCManager::get().createNPC(npcType, worldPos, props.uniqueID);
-            if (npc) {
-                // Apply transform properties
-                // npc->setScale(props.scale); // you need to add setScale to Character
-                // npc->setRotation(props.rotation);
-                // flipX/flipY handled in draw (or you can apply to sprite)
-                // If you need to apply flips, you can store them in NPC or Character.
-                // For now, you can just ignore flips for NPCs.
-            }
+        sf::Vector2f worldPos(pos.first, pos.second);
+        if (props.characterKey == "Player" || props.npcTypeId == "player") {
+            Terrain::setPlayerSpawnPosition(worldPos);
         } else {
-            // Backward compatibility: if npcTypeId is empty, treat as old-style NPC?
-            // Maybe just ignore or create a generic one.
+            // NPC spawn
+            NPC* npc = NPCManager::get().createNPC(props, worldPos);   // new overload
+            if (npc) {
+                // Additional setup if needed
+            }
         }
     }
-}
 }
 
 void NPCManager::setPlayer(Character* player) {
