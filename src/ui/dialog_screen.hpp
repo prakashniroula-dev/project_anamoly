@@ -27,8 +27,11 @@ private:
     void moveToLine(int index);   // new
     int highlightedOption = 0; 
     std::vector<sf::FloatRect> optionRects;   // store button rectangles for hit testing
+    sf::FloatRect m_boxRect;
+    sf::Vector2f  m_speakerPos;
+    sf::Vector2f  m_dialoguePos;
 
-    void updateOptionRects(const sf::RenderWindow& window); // recompute optionRects based on current layout
+    void updateLayout(sf::RenderWindow& window); // recompute optionRects based on current layout
 
     // Internal
     void advanceToNextLine();              // when no choices, moves to nextIndex or ends

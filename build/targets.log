@@ -6,22 +6,23 @@ make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --quest
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Tue Aug  4 16:23:43 2026
+# Make data base, printed on Fri Aug 14 20:44:55 2026
 
 # Variables
 
 # environment
 SYSTEMDRIVE = C:
 # makefile (from 'Makefile', line 47)
-OBJ := obj/core/scale.o obj/editor/level_editor.o obj/entities/character.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o
+OBJ := obj/core/scale.o obj/editor/level_editor.o obj/editor/object_editor.o obj/editor/palette.o obj/editor/solid_editor.o obj/editor/spawn_editor.o obj/editor/tile_editor.o obj/entities/character.o obj/entities/npc.o obj/entities/npc_manager.o obj/entities/objects.o obj/entities/player.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/overlay.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o obj/ui/dialog_screen.o obj/ui/main_menu.o obj/ui/ui_manager.o
 # makefile (from 'Makefile', line 29)
 LIBDIR := -LSFML/lib
-# environment
+# environm 
+ent
 LC_ALL = C
 # makefile (from 'Makefile', line 44)
-SRC :=        src/core/scale.cpp        src/editor/level_editor.cpp     src/entities/character.cpp      src/entities/terrain.cpp     src/graphics/animation.cpp    src/graphics/background.cpp    src/graphics/textures.cpp    src/graphics/tiles.cpp     src/main.cpp  
+SRC :=        src/core/scale.cpp          src/editor/level_editor.cpp    src/editor/object_editor.cpp    src/editor/palette.cpp    src/editor/solid_editor.cpp    src/editor/spawn_editor.cpp    src/editor/tile_editor.cpp       src/entities/character.cpp      src/entities/npc.cpp    src/entities/npc_manager.cpp      src/entities/objects.cpp    src/entities/player.cpp    src/entities/terrain.cpp     src/graphics/animation.cpp    src/graphics/background.cpp    src/graphics/overlay.cpp    src/graphics/textures.cpp    src/graphics/tiles.cpp     src/main.cpp         src/ui/dialog_screen.cpp    src/ui/main_menu.cpp    src/ui/ui_manager.cpp     
 # environment
-MXC_BIN_DIR = c:\Users\pr0n3o\AppData\Local\Programs\Microsoft VS Code\e4c7e7b1d6\resources\app\node_modules.asar.unpacked\@microsoft\mxc-sdk\bin
+MXC_BIN_DIR = c:\Users\pr0n3o\AppData\Local\Programs\Microsoft VS Code\df53daabb1\resources\app\node_modules.asar.unpacked\@microsoft\mxc-sdk\bin
 # makefile (from 'Makefile', line 14)
 EXT := .cpp
 # environment
@@ -51,7 +52,7 @@ MAKE_COMMAND := make.exe
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_17416_FPURJBWMYWZMWFDN
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_5128_RHAQOXWOEMJZJJIV
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
@@ -59,19 +60,19 @@ VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
 %D = $(patsubst %/,%,$(patsubst %\,%,$(dir $%)))
 # environment
-TOCD = E:\home\main\projects
+TOCD = E:\home\main\projects\replay
 # automatic
 ^D = $(patsubst %/,%,$(patsubst %\,%,$(dir $^)))
 # automatic
 %F = $(notdir $%)
 # environment
-VSCODE_CODE_CACHE_PATH = C:\Users\pr0n3o\AppData\Roaming\Code\CachedData\e4c7e7b1d6d060162f4aa7f8225271b67ce1df75
+VSCODE_CODE_CACHE_PATH = C:\Users\pr0n3o\AppData\Roaming\Code\CachedData\df53daabb18cd157bdb08c7f01c34df936cf12f4
 # environment
 TERM_PROMPT_UNAME = pr0n3o
 # environment
 LANG = C
 # environment
-TOTALCD = E:/home/main/projects
+TOTALCD = E:/home/main/projects/replay
 # default
 .LOADED := 
 # environment
@@ -83,7 +84,7 @@ MAKEFLAGS = pqrR
 # environment
 ONEDRIVE = C:\Users\pr0n3o\OneDrive
 # makefile (from 'Makefile', line 50)
-DEP := obj/core/scale.d obj/editor/level_editor.d obj/entities/character.d obj/entities/terrain.d obj/graphics/animation.d obj/graphics/background.d obj/graphics/textures.d obj/graphics/tiles.d obj/main.d
+DEP := obj/core/scale.d obj/editor/level_editor.d obj/editor/object_editor.d obj/editor/palette.d obj/editor/solid_editor.d obj/editor/spawn_editor.d obj/editor/tile_editor.d obj/entities/character.d obj/entities/npc.d obj/entities/npc_manager.d obj/entities/objects.d obj/entities/player.d obj/entities/terrain.d obj/graphics/animation.d obj/graphics/background.d obj/graphics/overlay.d obj/graphics/textures.d obj/graphics/tiles.d obj/main.d obj/ui/dialog_screen.d obj/ui/main_menu.d obj/ui/ui_manager.d
 # makefile
 CURDIR := e:/home/main/projects/replay
 # makefile (from 'Makefile', line 20)
@@ -104,12 +105,12 @@ COMMONPROGRAMW6432 = C:\Program Files\Common Files
 COPILOT_OTEL_FILE_EXPORTER_PATH = \\.\nul
 # automatic
 +D = $(patsubst %/,%,$(patsubst %\,%,$(dir $+)))
-# makefile (from 'obj/main.d', line 1)
-MAKEFILE_LIST := Makefile obj/core/scale.d obj/editor/level_editor.d obj/entities/character.d obj/entities/terrain.d obj/graphics/animation.d obj/graphics/background.d obj/graphics/textures.d obj/graphics/tiles.d obj/main.d
+# makefile (from 'obj/ui/ui_manager.d', line 1)
+MAKEFILE_LIST := Makefile obj/core/scale.d obj/editor/level_editor.d obj/editor/object_editor.d obj/editor/palette.d obj/editor/solid_editor.d obj/editor/spawn_editor.d obj/editor/tile_editor.d obj/entities/character.d obj/entities/npc.d obj/entities/npc_manager.d obj/entities/objects.d obj/entities/player.d obj/entities/terrain.d obj/graphics/animation.d obj/graphics/background.d obj/graphics/overlay.d obj/graphics/textures.d obj/graphics/tiles.d obj/main.d obj/ui/dialog_screen.d obj/ui/main_menu.d obj/ui/ui_manager.d
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 17416
+VSCODE_PID = 5128
 # makefile (from 'Makefile', line 7)
 APPNAME := myapp
 # automatic
@@ -127,7 +128,7 @@ SFML := SFML
 # automatic
 <D = $(patsubst %/,%,$(patsubst %\,%,$(dir $<)))
 # environment
-VSCODE_NLS_CONFIG = {"userLocale":"en-us","osLocale":"en-us","resolvedLanguage":"en","defaultMessagesFile":"C:\\Users\\pr0n3o\\AppData\\Local\\Programs\\Microsoft VS Code\\e4c7e7b1d6\\resources\\app\\out\\nls.messages.json","locale":"en-us","availableLanguages":{}}
+VSCODE_NLS_CONFIG = {"userLocale":"en-us","osLocale":"en-us","resolvedLanguage":"en","defaultMessagesFile":"C:\\Users\\pr0n3o\\AppData\\Local\\Programs\\Microsoft VS Code\\df53daabb1\\resources\\app\\out\\nls.messages.json","locale":"en-us","availableLanguages":{}}
 # default
 MAKE_HOST := x86_64-w64-mingw32
 # environment
@@ -161,7 +162,7 @@ PROMPT = [92mpr0n3o@winux[0m:[96mE:/home/main/projects/replay[0m$$$S
 # environment
 APPLICATION_INSIGHTS_NO_STATSBEAT = true
 # environment
-WT_SESSION = c4b86dc1-b3c9-4270-9826-0d8a2a6ee264
+WT_SESSION = f13fd7f9-8bc1-4282-a0ee-3dc3198bb74d
 # environment
 LOGONSERVER = \\WINUX
 # environment
@@ -215,13 +216,13 @@ COMMONPROGRAMFILES(X86) = C:\Program Files (x86)\Common Files
 # environment
 TERM_PROMPT_PCNAME = winux
 # environment
-_STR = pp.py
+_STR = pr0n3o
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
 TEMP = C:\Users\pr0n3o\AppData\Local\Temp
 # environment
-VSCODE_IPC_HOOK = \\.\pipe\c29e8353-1.131.0-main-sock
+VSCODE_IPC_HOOK = \\.\pipe\c29e8353-1.132.0-main-sock
 # makefile (from 'Makefile', line 10)
 SRCDIR := src
 # default
@@ -253,13 +254,13 @@ CXX := g++
 # environment
 VSCODE_ESM_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
-DPATHMACRO = for /f "tokens=* USEBACKQ" %f IN (`l2wdir %_str%`) do (set _str=%f)
+DPATHMACRO = for /f "tokens=* USEBACKQ" %f IN (`w2ldir %_str%`) do (set _str=%f)
 # environment
 PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 58 Stepping 9, GenuineIntel
 # makefile (from 'Makefile', line 41)
 rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
 # variable set hash-table stats:
-# Load=124/1024=12%, Rehash=0, Collisions=10/256=4%
+# Load=124/1024=12%, Rehash=0, Collisions=10/350=3%
 
 # Pattern-specific Variable Values
 
@@ -268,37 +269,71 @@ rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subs
 # Directories
 
 # src/graphics/animation.hpp (key e:/home/main/projects/replay/src/graphics/animation.hpp, mtime 1785650522): could not be opened.
-# src/graphics/tiles.cpp (key e:/home/main/projects/replay/src/graphics/tiles.cpp, mtime 1785746202): could not be opened.
+# src/graphics/tiles.cpp (key e:/home/main/projects/replay/src/graphics/tiles.cpp, mtime 1786183276): could not be opened.
 # src/graphics/textures.hpp (key e:/home/main/projects/replay/src/graphics/textures.hpp, mtime 1785669592): could not be opened.
-# src/entities/character.cpp (key e:/home/main/projects/replay/src/entities/character.cpp, mtime 1785829392): could not be opened.
+# src/editor/undo_stack.hpp (key e:/home/main/projects/replay/src/editor/undo_stack.hpp, mtime 1786174374): could not be opened.
+# src/entities/character.cpp (key e:/home/main/projects/replay/src/entities/character.cpp, mtime 1786716908): could not be opened.
 # src/entities/game_object.hpp (key e:/home/main/projects/replay/src/entities/game_object.hpp, mtime 1785647360): could not be opened.
-# src/entities/terrain.cpp (key e:/home/main/projects/replay/src/entities/terrain.cpp, mtime 1785661296): could not be opened.
+# src/ui/ui_screen.hpp (key e:/home/main/projects/replay/src/ui/ui_screen.hpp, mtime 1786718256): could not be opened.
+# src/entities/terrain.cpp (key e:/home/main/projects/replay/src/entities/terrain.cpp, mtime 1786207870): could not be opened.
 # src/debug/logs.hpp (key e:/home/main/projects/replay/src/debug/logs.hpp, mtime 1785647246): could not be opened.
+# src/graphics/overlay.cpp (key e:/home/main/projects/replay/src/graphics/overlay.cpp, mtime 1786173084): could not be opened.
+# src/editor/tile_editor.hpp (key e:/home/main/projects/replay/src/editor/tile_editor.hpp, mtime 1786170902): could not be opened.
 # src/core/scale.cpp (key e:/home/main/projects/replay/src/core/scale.cpp, mtime 1785647554): could not be opened.
-# src/editor/level_editor.hpp (key e:/home/main/projects/replay/src/editor/level_editor.hpp, mtime 1785829866): could not be opened.
-# src/main.cpp (key e:/home/main/projects/replay/src/main.cpp, mtime 1785839424): could not be opened.
-# src/editor (key e:/home/main/projects/replay/src/editor, mtime 1785652349): 4 files, no impossibilities.
+# src/editor/level_editor.hpp (key e:/home/main/projects/replay/src/editor/level_editor.hpp, mtime 1786190092): could not be opened.
+# src/main.cpp (key e:/home/main/projects/replay/src/main.cpp, mtime 1786718638): could not be opened.
+# src/editor (key e:/home/main/projects/replay/src/editor, mtime 1785652349): 15 files, no impossibilities.
+# src/ui/dialog_screen.hpp (key e:/home/main/projects/replay/src/ui/dialog_screen.hpp, mtime 1786277502): could not be opened.
+# src/story/story_manager.hpp (key e:/home/main/projects/replay/src/story/story_manager.hpp, mtime 1786258668): could not be opened.
+# src/ui (key e:/home/main/projects/replay/src/ui, mtime 1786180776): 9 files, no impossibilities.
 # src/graphics/animation.cpp (key e:/home/main/projects/replay/src/graphics/animation.cpp, mtime 1785650590): could not be opened.
-# src/core/collision.hpp (key e:/home/main/projects/replay/src/core/collision.hpp, mtime 1785642250): could not be opened.
-# src (key e:/home/main/projects/replay/src, mtime 1784915574): 9 files, no impossibilities.
+# src/core/collision.hpp (key e:/home/main/projects/replay/src/core/collision.hpp, mtime 1785863672): could not be opened.
+# src (key e:/home/main/projects/replay/src, mtime 1784915574): 11 files, no impossibilities.
+# src/entities/npc.cpp (key e:/home/main/projects/replay/src/entities/npc.cpp, mtime 1786206690): could not be opened.
 # src/core/scale.hpp (key e:/home/main/projects/replay/src/core/scale.hpp, mtime 1785647544): could not be opened.
-# src/entities/characters.hpp (key e:/home/main/projects/replay/src/entities/characters.hpp, mtime 1785749068): could not be opened.
-# src/entities (key e:/home/main/projects/replay/src/entities, mtime 1785647353): 7 files, no impossibilities.
-# src/graphics/tiles.hpp (key e:/home/main/projects/replay/src/graphics/tiles.hpp, mtime 1785661298): could not be opened.
-# . (key e:/home/main/projects/replay, mtime 1784915458): 11 files, no impossibilities.
-# src/graphics/background.cpp (key e:/home/main/projects/replay/src/graphics/background.cpp, mtime 1785829420): could not be opened.
+# src/entities/characters.hpp (key e:/home/main/projects/replay/src/entities/characters.hpp, mtime 1786716874): could not be opened.
+# src/story (key e:/home/main/projects/replay/src/story, mtime 1786258560): 4 files, no impossibilities.
+# src/ui/ui_manager.cpp (key e:/home/main/projects/replay/src/ui/ui_manager.cpp, mtime 1786187302): could not be opened.
+# src/entities (key e:/home/main/projects/replay/src/entities, mtime 1785647353): 16 files, no impossibilities.
+# src/entities/player.cpp (key e:/home/main/projects/replay/src/entities/player.cpp, mtime 1786713366): could not be opened.
+# src/graphics/tiles.hpp (key e:/home/main/projects/replay/src/graphics/tiles.hpp, mtime 1786119266): could not be opened.
+# . (key e:/home/main/projects/replay, mtime 1784915458): 16 files, no impossibilities.
+# src/core/tile_encoding.hpp (key e:/home/main/projects/replay/src/core/tile_encoding.hpp, mtime 1786122500): could not be opened.
+# src/graphics/background.cpp (key e:/home/main/projects/replay/src/graphics/background.cpp, mtime 1786080658): could not be opened.
+# src/editor/tile_editor.cpp (key e:/home/main/projects/replay/src/editor/tile_editor.cpp, mtime 1786171084): could not be opened.
+# src/editor/object_editor.hpp (key e:/home/main/projects/replay/src/editor/object_editor.hpp, mtime 1786170912): could not be opened.
 # src/graphics/background.hpp (key e:/home/main/projects/replay/src/graphics/background.hpp, mtime 1785669660): could not be opened.
 # src/graphics/textures.cpp (key e:/home/main/projects/replay/src/graphics/textures.cpp, mtime 1785829432): could not be opened.
-# src/entities/terrain.hpp (key e:/home/main/projects/replay/src/entities/terrain.hpp, mtime 1785652768): could not be opened.
-# src/editor/level_editor.cpp (key e:/home/main/projects/replay/src/editor/level_editor.cpp, mtime 1785831444): could not be opened.
-# src/graphics (key e:/home/main/projects/replay/src/graphics, mtime 1785646468): 10 files, no impossibilities.
+# src/editor/object_editor.cpp (key e:/home/main/projects/replay/src/editor/object_editor.cpp, mtime 1786172258): could not be opened.
+# src/entities/objects.cpp (key e:/home/main/projects/replay/src/entities/objects.cpp, mtime 1786165684): could not be opened.
+# src/entities/npc_types.hpp (key e:/home/main/projects/replay/src/entities/npc_types.hpp, mtime 1786258532): could not be opened.
+# src/entities/player.hpp (key e:/home/main/projects/replay/src/entities/player.hpp, mtime 1786713364): could not be opened.
+# src/editor/palette.cpp (key e:/home/main/projects/replay/src/editor/palette.cpp, mtime 1786171272): could not be opened.
+# src/editor/spawn_editor.hpp (key e:/home/main/projects/replay/src/editor/spawn_editor.hpp, mtime 1786207286): could not be opened.
+# src/graphics/overlay.hpp (key e:/home/main/projects/replay/src/graphics/overlay.hpp, mtime 1786080394): could not be opened.
+# src/editor/solid_editor.cpp (key e:/home/main/projects/replay/src/editor/solid_editor.cpp, mtime 1786172308): could not be opened.
+# src/ui/dialog_screen.cpp (key e:/home/main/projects/replay/src/ui/dialog_screen.cpp, mtime 1786718362): could not be opened.
+# src/editor/palette.hpp (key e:/home/main/projects/replay/src/editor/palette.hpp, mtime 1786104068): could not be opened.
+# src/editor/spawn_editor.cpp (key e:/home/main/projects/replay/src/editor/spawn_editor.cpp, mtime 1786207478): could not be opened.
+# src/entities/npc_manager.cpp (key e:/home/main/projects/replay/src/entities/npc_manager.cpp, mtime 1786272088): could not be opened.
+# src/story/story_helpers.hpp (key e:/home/main/projects/replay/src/story/story_helpers.hpp, mtime 1786267530): could not be opened.
+# src/entities/terrain.hpp (key e:/home/main/projects/replay/src/entities/terrain.hpp, mtime 1786196966): could not be opened.
+# src/ui/main_menu.hpp (key e:/home/main/projects/replay/src/ui/main_menu.hpp, mtime 1786718544): could not be opened.
+# src/editor/level_editor.cpp (key e:/home/main/projects/replay/src/editor/level_editor.cpp, mtime 1786200614): could not be opened.
+# src/graphics (key e:/home/main/projects/replay/src/graphics, mtime 1785646468): 12 files, no impossibilities.
 # src/core/position.hpp (key e:/home/main/projects/replay/src/core/position.hpp, mtime 1785649176): could not be opened.
-# src/core (key e:/home/main/projects/replay/src/core, mtime 1784917408): 7 files, no impossibilities.
-# src/core/constants.hpp (key e:/home/main/projects/replay/src/core/constants.hpp, mtime 1785744360): could not be opened.
+# src/ui/ui_manager.hpp (key e:/home/main/projects/replay/src/ui/ui_manager.hpp, mtime 1786718326): could not be opened.
+# src/entities/objects.hpp (key e:/home/main/projects/replay/src/entities/objects.hpp, mtime 1786106984): could not be opened.
+# src/core (key e:/home/main/projects/replay/src/core, mtime 1784917408): 8 files, no impossibilities.
+# src/entities/npc_manager.hpp (key e:/home/main/projects/replay/src/entities/npc_manager.hpp, mtime 1786204516): could not be opened.
+# src/core/constants.hpp (key e:/home/main/projects/replay/src/core/constants.hpp, mtime 1785845142): could not be opened.
+# src/ui/main_menu.cpp (key e:/home/main/projects/replay/src/ui/main_menu.cpp, mtime 1786719332): could not be opened.
 # src/debug (key e:/home/main/projects/replay/src/debug, mtime 1785647239): 3 files, no impossibilities.
+# src/entities/npc.hpp (key e:/home/main/projects/replay/src/entities/npc.hpp, mtime 1786206698): could not be opened.
 # src/tests (key e:/home/main/projects/replay/src/tests, mtime 1784921518): 2 files, no impossibilities.
+# src/editor/solid_editor.hpp (key e:/home/main/projects/replay/src/editor/solid_editor.hpp, mtime 1786120034): could not be opened.
 
-# 53 files, no impossibilities in 30 directories.
+# 96 files, no impossibilities in 64 directories.
 
 # Implicit Rules
 
@@ -314,7 +349,7 @@ obj/graphics/animation.o: src/graphics/animation.cpp src/graphics/animation.cpp 
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'graphics/animation'
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:14
+#  Last modified 2026-08-07 17:51:46
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 63):
@@ -332,15 +367,26 @@ SFML/include/SFML/System/Utf.hpp:
 src/graphics/tiles.cpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-03 14:21:42
+#  Last modified 2026-08-08 15:46:16
 #  File has been updated.
 #  Successfully updated.
+
+obj/editor/tile_editor.o: src/editor/tile_editor.cpp src/editor/tile_editor.cpp src/editor/tile_editor.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/editor/undo_stack.hpp src/editor/palette.hpp src/core/constants.hpp src/graphics/tiles.hpp src/core/scale.hpp src/entities/terrain.hpp src/entities/objects.hpp src/graphics/textures.hpp src/core/tile_encoding.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'editor/tile_editor'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 20:07:20
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Not a target:
 obj/graphics/animation.d:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:14
+#  Last modified 2026-08-07 17:51:46
 #  File has been updated.
 #  Successfully updated.
 
@@ -348,7 +394,15 @@ obj/graphics/animation.d:
 obj/main.d:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 14:56:04
+#  Last modified 2026-08-14 20:29:04
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+obj/editor/palette.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 12:26:24
 #  File has been updated.
 #  Successfully updated.
 
@@ -356,7 +410,7 @@ obj/core/scale.o: src/core/scale.cpp src/core/scale.cpp src/core/scale.hpp SFML/
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'core/scale'
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:02
+#  Last modified 2026-08-07 17:48:52
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 63):
@@ -370,10 +424,26 @@ SFML/include/SFML/System/String.inl:
 #  File has been updated.
 #  Successfully updated.
 
+# Not a target:
+obj/editor/solid_editor.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 20:05:32
+#  File has been updated.
+#  Successfully updated.
+
 SFML/include/SFML/System.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
 #  Last modified 2026-04-16 20:23:58
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+obj/editor/object_editor.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 20:05:28
 #  File has been updated.
 #  Successfully updated.
 
@@ -401,14 +471,14 @@ SFML/include/SFML/Graphics/Vertex.hpp:
 src/core/collision.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-02 09:29:10
+#  Last modified 2026-08-04 22:59:32
 #  File has been updated.
 #  Successfully updated.
 
 src/entities/characters.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-03 15:09:28
+#  Last modified 2026-08-14 19:59:34
 #  File has been updated.
 #  Successfully updated.
 
@@ -426,6 +496,14 @@ SFML/include/SFML/System/Vector3.hpp:
 #  File has been updated.
 #  Successfully updated.
 
+# Not a target:
+src/editor/tile_editor.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 12:23:04
+#  File has been updated.
+#  Successfully updated.
+
 SFML/include/SFML/Graphics/RenderWindow.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
@@ -437,7 +515,14 @@ SFML/include/SFML/Graphics/RenderWindow.hpp:
 obj/graphics/textures.d:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:18
+#  Last modified 2026-08-07 17:51:54
+#  File has been updated.
+#  Successfully updated.
+
+src/editor/object_editor.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 12:20:12
 #  File has been updated.
 #  Successfully updated.
 
@@ -456,30 +541,20 @@ src/graphics/textures.cpp:
 #  File has been updated.
 #  Successfully updated.
 
-obj/main.o: src/main.cpp src/main.cpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/debug/logs.hpp src/entities/terrain.hpp src/entities/characters.hpp src/entities/game_object.hpp src/core/constants.hpp src/graphics/tiles.hpp src/graphics/textures.hpp src/graphics/background.hpp src/core/scale.hpp src/editor/level_editor.hpp
+src/entities/npc_types.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-09 12:40:32
+#  File has been updated.
+#  Successfully updated.
+
+obj/main.o: src/main.cpp src/main.cpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/debug/logs.hpp src/entities/terrain.hpp src/graphics/tiles.hpp src/entities/objects.hpp src/graphics/textures.hpp src/entities/characters.hpp src/entities/game_object.hpp src/core/constants.hpp src/core/scale.hpp src/graphics/background.hpp src/editor/level_editor.hpp src/editor/tile_editor.hpp src/editor/undo_stack.hpp src/editor/palette.hpp src/editor/object_editor.hpp src/editor/solid_editor.hpp src/editor/spawn_editor.hpp src/entities/npc_manager.hpp src/entities/npc.hpp src/entities/npc_types.hpp src/graphics/overlay.hpp src/ui/ui_manager.hpp src/ui/ui_screen.hpp src/entities/player.hpp src/ui/main_menu.hpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'main'
-#  Last modified 2026-08-04 14:56:06
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:29:06
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := obj/main.o
-# automatic
-# * := main
-# automatic
-# < := src/main.cpp
-# automatic
-# + := src/main.cpp src/main.cpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/debug/logs.hpp src/entities/terrain.hpp src/entities/characters.hpp src/entities/game_object.hpp src/core/constants.hpp src/graphics/tiles.hpp src/graphics/textures.hpp src/graphics/background.hpp src/core/scale.hpp src/editor/level_editor.hpp
-# automatic
-# % := 
-# automatic
-# ^ := src/main.cpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/debug/logs.hpp src/entities/terrain.hpp src/entities/characters.hpp src/entities/game_object.hpp src/core/constants.hpp src/graphics/tiles.hpp src/graphics/textures.hpp src/graphics/background.hpp src/core/scale.hpp src/editor/level_editor.hpp
-# automatic
-# ? := src/main.cpp
-# automatic
-# | := 
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/16=6%
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 63):
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -498,10 +573,25 @@ SFML/include/SFML/Graphics/RenderTexture.hpp:
 #  File has been updated.
 #  Successfully updated.
 
+# Not a target:
+obj/editor/spawn_editor.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:01:54
+#  File has been updated.
+#  Successfully updated.
+
 SFML/include/SFML/Graphics/Font.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
 #  Last modified 2026-04-16 20:23:58
+#  File has been updated.
+#  Successfully updated.
+
+src/editor/spawn_editor.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 22:26:26
 #  File has been updated.
 #  Successfully updated.
 
@@ -513,10 +603,18 @@ SFML/include/SFML/Window/ContextSettings.hpp:
 #  Successfully updated.
 
 # Not a target:
+src/ui/dialog_screen.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:24:22
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
 obj/core/scale.d:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:02
+#  Last modified 2026-08-07 17:48:52
 #  File has been updated.
 #  Successfully updated.
 
@@ -524,6 +622,36 @@ SFML/include/SFML/Graphics.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
 #  Last modified 2026-04-16 20:23:58
+#  File has been updated.
+#  Successfully updated.
+
+src/editor/palette.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-07 17:46:08
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/editor/spawn_editor.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 22:29:38
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/entities/npc_manager.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-09 16:26:28
+#  File has been updated.
+#  Successfully updated.
+
+src/story/story_helpers.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-09 15:10:30
 #  File has been updated.
 #  Successfully updated.
 
@@ -538,7 +666,14 @@ SFML/include/SFML/Window/Vulkan.hpp:
 obj/graphics/background.d:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:16
+#  Last modified 2026-08-07 17:51:50
+#  File has been updated.
+#  Successfully updated.
+
+src/ui/main_menu.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:27:24
 #  File has been updated.
 #  Successfully updated.
 
@@ -549,7 +684,7 @@ SFML/include/SFML/Graphics/CircleShape.hpp:
 #  File has been updated.
 #  Successfully updated.
 
-bin/myapp: obj/core/scale.o obj/editor/level_editor.o obj/entities/character.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o | bin
+bin/myapp: obj/core/scale.o obj/editor/level_editor.o obj/editor/object_editor.o obj/editor/palette.o obj/editor/solid_editor.o obj/editor/spawn_editor.o obj/editor/tile_editor.o obj/entities/character.o obj/entities/npc.o obj/entities/npc_manager.o obj/entities/objects.o obj/entities/player.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/overlay.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o obj/ui/dialog_screen.o obj/ui/main_menu.o obj/ui/ui_manager.o | bin
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has been updated.
@@ -573,11 +708,11 @@ SFML/include/SFML/Window/Context.hpp:
 #  File has been updated.
 #  Successfully updated.
 
-obj/entities/character.o: src/entities/character.cpp src/entities/character.cpp src/graphics/textures.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp src/graphics/tiles.hpp SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl src/graphics/animation.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/entities/characters.hpp src/entities/game_object.hpp src/core/constants.hpp src/debug/logs.hpp src/core/scale.hpp src/core/collision.hpp src/entities/terrain.hpp
+obj/entities/character.o: src/entities/character.cpp src/entities/character.cpp src/graphics/textures.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp src/graphics/tiles.hpp SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl src/graphics/animation.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/entities/characters.hpp src/entities/game_object.hpp src/core/constants.hpp src/core/scale.hpp src/entities/terrain.hpp src/entities/objects.hpp src/debug/logs.hpp src/core/collision.hpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'entities/character'
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:08
+#  Last modified 2026-08-14 20:01:56
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 63):
@@ -592,6 +727,14 @@ SFML/include/SFML/Window/Clipboard.hpp:
 #  Successfully updated.
 
 # Not a target:
+src/ui/main_menu.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:40:32
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
 Makefile:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
@@ -599,12 +742,28 @@ Makefile:
 #  File has been updated.
 #  Successfully updated.
 
+obj/ui/ui_manager.o: src/ui/ui_manager.cpp src/ui/ui_manager.hpp src/ui/ui_screen.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/debug/logs.hpp
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
 SFML/include/SFML/Graphics/StencilMode.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
 #  Last modified 2026-04-16 20:23:58
 #  File has been updated.
 #  Successfully updated.
+
+obj/editor/object_editor.o: src/editor/object_editor.cpp src/editor/object_editor.cpp src/editor/object_editor.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/editor/undo_stack.hpp src/editor/palette.hpp src/entities/objects.hpp src/graphics/textures.hpp src/entities/terrain.hpp src/graphics/tiles.hpp src/core/scale.hpp src/core/constants.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'editor/object_editor'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 20:05:28
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 SFML/include/SFML/System/InputStream.hpp:
 #  Implicit rule search has been done.
@@ -628,10 +787,18 @@ SFML/include/SFML/System/Version.hpp:
 #  Successfully updated.
 
 # Not a target:
+obj/entities/player.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:02:06
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
 src/entities/character.cpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:28:12
+#  Last modified 2026-08-14 20:00:08
 #  File has been updated.
 #  Successfully updated.
 
@@ -639,7 +806,7 @@ src/entities/character.cpp:
 src/entities/terrain.cpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-02 14:46:36
+#  Last modified 2026-08-08 22:36:10
 #  File has been updated.
 #  Successfully updated.
 
@@ -660,7 +827,7 @@ SFML/include/SFML/Graphics/BlendMode.hpp:
 src/editor/level_editor.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:36:06
+#  Last modified 2026-08-08 17:39:52
 #  File has been updated.
 #  Successfully updated.
 
@@ -671,11 +838,18 @@ SFML/include/SFML/System/Time.inl:
 #  File has been updated.
 #  Successfully updated.
 
+src/ui/dialog_screen.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-09 17:56:42
+#  File has been updated.
+#  Successfully updated.
+
 # Not a target:
 src/main.cpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 16:15:24
+#  Last modified 2026-08-14 20:28:58
 #  File has been updated.
 #  Successfully updated.
 
@@ -692,6 +866,17 @@ SFML/include/SFML/Graphics/Glsl.hpp:
 #  Last modified 2026-04-16 20:23:58
 #  File has been updated.
 #  Successfully updated.
+
+obj/editor/spawn_editor.o: src/editor/spawn_editor.cpp src/editor/spawn_editor.cpp src/editor/spawn_editor.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/editor/undo_stack.hpp src/editor/palette.hpp src/entities/npc_manager.hpp src/entities/npc.hpp src/entities/characters.hpp src/entities/game_object.hpp src/core/constants.hpp src/core/scale.hpp src/graphics/tiles.hpp src/entities/terrain.hpp src/entities/objects.hpp src/graphics/textures.hpp src/entities/npc_types.hpp src/debug/logs.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'editor/spawn_editor'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:01:54
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 SFML/include/SFML/Graphics/CoordinateType.hpp:
 #  Implicit rule search has been done.
@@ -717,6 +902,25 @@ src/graphics/animation.cpp:
 #  File has been updated.
 #  Successfully updated.
 
+# Not a target:
+src/entities/npc.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 22:16:30
+#  File has been updated.
+#  Successfully updated.
+
+obj/ui/dialog_screen.o: src/ui/dialog_screen.cpp src/ui/dialog_screen.cpp src/ui/dialog_screen.hpp src/ui/ui_screen.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/entities/npc.hpp src/entities/characters.hpp src/entities/game_object.hpp src/core/constants.hpp src/core/scale.hpp src/graphics/tiles.hpp src/entities/terrain.hpp src/entities/objects.hpp src/graphics/textures.hpp src/entities/npc_types.hpp src/ui/ui_manager.hpp src/debug/logs.hpp src/story/story_helpers.hpp src/story/story_manager.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'ui/dialog_screen'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:24:42
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 SFML/include/SFML/System/Vector3.inl:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
@@ -728,6 +932,41 @@ SFML/include/SFML/System/MemoryInputStream.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
 #  Last modified 2026-04-16 20:23:58
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/entities/player.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 19:01:06
+#  File has been updated.
+#  Successfully updated.
+
+obj/entities/objects.o: src/entities/objects.cpp src/entities/objects.cpp src/entities/objects.hpp src/graphics/textures.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include 
+/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'entities/objects'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 10:53:12
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Not a target:
+obj/ui/main_menu.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:38:18
+#  File has been updated.
+#  Successfully updated.
+
+src/core/tile_encoding.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-07 22:53:20
 #  File has been updated.
 #  Successfully updated.
 
@@ -752,10 +991,41 @@ SFML/include/SFML/Graphics/Text.hpp:
 #  File has been updated.
 #  Successfully updated.
 
+# Not a target:
+src/entities/objects.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 10:53:04
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+obj/ui/ui_manager.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:24:46
+#  File has been updated.
+#  Successfully updated.
+
 SFML/include/SFML/Graphics/Texture.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
 #  Last modified 2026-04-16 20:23:58
+#  File has been updated.
+#  Successfully updated.
+
+src/entities/player.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 19:01:04
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+obj/entities/npc_manager.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:02:04
 #  File has been updated.
 #  Successfully updated.
 
@@ -791,6 +1061,31 @@ SFML/include/SFML/System/Exception.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
 #  Last modified 2026-04-16 20:23:58
+#  File has been updated.
+#  Successfully updated.
+
+src/entities/objects.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-07 18:34:44
+#  File has been updated.
+#  Successfully updated.
+
+obj/entities/npc.o: src/entities/npc.cpp src/entities/npc.cpp src/entities/npc.hpp src/entities/characters.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp src/entities/game_object.hpp src/core/constants.hpp src/core/scale.hpp src/graphics/tiles.hpp SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/Transformable.hpp src/entities/terrain.hpp src/entities/objects.hpp src/graphics/textures.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/entities/npc_types.hpp src/entities/npc_manager.hpp src/ui/ui_manager.hpp src/ui/ui_screen.hpp src/debug/logs.hpp src/ui/dialog_screen.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'entities/npc'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:24:34
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+src/editor/solid_editor.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-07 22:12:14
 #  File has been updated.
 #  Successfully updated.
 
@@ -833,12 +1128,19 @@ obj/graphics/background.o: src/graphics/background.cpp src/graphics/background.c
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'graphics/background'
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:16
+#  Last modified 2026-08-07 17:51:50
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 63):
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+src/ui/ui_screen.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:22:36
+#  File has been updated.
+#  Successfully updated.
 
 SFML/include/SFML/Graphics/Transform.inl:
 #  Implicit rule search has been done.
@@ -851,6 +1153,13 @@ src/debug/logs.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
 #  Last modified 2026-08-02 10:52:26
+#  File has been updated.
+#  Successfully updated.
+
+src/editor/tile_editor.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 12:20:02
 #  File has been updated.
 #  Successfully updated.
 
@@ -875,6 +1184,22 @@ src/core/scale.cpp:
 #  Modification time never checked.
 #  File has not been updated.
 
+# Not a target:
+obj/entities/objects.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 10:53:12
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+obj/graphics/overlay.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 13:18:28
+#  File has been updated.
+#  Successfully updated.
+
 SFML/include/SFML/Graphics/Transform.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
@@ -892,12 +1217,29 @@ all: bin/myapp
 # variable set hash-table stats:
 # Load=0/32=0%, Rehash=0, Collisions=0/5=0%
 
+obj/editor/palette.o: src/editor/palette.cpp src/editor/palette.cpp src/editor/palette.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/core/scale.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'editor/palette'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 12:26:26
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 SFML/include/SFML/Graphics/ConvexShape.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
 #  Last modified 2026-04-16 20:23:58
 #  File has been updated.
 #  Successfully updated.
+
+# Not a target:
+src/ui/ui_manager.cpp:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 SFML/include/SFML/System/Utf.inl:
 #  Implicit rule search has been done.
@@ -909,9 +1251,20 @@ SFML/include/SFML/System/Utf.inl:
 src/graphics/tiles.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-02 14:46:38
+#  Last modified 2026-08-07 21:59:26
 #  File has been updated.
 #  Successfully updated.
+
+obj/entities/player.o: src/entities/player.cpp src/entities/player.cpp src/entities/player.hpp src/entities/characters.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp src/entities/game_object.hpp src/core/constants.hpp src/core/scale.hpp src/graphics/tiles.hpp SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/Transformable.hpp src/entities/terrain.hpp src/entities/objects.hpp src/graphics/textures.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/debug/logs.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'entities/player'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:02:08
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 SFML/include/SFML/Graphics/Rect.inl:
 #  Implicit rule search has been done.
@@ -924,7 +1277,7 @@ SFML/include/SFML/Graphics/Rect.inl:
 obj/entities/character.d:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:08
+#  Last modified 2026-08-14 20:01:56
 #  File has been updated.
 #  Successfully updated.
 
@@ -935,10 +1288,42 @@ SFML/include/SFML/System/Vector2.inl:
 #  File has been updated.
 #  Successfully updated.
 
+# Not a target:
+obj/entities/npc.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:24:34
+#  File has been updated.
+#  Successfully updated.
+
 SFML/include/SFML/Window/GlResource.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
 #  Last modified 2026-04-16 20:23:58
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/editor/palette.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 12:26:12
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+obj/editor/tile_editor.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 20:07:20
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/editor/solid_editor.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 12:43:28
 #  File has been updated.
 #  Successfully updated.
 
@@ -960,7 +1345,7 @@ SFML/include/SFML/Graphics/Drawable.hpp:
 obj/editor/level_editor.d:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 14:55:20
+#  Last modified 2026-08-14 20:01:48
 #  File has been updated.
 #  Successfully updated.
 
@@ -975,14 +1360,21 @@ SFML/include/SFML/Graphics/Shader.hpp:
 src/editor/level_editor.cpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 14:02:24
+#  Last modified 2026-08-08 20:35:14
+#  File has been updated.
+#  Successfully updated.
+
+src/ui/ui_manager.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:23:46
 #  File has been updated.
 #  Successfully updated.
 
 src/core/constants.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-03 13:51:00
+#  Last modified 2026-08-04 17:50:42
 #  File has been updated.
 #  Successfully updated.
 
@@ -992,6 +1384,13 @@ bin:
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 70):
 	mkdir -p $(BINDIR)
+
+src/entities/npc.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 22:16:38
+#  File has been updated.
+#  Successfully updated.
 
 SFML/include/SFML/Config.hpp:
 #  Implicit rule search has been done.
@@ -1011,7 +1410,7 @@ SFML/include/SFML/Window/Event.hpp:
 obj/entities/terrain.d:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:10
+#  Last modified 2026-08-14 20:02:12
 #  File has been updated.
 #  Successfully updated.
 
@@ -1043,11 +1442,29 @@ SFML/include/SFML/System/Vector2.hpp:
 #  File has been updated.
 #  Successfully updated.
 
-obj/entities/terrain.o: src/entities/terrain.cpp src/entities/terrain.cpp src/core/scale.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl src/entities/terrain.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp src/graphics/tiles.hpp SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/Transformable.hpp src/core/constants.hpp
+obj/entities/terrain.o: src/entities/terrain.cpp src/entities/terrain.cpp src/debug/logs.hpp src/core/scale.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl src/entities/terrain.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp src/graphics/tiles.hpp SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/Transformable.hpp src/entities/objects.hpp src/graphics/textures.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/core/constants.hpp src/core/tile_encoding.hpp src/entities/characters.hpp src/entities/game_object.hpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'entities/terrain'
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:10
+#  Last modified 2026-08-14 20:02:12
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+src/editor/undo_stack.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 13:17:54
+#  File has been updated.
+#  Successfully updated.
+
+obj/graphics/overlay.o: src/graphics/overlay.cpp src/graphics/overlay.cpp src/graphics/overlay.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp src/entities/game_object.hpp src/graphics/textures.hpp SFML/include/SFML/Graphics/Texture.hpp src/debug/logs.hpp SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/Transformable.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'graphics/overlay'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 13:18:28
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 63):
@@ -1075,6 +1492,14 @@ SFML/include/SFML/Window/Sensor.hpp:
 #  File has been updated.
 #  Successfully updated.
 
+# Not a target:
+src/graphics/overlay.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 12:56:24
+#  File has been updated.
+#  Successfully updated.
+
 SFML/include/SFML/Window/Touch.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
@@ -1093,7 +1518,7 @@ SFML/include/SFML/System/Sleep.hpp:
 obj/graphics/tiles.d:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:20
+#  Last modified 2026-08-08 15:54:12
 #  File has been updated.
 #  Successfully updated.
 
@@ -1101,6 +1526,21 @@ SFML/include/SFML/Graphics/Color.inl:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
 #  Last modified 2026-04-16 20:23:58
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+obj/ui/dialog_screen.d:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:24:42
+#  File has been updated.
+#  Successfully updated.
+
+src/story/story_manager.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-09 12:42:48
 #  File has been updated.
 #  Successfully updated.
 
@@ -1139,11 +1579,11 @@ SFML/include/SFML/Graphics/Shape.hpp:
 #  File has been updated.
 #  Successfully updated.
 
-obj/editor/level_editor.o: src/editor/level_editor.cpp src/editor/level_editor.cpp src/core/constants.hpp src/graphics/tiles.hpp SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl src/editor/level_editor.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/entities/terrain.hpp src/core/scale.hpp src/debug/logs.hpp
+obj/editor/level_editor.o: src/editor/level_editor.cpp src/editor/level_editor.cpp src/editor/level_editor.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/editor/tile_editor.hpp src/editor/undo_stack.hpp src/editor/palette.hpp src/editor/object_editor.hpp src/entities/objects.hpp src/graphics/textures.hpp src/editor/solid_editor.hpp src/editor/spawn_editor.hpp src/entities/npc_manager.hpp src/entities/npc.hpp src/entities/characters.hpp src/entities/game_object.hpp src/core/constants.hpp src/core/scale.hpp src/graphics/tiles.hpp src/entities/terrain.hpp src/entities/npc_types.hpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'editor/level_editor'
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 14:55:22
+#  Last modified 2026-08-14 20:01:48
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 63):
@@ -1154,7 +1594,7 @@ obj/editor/level_editor.o: src/editor/level_editor.cpp src/editor/level_editor.c
 src/graphics/background.cpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:28:40
+#  Last modified 2026-08-07 11:15:58
 #  File has been updated.
 #  Successfully updated.
 
@@ -1172,6 +1612,17 @@ SFML/include/SFML/Window/WindowHandle.hpp:
 #  File has been updated.
 #  Successfully updated.
 
+obj/editor/solid_editor.o: src/editor/solid_editor.cpp src/editor/solid_editor.cpp src/editor/solid_editor.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/editor/undo_stack.hpp src/entities/terrain.hpp src/graphics/tiles.hpp src/entities/objects.hpp src/graphics/textures.hpp src/core/constants.hpp src/core/scale.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'editor/solid_editor'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 20:05:32
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 SFML/include/SFML/Window/Window.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
@@ -1186,12 +1637,19 @@ SFML/include/SFML/Graphics/PrimitiveType.hpp:
 #  File has been updated.
 #  Successfully updated.
 
-obj/graphics/tiles.o: src/graphics/tiles.cpp src/graphics/tiles.cpp src/graphics/tiles.hpp SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SF 
-ML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl src/graphics/textures.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp src/core/scale.hpp src/core/constants.hpp
+# Not a target:
+src/editor/object_editor.cpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 12:42:38
+#  File has been updated.
+#  Successfully updated.
+
+obj/graphics/tiles.o: src/graphics/tiles.cpp src/graphics/tiles.cpp src/graphics/tiles.hpp SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl src/graphics/textures.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp src/core/scale.hpp src/core/constants.hpp src/core/tile_encoding.hpp
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'graphics/tiles'
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:20
+#  Last modified 2026-08-08 15:54:14
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 63):
@@ -1217,6 +1675,13 @@ SFML/include/SFML/Graphics/RectangleShape.hpp:
 #  File has been updated.
 #  Successfully updated.
 
+src/graphics/overlay.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-07 11:11:34
+#  File has been updated.
+#  Successfully updated.
+
 SFML/include/SFML/Window/WindowBase.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
@@ -1228,7 +1693,7 @@ obj/graphics/textures.o: src/graphics/textures.cpp src/graphics/textures.cpp src
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'graphics/textures'
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-04 13:37:18
+#  Last modified 2026-08-07 17:51:54
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 63):
@@ -1245,7 +1710,7 @@ SFML/include/SFML/Graphics/Image.hpp:
 src/entities/terrain.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
-#  Last modified 2026-08-02 12:24:28
+#  Last modified 2026-08-08 19:34:26
 #  File has been updated.
 #  Successfully updated.
 
@@ -1255,6 +1720,46 @@ SFML/include/SFML/Window/Cursor.hpp:
 #  Last modified 2026-04-16 20:23:58
 #  File has been updated.
 #  Successfully updated.
+
+obj/entities/npc_manager.o: src/entities/npc_manager.cpp src/entities/npc_manager.cpp src/entities/npc_manager.hpp src/entities/npc.hpp src/entities/characters.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp src/entities/game_object.hpp src/core/constants.hpp src/core/scale.hpp src/graphics/tiles.hpp SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/Transformable.hpp src/entities/terrain.hpp src/entities/objects.hpp src/graphics/textures.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/entities/npc_types.hpp src/debug/logs.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'entities/npc_manager'
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-14 20:02:04
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+obj/ui/main_menu.o: src/ui/main_menu.cpp src/ui/main_menu.cpp src/ui/main_menu.hpp src/ui/ui_screen.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/ui/ui_manager.hpp src/debug/logs.hpp
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'ui/main_menu'
+#  Last modified 2026-08-14 20:38:18
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := obj/ui/main_menu.o
+# automatic
+# * := ui/main_menu
+# automatic
+# < := src/ui/main_menu.cpp
+# automatic
+# + := src/ui/main_menu.cpp src/ui/main_menu.cpp src/ui/main_menu.hpp src/ui/ui_screen.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/System.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/ui/ui_manager.hpp src/debug/logs.hpp
+# automatic
+# % := 
+# automatic
+# ^ := src/ui/main_menu.cpp src/ui/main_menu.hpp src/ui/ui_screen.hpp SFML/include/SFML/Graphics.hpp SFML/include/SFML/Graphics/BlendMode.hpp SFML/include/SFML/Graphics/Export.hpp SFML/include/SFML/Config.hpp SFML/include/SFML/Graphics/CircleShape.hpp SFML/include/SFML/Graphics/Shape.hpp SFML/include/SFML/Graphics/Color.hpp SFML/include/SFML/Graphics/Color.inl SFML/include/SFML/Graphics/Drawable.hpp SFML/include/SFML/Graphics/PrimitiveType.hpp SFML/include/SFML/Graphics/Rect.hpp SFML/include/SFML/System/Vector2.hpp SFML/include/SFML/System/Angle.hpp SFML/include/SFML/System/Angle.inl SFML/include/SFML/System/Vector2.inl SFML/include/SFML/Graphics/Rect.inl SFML/include/SFML/Graphics/RenderStates.hpp SFML/include/SFML/Graphics/CoordinateType.hpp SFML/include/SFML/Graphics/StencilMode.hpp SFML/include/SFML/Graphics/Transform.hpp SFML/include/SFML/Graphics/Transform.inl SFML/include/SFML/Graphics/Transformable.hpp SFML/include/SFML/Graphics/VertexArray.hpp SFML/include/SFML/Graphics/Vertex.hpp SFML/include/SFML/Graphics/ConvexShape.hpp SFML/include/SFML/Graphics/Font.hpp SFML/include/SFML/Graphics/Glyph.hpp SFML/include/SFML/Graphics/Texture.hpp SFML/include/SFML/Window/GlResource.hpp SFML/include/SFML/Window/Export.hpp SFML/include/SFML/Graphics/Image.hpp SFML/include/SFML/Graphics/RectangleShape.hpp SFML/include/SFML/Graphics/RenderTarget.hpp SFML/include/SFML/Graphics/View.hpp SFML/include/SFML/Graphics/RenderTexture.hpp SFML/include/SFML/Window/ContextSettings.hpp SFML/include/SFML/Graphics/RenderWindow.hpp SFML/include/SFML/Window/VideoMode.hpp SFML/include/SFML/Window/Window.hpp SFML/include/SFML/Window/WindowBase.hpp SFML/include/SFML/Window/Vulkan.hpp SFML/include/SFML/Window/WindowEnums.hpp SFML/include/SFML/Window/WindowHandle.hpp SFML/include/SFML/System/Time.hpp SFML/include/SFML/System/Time.inl SFML/include/SFML/Window/WindowBase.inl SFML/include/SFML/Window/Event.hpp SFML/include/SFML/Window/Joystick.hpp SFML/include/SFML/System/String.hpp SFML/include/SFML/System/Export.hpp SFML/include/SFML/System/Utf.hpp SFML/include/SFML/System/Utf.inl SFML/include/SFML/System/Err.hpp SFML/include/SFML/System/String.inl SFML/include/SFML/Window/Keyboard.hpp SFML/include/SFML/Window/Mouse.hpp SFML/include/SFML/Window/Sensor.hpp SFML/include/SFML/System/Vector3.hpp SFML/include/SFML/System/Vector3.inl SFML/include/SFML/Window/Event.inl SFML/include/SFML/System/Clock.hpp SFML/include/SFML/Graphics/Shader.hpp SFML/include/SFML/Graphics/Glsl.hpp SFML/include/SFML/Graphics/Glsl.inl SFML/include/SFML/Graphics/Sprite.hpp SFML/include/SFML/Graphics/Text.hpp SFML/include/SFML/Graphics/VertexBuffer.hpp SFML/include/SFML/Window.hpp SFML/include/SFML/Window/Clipboard.hpp SFML/include/SFML/Window/Context.hpp SFML/include/SFML/Window/Cursor.hpp SFML/include/SFML/Window/Touch.hpp SFML/include/SFML/Syste 
+m.hpp SFML/include/SFML/System/Exception.hpp SFML/include/SFML/System/FileInputStream.hpp SFML/include/SFML/System/InputStream.hpp SFML/include/SFML/System/MemoryInputStream.hpp SFML/include/SFML/System/Sleep.hpp SFML/include/SFML/System/TimeoutWithPredicate.hpp SFML/include/SFML/System/Version.hpp src/ui/ui_manager.hpp src/debug/logs.hpp
+# automatic
+# ? := src/ui/main_menu.cpp
+# automatic
+# | := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/16=6%
+#  recipe to execute (from 'Makefile', line 63):
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 SFML/include/SFML/Graphics/Transformable.hpp:
 #  Implicit rule search has been done.
@@ -1277,6 +1782,13 @@ SFML/include/SFML/System/TimeoutWithPredicate.hpp:
 #  File has been updated.
 #  Successfully updated.
 
+src/entities/npc_manager.hpp:
+#  Implicit rule search has been done.
+#  File is secondary (prerequisite of .SECONDARY).
+#  Last modified 2026-08-08 21:40:16
+#  File has been updated.
+#  Successfully updated.
+
 SFML/include/SFML/Graphics/RenderStates.hpp:
 #  Implicit rule search has been done.
 #  File is secondary (prerequisite of .SECONDARY).
@@ -1285,19 +1797,19 @@ SFML/include/SFML/Graphics/RenderStates.hpp:
 #  Successfully updated.
 
 # files hash-table stats:
-# Load=129/1024=13%, Rehash=0, Collisions=45/1227=4%
+# Load=187/1024=18%, Rehash=0, Collisions=224/3745=6%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 182 / storage = 4656 B / avg = 25 B
-# current buf: size = 8162 B / used = 4656 B / count = 182 / avg = 25 B
+# strcache buffers: 1 (0) / strings = 293 / storage = 6825 B / avg = 23 B
+# current buf: size = 8162 B / used = 6825 B / count = 293 / avg = 23 B
 
-# strcache performance: lookups = 1711 / hit rate = 89%
+# strcache performance: lookups = 5460 / hit rate = 94%
 # hash-table stats:
-# Load=182/8192=2%, Rehash=0, Collisions=0/1711=0%
-# Finished Make data base on Tue Aug  4 16:23:43 2026
+# Load=293/8192=4%, Rehash=0, Collisions=133/5460=2%
+# Finished Make data base on Fri Aug 14 20:44:57 2026
 
  

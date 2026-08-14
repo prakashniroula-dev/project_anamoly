@@ -13,6 +13,7 @@ DialogScreen::DialogScreen(NPC *npc) : npc(npc), speakerText(font), dialogueText
   font = UIManager::get().getFont();
   speakerText.setFont(font);
   dialogueText.setFont(font);
+  speakerText.setStyle(sf::Text::Bold | sf::Text::Underlined);
   speakerText.setCharacterSize(28);
   dialogueText.setCharacterSize(20);
   background.setFillColor(sf::Color(0, 0, 0, 200));
@@ -136,7 +137,7 @@ bool DialogScreen::handleEvent(const sf::Event &event, sf::RenderWindow &window)
 {
   // Ensure option rectangles are up‑to‑date for hit testing
   if (!visibleOptions.empty()) {
-      updateOptionRects(window);
+      updateLayout(window);
   }
   // --- Keyboard navigation ---
   if (const auto *key = event.getIf<sf::Event::KeyPressed>())
@@ -219,47 +220,75 @@ bool DialogScreen::handleEvent(const sf::Event &event, sf::RenderWindow &window)
   return false;
 }
 
-void DialogScreen::updateOptionRects(const sf::RenderWindow& window)
+void DialogScreen::updateLayout(sf::RenderWindow& window)
 {
-    optionRects.clear();
-    if (optionTexts.empty()) return;
+    // Use the exact same constants and logic as in your fixed draw()
+    sf::Vector2f winSize = sf::Vector2f(window.getSize());
+    uiView = UIManager::getUIView(window); // ensure uiView is set for event mapping
+    window.setView(uiView); // set the view for layout calculations
 
-    sf::Vector2f winSize = static_cast<sf::Vector2f>(window.getSize());
     const float PADDINGX = std::max(0.3f * winSize.x, 40.f);
     const float PADDINGY = std::max(0.05f * winSize.y, 20.f);
-    const float LINE_HEIGHT = 60.f;
-    const float SPEAKER_HEIGHT = 40.f;
-    const float DIALOGUE_HEIGHT = 80.f;
+    const float LINE_HEIGHT = 30.f;          // as in draw
+    const float SPEAKER_HEIGHT = 50.f;       // as in draw
+    const float DIALOGUE_HEIGHT = 60.f;      // as in draw
 
-    // Compute boxHeight and textY (same as in draw)
-    float boxHeight = PADDINGY * 2 + SPEAKER_HEIGHT + 5.f + DIALOGUE_HEIGHT + 5.f;
-    if (!optionTexts.empty()) {
-        boxHeight += 5.f + optionTexts.size() * LINE_HEIGHT;
-    } else {
-        boxHeight += 5.f;
-    }
-    boxHeight = std::max(boxHeight, 120.f);
+    // ----- Compute box dimensions (matches draw) -----
+    float boxHeight = PADDINGY * 2;
+    boxHeight += SPEAKER_HEIGHT + 5.f;
+    boxHeight += DIALOGUE_HEIGHT + 5.f;
+    boxHeight = std::max(boxHeight, 60.f);
     boxHeight = std::min(boxHeight, winSize.y * 0.6f);
+
+    float boxX = 0.f;
     float boxY = winSize.y - boxHeight;
-    float textY = boxY + PADDINGY + SPEAKER_HEIGHT + 5.f + DIALOGUE_HEIGHT + 5.f;
 
-    // Uniform button width (based on longest text)
-    float maxTextWidth = 0.f;
-    for (const auto& opt : optionTexts) {
-        float w = opt.getLocalBounds().size.x;
-        if (w > maxTextWidth) maxTextWidth = w;
-    }
-    const float BTN_PADDING_X = 30.f;
-    const float BTN_PADDING_Y = 12.f;
-    float btnWidth = maxTextWidth + BTN_PADDING_X * 2 + 60.f; // extra for outline (as you set)
+    // Store for drawing
+    boxY = std::floor(boxY); // optional: align to pixel grid
+    m_boxRect = sf::FloatRect(sf::Vector2f(boxX, boxY), sf::Vector2f(winSize.x, boxHeight));
 
-    for (size_t i = 0; i < optionTexts.size(); ++i) {
-        const sf::Text& opt = optionTexts[i];
-        float textHeight = opt.getLocalBounds().size.y;
-        float btnHeight = textHeight + BTN_PADDING_Y * 2;
-        float btnX = winSize.x - PADDINGX - btnWidth;
-        float btnY = textY + i * LINE_HEIGHT;
-        optionRects.push_back(sf::FloatRect(sf::Vector2f(btnX, btnY), sf::Vector2f(btnWidth, btnHeight)));
+    // ----- Speaker & dialogue positions -----
+    float textX = boxX + PADDINGX;
+    float textY = boxY + PADDINGY;
+    textX = std::floor(textX); // optional: align to pixel grid
+    textY = std::floor(textY);
+    m_speakerPos = sf::Vector2f(textX, textY);
+    m_dialoguePos = sf::Vector2f(textX, std::floor(textY + SPEAKER_HEIGHT + 5.f));
+
+    // ----- Options (right‑aligned, uniform width) -----
+    optionRects.clear();
+    if (!optionTexts.empty())
+    {
+        // 1) Find max text width
+        float maxTextWidth = 0.f;
+        for (const auto& opt : optionTexts) {
+            float w = opt.getLocalBounds().size.x;
+            if (w > maxTextWidth) maxTextWidth = w;
+        }
+
+        const float BTN_PADDING_X = 30.f;
+        const float BTN_PADDING_Y = 12.f;
+        const float BTN_HEIGHT = LINE_HEIGHT + 40.f;   // spacing between options (as in draw)
+        float btnWidth = maxTextWidth + BTN_PADDING_X * 2 + 60.f; // extra for outline
+
+        // Options start above the box (matches draw's `textY = boxY - optionTexts.size() * 60.f;`)
+        float optStartY = boxY - optionTexts.size() * 60.f;   // 60 is the fixed gap used in draw
+
+        for (size_t i = 0; i < optionTexts.size(); ++i)
+        {
+            const sf::Text& opt = optionTexts[i];
+            sf::FloatRect textBounds = opt.getLocalBounds();
+            float textHeight = textBounds.size.y;
+            float btnHeight = textHeight + BTN_PADDING_Y * 2;
+
+            float btnX = winSize.x / 2.f - btnWidth / 2.f;
+            float btnY = optStartY + i * BTN_HEIGHT;
+            btnX = std::floor(btnX);
+            btnY = std::floor(btnY);
+
+            optionRects.push_back(sf::FloatRect(sf::Vector2f(btnX, btnY),
+                                                sf::Vector2f(btnWidth, btnHeight)));
+        }
     }
 }
 
@@ -288,117 +317,49 @@ void drawBlackGradient(sf::RenderWindow& win, float x, float y, float width, flo
 
 void DialogScreen::draw(sf::RenderWindow &window)
 {
-  updateOptionRects(window);
-  uiView = window.getDefaultView();
-  uiView.setSize(sf::Vector2f(window.getSize()));
-  uiView.setCenter(sf::Vector2f(window.getSize().x / 2.f, window.getSize().y / 2.f));
-  window.setView(uiView);
-  const sf::View& defaultView = uiView;
+  updateLayout(window);
 
-  sf::Vector2f winSize = defaultView.getSize();
+ drawBlackGradient(window, m_boxRect.position.x, m_boxRect.position.y,
+                      m_boxRect.size.x, m_boxRect.size.y);
 
-  // ----- Layout constants (tweaked for bigger buttons) -----
-  const float PADDINGX = std::max(0.3f * winSize.x, 40.f);
-  const float PADDINGY = std::max(0.05f * winSize.y, 20.f);
-  const float LINE_HEIGHT = 60.f;          // increased from 30
-  const float SPEAKER_HEIGHT = 40.f;
-  const float DIALOGUE_HEIGHT = 80.f;
-
-  // ----- Compute box height (includes options) -----
-  float boxHeight = PADDINGY * 2;
-  boxHeight += SPEAKER_HEIGHT + 5.f;
-  boxHeight += DIALOGUE_HEIGHT + 5.f;
-  if (!optionTexts.empty())
-  {
-    boxHeight += 5.f;
-    boxHeight += optionTexts.size() * LINE_HEIGHT;   // each option uses LINE_HEIGHT as vertical step
-  }
-  else
-  {
-    boxHeight += 5.f;
-  }
-  boxHeight = std::max(boxHeight, 120.f);
-  boxHeight = std::min(boxHeight, winSize.y * 0.6f);
-
-  float boxX = 0.f;
-  float boxY = winSize.y - boxHeight;
-
-  drawBlackGradient(window, boxX, boxY, winSize.x, boxHeight);
-
-  // ----- Speaker & Dialogue (left‑aligned) -----
-  float textX = boxX + PADDINGX;
-  float textY = boxY + PADDINGY;
-
-  speakerText.setPosition({textX, textY});
+  speakerText.setPosition(m_speakerPos);
   window.draw(speakerText);
-
-  textY += SPEAKER_HEIGHT + 5.f;
-  dialogueText.setPosition({textX, textY});
+  dialogueText.setPosition(m_dialoguePos);
   window.draw(dialogueText);
 
-  // ----- Options (right‑aligned, uniform width) -----
-  optionRects.clear();
-  if (!optionTexts.empty())
+  // 5. Draw options using the precomputed optionRects
+  for (size_t i = 0; i < optionTexts.size(); ++i)
   {
-    // 1) Find the maximum text width among all options
-    float maxTextWidth = 0.f;
-    for (const auto& opt : optionTexts)
-    {
-      float w = opt.getLocalBounds().size.x;
-      if (w > maxTextWidth) maxTextWidth = w;
-    }
+      const sf::FloatRect& rect = optionRects[i];
+      sf::Text& opt = optionTexts[i];
 
-    // 2) Button padding (make it generous)
-    const float BTN_PADDING_X = 30.f;   // increased from 20
-    const float BTN_PADDING_Y = 12.f;   // increased from 10
-    float btnWidth = maxTextWidth + BTN_PADDING_X * 2 + 60.f; // extra for outline
-    float btnHeight = 0.f;  // will be computed per button (text height + padding)
-
-    textY += DIALOGUE_HEIGHT + 5.f;   // gap before first option
-
-    for (size_t i = 0; i < optionTexts.size(); ++i)
-    {
-      sf::Text &opt = optionTexts[i];
-      sf::FloatRect textBounds = opt.getLocalBounds();
-      float textHeight = textBounds.size.y;
-
-      // Button height based on this option's text height (all will be similar)
-      float btnHeight_i = textHeight + BTN_PADDING_Y * 2;
-
-      // Right‑align: button X = window width - padding - button width
-      float btnX = winSize.x - PADDINGX - btnWidth;
-      float btnY = textY + i * LINE_HEIGHT;   // spacing = LINE_HEIGHT
-
-      // Store rectangle for hit testing
-      optionRects.push_back(sf::FloatRect(sf::Vector2f(btnX, btnY), sf::Vector2f(btnWidth, btnHeight_i)));
-
-      // Draw button background
-      sf::RectangleShape btnShape({btnWidth, btnHeight_i});
-      btnShape.setPosition({btnX, btnY});
+      // Button background
+      sf::RectangleShape btnShape(rect.size);
+      btnShape.setPosition(rect.position);
       btnShape.setOutlineThickness(2.f);
 
-      // Selected option: different style
       if (i == highlightedOption)
       {
-        btnShape.setFillColor(sf::Color::White); // blue highlight
-        btnShape.setOutlineColor(sf::Color::Black);
-        opt.setFillColor(sf::Color::Black);
+          btnShape.setFillColor(sf::Color::White);
+          btnShape.setOutlineColor(sf::Color::Black);
+          opt.setFillColor(sf::Color::Black);
       }
       else
       {
-        btnShape.setFillColor(sf::Color(40, 40, 40, 220)); // dark gray
-        btnShape.setOutlineColor(sf::Color(120, 120, 120));
-        opt.setFillColor(sf::Color::White);
-        opt.setScale({1.f, 1.f});
+          btnShape.setFillColor(sf::Color(40, 40, 40, 220));
+          btnShape.setOutlineColor(sf::Color(120, 120, 120));
+          opt.setFillColor(sf::Color::White);
       }
       window.draw(btnShape);
 
-      // Position text centered inside button
-      float textPosX = btnX + (btnWidth - textBounds.size.x) / 2.f;
-      float textPosY = btnY + (btnHeight_i - textHeight) / 2.f;
-      opt.setPosition({textPosX, textPosY});
+      // Center text inside the button
+      sf::FloatRect textBounds = opt.getLocalBounds();
+      float textX = rect.position.x + (rect.size.x - textBounds.size.x) / 2.f;
+      float textY = rect.position.y + (rect.size.y - textBounds.size.y) / 2.f;
+      textX = std::floor(textX); // optional: align to pixel grid
+      textY = std::floor(textY);
+      opt.setPosition({textX, textY});
       window.draw(opt);
-    }
   }
 }
 

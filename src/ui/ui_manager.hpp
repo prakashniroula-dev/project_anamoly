@@ -23,6 +23,13 @@ public:
         }
     }
     sf::Font& getFont() { return m_font; } // Provide access to a shared font
+    static sf::View getUIView(sf::RenderWindow& window) {
+        static sf::View uiView = window.getDefaultView();
+        uiView.setSize(sf::Vector2f(window.getSize()));
+        uiView.setCenter(sf::Vector2f(window.getSize()) / 2.f);
+        uiView.setViewport(sf::FloatRect(sf::Vector2f(0.f, 0.f), sf::Vector2f(1.f, 1.f))); // to prevent blur
+        return uiView;
+    }
 
 private:
     UIManager() = default;                          // private constructor

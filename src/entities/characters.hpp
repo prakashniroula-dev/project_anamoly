@@ -60,7 +60,7 @@ class Character : public GameObject {
 
     // ---------- COLLISION BOX ----------
     static constexpr float BASE_WIDTH = 28.f;
-    static constexpr float BASE_HEIGHT = 64.f;
+    static constexpr float BASE_HEIGHT = 62.f;
     static constexpr float OFFSET_X = 44.f;
     static constexpr float OFFSET_Y = 58.f;
     static constexpr float FEET_WIDTH = 20.f;
