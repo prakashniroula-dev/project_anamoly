@@ -51,6 +51,7 @@ void DialogScreen::moveToLine(int index)
 // Update onEnter()
 void DialogScreen::onEnter()
 {
+  Log::info << "DialogScreen onEnter() for NPC!" << std::endl;
   if (!npc->getType().dialogue.empty())
   {
     moveToLine(0); // start from index 0, but it will skip if invalid
@@ -363,7 +364,11 @@ void DialogScreen::draw(sf::RenderWindow &window)
   }
 }
 
-void DialogScreen::onExit()
-{
-  // optional cleanup
+void DialogScreen::onExit() {
+  if (npc) {
+      Log::info << "Exiting DialogScreen for NPC!" << std::endl;
+        npc->dialogueEnded();
+    } else {
+      Log::info << "Exiting DialogScreen with null NPC!" << std::endl;
+    }
 }

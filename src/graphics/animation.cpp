@@ -24,5 +24,13 @@ namespace Animations {
         }
     }
 
-    Info get(std::string key) { return animations.at(key); }
+    Info get(std::string key) {
+        auto it = animations.find(key);
+        if (it != animations.end()) {
+            return it->second;
+        }
+        static Log::Scope scope("Animations::get()");
+        scope.error << "Animation key '" << key << "' not found. Returning dummy.\n";
+        return Info();   // empty/default Info
+    }
 }

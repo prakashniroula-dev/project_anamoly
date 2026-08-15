@@ -2,7 +2,7 @@
 #include "characters.hpp"
 #include "npc_types.hpp"
 #include <functional>
-#include <entities/script_registry.hpp>
+#include <story/script_registry.hpp>
 
 class NPC : public Character
 {
@@ -44,9 +44,11 @@ public:
 
     // Run a script (sequence)
     void runSequence(const std::vector<Action> &actions);
+    void dialogueEnded(); 
 
 private:
 private:
+    bool m_waitingForDialogue = false;
     bool m_aiPaused = false;
     float m_blockedTimer = 0.f;       // cooldown to prevent rapid direction changes
     bool m_directionReversed = false; // to avoid flipping multiple times per frame

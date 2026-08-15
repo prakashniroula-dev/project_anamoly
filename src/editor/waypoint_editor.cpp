@@ -1,6 +1,6 @@
 #include "waypoint_editor.hpp"
 #include <core/scale.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <debug/logs.hpp>
 #include <algorithm>
 #include <cmath>

@@ -1,6 +1,7 @@
 #include "npc_manager.hpp"
 #include <debug/logs.hpp>
-#include <entities/script_registry.hpp>
+#include <story/script_registry.hpp>
+#include <story/story_manager.hpp>
 
 NPCManager& NPCManager::get() {
     static NPCManager instance;
@@ -12,10 +13,12 @@ void NPCManager::registerType(const NPCType& type) {
 }
 
 NPC* NPCManager::createNPC(const SpawnProps& props, const sf::Vector2f& pos) {
+
+    Log::Scope scope("NPCManager::createNPC");
     // Use props.npcTypeId as typeId
     auto it = typeRegistry.find(props.npcTypeId);
     if (it == typeRegistry.end()) {
-        Log::error << "Unknown NPC type: " << props.npcTypeId << std::endl;
+        scope.error << "Unknown NPC type: " << props.npcTypeId << std::endl;
         return nullptr;
     }
     const NPCType& type = it->second;
@@ -35,15 +38,32 @@ NPC* NPCManager::createNPC(const SpawnProps& props, const sf::Vector2f& pos) {
         auto scriptIt = ScriptRegistry::scripts.find(props.scriptName);
         if (scriptIt != ScriptRegistry::scripts.end()) {
             raw->runSequence(scriptIt->second);
+            scope.info << "Finished running script '" << props.scriptName << "' for NPC " << id << std::endl;
         } else {
-            Log::warn << "Script '" << props.scriptName << "' not found in registry." << std::endl;
+            scope.warn << "Script '" << props.scriptName << "' not found in registry." << std::endl;
         }
     }
     if (!props.waypoints.empty()) {
+        scope.info << "Setting waypoints for NPC " << id << std::endl;
         raw->setWaypoints(props.waypoints);
     }
 
     return raw;
+}
+
+void NPCManager::clearAll() {
+    npcStorage.clear();
+    npcList.clear();
+    npcMap.clear();
+    pendingAutoTalks.clear();
+}
+
+void guardShoot(NPC* npc) {
+    if (!npc) return;
+    Log::info << "guardShoot() called for NPC at (" << npc->getPosition().x << ", " << npc->getPosition().y << ")\n";
+    // Set the character state to Shooting so the animation plays.
+    npc->shoot();   // Character::shoot() sets state to Shooting and resets timer
+    // Optionally spawn a visual bullet or flash here.
 }
 
 void NPCManager::loadDefinitions() {
@@ -99,7 +119,23 @@ void NPCManager::loadDefinitions() {
     };
     registerType(guard);
 
+    NPCType guardCutscene;
+    guardCutscene.id = "guard_cutscene";
+    guardCutscene.characterKey = Characters::Fighter_Boss;  // same sprite as generic guard
+    guardCutscene.behaviorType = "idle";                   // or "patrol" if you want
+    guardCutscene.dialogue = {
+        {"guard_shoot_intro", "Guard", "Stop right there, criminal! You're under arrest!", "", "", -1, {}},
+        {"guard_shoot_2", "Guard", "Take this!", "", "", -1, {}}
+    };
+    registerType(guardCutscene);
+
+    FunctionRegistry::registerFunction("guardShoot", guardShoot);
+    FunctionRegistry::registerFunction("setFlag_guardshoot_started", [](NPC* npc) {
+        StoryManager::get().setFlag("guardshoot_started");
+    });
+
 }
+
 
 const NPCType* NPCManager::getType(const std::string& typeId) const {
     auto it = typeRegistry.find(typeId);
@@ -164,7 +200,20 @@ void NPCManager::draw(sf::RenderWindow& win, float dt) {
     }
 }
 
+// entities/npc_manager.cpp
+NPC* NPCManager::getNearestInteractable(const sf::Vector2f& playerPos) const {
+    for (NPC* npc : npcList) {
+        sf::Vector2f npcPos = npc->getPosition();
+        float dist = std::hypot(playerPos.x - npcPos.x, playerPos.y - npcPos.y);
+        if (dist <= npc->getType().talkRadius) {
+            return npc;   // return the first one found (you could also pick the closest)
+        }
+    }
+    return nullptr;
+}
+
 void NPCManager::spawnAllNPCs() {
+    Log::Scope scope("NPCManager::spawnAllNPCs");
     for (const auto& [pos, props] : Terrain::getSpawnMap()) {
         sf::Vector2f worldPos(pos.first, pos.second);
         if (props.characterKey == "Player" || props.npcTypeId == "player") {
@@ -177,6 +226,7 @@ void NPCManager::spawnAllNPCs() {
             }
         }
     }
+    scope.info << "Finished spawning all NPCs." << std::endl;
 }
 
 void NPCManager::setPlayer(Character* player) {

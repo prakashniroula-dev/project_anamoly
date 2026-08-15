@@ -37,6 +37,9 @@ public:
         return ids;
     }
 
+    void clearAll(); // clears npcStorage, npcList, npcMap, pendingAutoTalks
+    NPC* getNearestInteractable(const sf::Vector2f& playerPos) const; // new
+
 private:
     NPCManager() = default;
     std::vector<std::unique_ptr<NPC>> npcStorage;

@@ -3,7 +3,6 @@ make: Entering directory 'e:/home/main/projects/replay'
  
 mkdir -p obj/core/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/core/scale.cpp -o obj/core/scale.o
- 
 mkdir -p obj/editor/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/editor/level_editor.cpp -o obj/editor/level_editor.o
 mkdir -p obj/editor/
@@ -16,6 +15,9 @@ mkdir -p obj/editor/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/editor/spawn_editor.cpp -o obj/editor/spawn_editor.o
 mkdir -p obj/editor/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/editor/tile_editor.cpp -o obj/editor/tile_editor.o
+mkdir -p obj/editor/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/editor/waypoint_editor.cpp -o obj/editor/waypoint_editor.o
+ 
 mkdir -p obj/entities/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/entities/character.cpp -o obj/entities/character.o
 mkdir -p obj/entities/
@@ -23,11 +25,13 @@ g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/entities/npc.cpp -o ob
 mkdir -p obj/entities/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/entities/npc_manager.cpp -o obj/entities/npc_manager.o
 mkdir -p obj/entities/
-g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/entities/objects.cpp -o obj/entities/objects.o
-mkdir -p obj/entities/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/entities/player.cpp -o obj/entities/player.o
-mkdir -p obj/entities/
-g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/entities/terrain.cpp -o obj/entities/terrain.o
+mkdir -p obj/game/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/game/fps_display.cpp -o obj/game/fps_display.o
+mkdir -p obj/game/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/game/game.cpp -o obj/game/game.o
+mkdir -p obj/game/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/game/infobox.cpp -o obj/game/infobox.o
 mkdir -p obj/graphics/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/graphics/animation.cpp -o obj/graphics/animation.o
 mkdir -p obj/graphics/
@@ -40,13 +44,23 @@ mkdir -p obj/graphics/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/graphics/tiles.cpp -o obj/graphics/tiles.o
 mkdir -p obj/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/main.cpp -o obj/main.o
+mkdir -p obj/map/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/map/map_manager.cpp -o obj/map/map_manager.o
+mkdir -p obj/map/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/map/objects.cpp -o obj/map/objects.o
+mkdir -p obj/map/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/map/terrain.cpp -o obj/map/terrain.o
+mkdir -p obj/story/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/story/script_registry.cpp -o obj/story/script_registry.o
 mkdir -p obj/ui/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/dialog_screen.cpp -o obj/ui/dialog_screen.o
 mkdir -p obj/ui/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/main_menu.cpp -o obj/ui/main_menu.o
 mkdir -p obj/ui/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/transition_screen.cpp -o obj/ui/transition_screen.o
+mkdir -p obj/ui/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/ui_manager.cpp -o obj/ui/ui_manager.o
 mkdir -p bin
-g++ obj/core/scale.o obj/editor/level_editor.o obj/editor/object_editor.o obj/editor/palette.o obj/editor/solid_editor.o obj/editor/spawn_editor.o obj/editor/tile_editor.o obj/entities/character.o obj/entities/npc.o obj/entities/npc_manager.o obj/entities/objects.o obj/entities/player.o obj/entities/terrain.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/overlay.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o obj/ui/dialog_screen.o obj/ui/main_menu.o obj/ui/ui_manager.o -o bin/myapp -LSFML/lib -lsfml-graphics -lsfml-window -lsfml-system
+g++ obj/core/scale.o obj/editor/level_editor.o obj/editor/object_editor.o obj/editor/palette.o obj/editor/solid_editor.o obj/editor/spawn_editor.o obj/editor/tile_editor.o obj/editor/waypoint_editor.o obj/entities/character.o obj/entities/npc.o obj/entities/npc_manager.o obj/entities/player.o obj/game/fps_display.o obj/game/game.o obj/game/infobox.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/overlay.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o obj/map/map_manager.o obj/map/objects.o obj/map/terrain.o obj/story/script_registry.o obj/ui/dialog_screen.o obj/ui/main_menu.o obj/ui/transition_screen.o obj/ui/ui_manager.o -o bin/myapp -LSFML/lib -lsfml-graphics -lsfml-window -lsfml-system
 make: Leaving directory 'e:/home/main/projects/replay'
  

@@ -8,17 +8,22 @@
 #include <unordered_map>
 #include <string>
 #include <SFML/System/Vector2.hpp>
+#include <functional>
+#include <unordered_map>
 
 class NPC; // forward
 
 enum class ActionType {
     MoveTo,
+    MoveRelative,
     Wait,
     LockPlayer,
     UnlockPlayer,
     PlayAnimation,
     ShowDialogue,
     SwapPlayer,
+    FacePlayer,
+    JustToReload,
     CallFunction,
     EndSequence
 };
@@ -38,4 +43,10 @@ using Script = std::vector<Action>;
 namespace ScriptRegistry {
   extern std::unordered_map<std::string, Script> scripts;
   void init();
+}
+
+namespace FunctionRegistry {
+    using Function = std::function<void(NPC*)>;
+    extern std::unordered_map<std::string, Function> functions;
+    void registerFunction(const std::string& name, Function func);
 }

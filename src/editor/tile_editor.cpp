@@ -2,7 +2,7 @@
 #include <core/constants.hpp>
 #include <graphics/tiles.hpp>
 #include <core/scale.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <algorithm>
 #include <cmath>
 #include <core/tile_encoding.hpp>

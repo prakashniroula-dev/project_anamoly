@@ -3,18 +3,19 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
+#include <game/game.hpp>
 
 class MainMenu : public UIScreen {
 public:
-    MainMenu();
 
-    void onEnter() override;
-    void onExit() override;
-    bool handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
-    void update(float dt) override;
-    void draw(sf::RenderWindow& window) override;
+void onEnter() override;
+void onExit() override;
+bool handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
+void update(float dt) override;
+void draw(sf::RenderWindow& window) override;
 
-    bool blocksGameUpdate() const override { return true; }   // pause game
+MainMenu(Game::Game* gameInstance);
+bool blocksGameUpdate() const override { return true; }   // pause game
 
 private:
     enum Option {
@@ -36,4 +37,5 @@ private:
 
     void updateLayout(sf::RenderWindow& window);
     void executeSelected();
+    Game::Game* game = nullptr; // Pointer to the game instance for starting a new game
 };

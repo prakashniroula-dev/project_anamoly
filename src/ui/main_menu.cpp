@@ -3,8 +3,9 @@
 #include <debug/logs.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
+#include <ui/options_menu.hpp>
 
-MainMenu::MainMenu(): titleLine1(font), titleLine2(font) {
+MainMenu::MainMenu(Game::Game* gameInstance) : game(gameInstance), titleLine1(UIManager::get().getFont()), titleLine2(UIManager::get().getFont()) {
     labels = {"New Game", "Continue", "Options", "Quit"};
     font = UIManager::get().getFont();
 
@@ -164,11 +165,11 @@ void MainMenu::executeSelected() {
             UIManager::get().popScreen();
             break;
         case Options:
-            Log::info << "MainMenu: Options selected (not implemented).\n";
+            UIManager::get().pushScreen(std::make_unique<OptionsMenu>());
             break;
         case Quit:
             Log::info << "MainMenu: Quit selected.\n";
-            UIManager::get().popScreen();
+            game->quit();
             break;
     }
 }

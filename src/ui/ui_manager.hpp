@@ -23,7 +23,7 @@ public:
         }
     }
     sf::Font& getFont() { return m_font; } // Provide access to a shared font
-    static sf::View getUIView(sf::RenderWindow& window) {
+    static sf::View getUIView(const sf::RenderWindow& window) {
         static sf::View uiView = window.getDefaultView();
         uiView.setSize(sf::Vector2f(window.getSize()));
         uiView.setCenter(sf::Vector2f(window.getSize()) / 2.f);

@@ -1,0 +1,1466 @@
+(!warn) <Textures::load()>: multiple calls for texture key 'exclusion_zone'
+(info) <Background::Load()>: Load PowerStationDay textures...
+(info) <Background::Load()>: Load PowerStationNight textures...
+(info) <Overlay::Load()>: Load PowerStationOverlay texture...
+(info): Loading map: detective_office
+(info): Loaded 63 objects from assets/maps/detective_office\objects.txt
+(info): Loaded player spawn position from file: (460.553, 479.784)
+(info): Loaded 2 spawns from assets/maps/detective_office\spawns.txt
+(info): Loaded 1 transitions.
+(info) <Characters::Load()>: Adding Fighter_Boss animations...
+(info) <Characters::Load()>: Adding Fighter_Detective animations...
+(info): Getting character sprite for key: fighter_detective
+(info): Getting character sprite for key: fighter_detective
+(info): Getting character sprite for key: fighter_boss
+(info): Getting character sprite for key: fighter_detective
+(info): Getting character sprite for key: fighter_boss
+(info): Getting character sprite for key: fighter_detective
+(info): Getting character sprite for key: fighter_detective
+(info): Getting character sprite for key: fighter_detective
+(info): MainMenu: Starting new game.
+(info) <MapManager::spawnNPCs>: Spawning NPCs for map: detective_office
+(info) <NPCManager::createNPC>: Setting waypoints for NPC generic_guard_0
+(info) <NPCManager::spawnAllNPCs>: Finished spawning all NPCs.
+(info): Game started, NPCs spawned.
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): DialogScreen onEnter() for NPC!
+(info): Exiting DialogScreen for NPC!
+(info): NPC dialogue ended for NPC
+(info): Reached waypoint, waiting 2s before moving to index 2
+(info): Resuming patrol to waypoint 2 at (304.851, 563.2)
+(info): Switching from detective_office to default
+(info): TransitionScreen: onEnter() called. fadeDuration=1
+(info): TransitionScreen: update() called. dt=0.008559, state=0, timer=0, currentAlpha=0
+(info): TransitionScreen: update() called. dt=0.01004, state=0, timer=0.008559, currentAlpha=4.36509
+(info): TransitionScreen: update() called. dt=0.009094, state=0, timer=0.018599, currentAlpha=9.48549
+(info): TransitionScreen: update() called. dt=0.010501, state=0, timer=0.027693, currentAlpha=14.1234
+(info): TransitionScreen: update() called. dt=0.007901, state=0, timer=0.038194, currentAlpha=19.4789
+(info): TransitionScreen: update() called. dt=0.008947, state=0, timer=0.046095, currentAlpha=23.5084
+(info): TransitionScreen: update() called. dt=0.007451, state=0, timer=0.055042, currentAlpha=28.0714
+(info): TransitionScreen: update() called. dt=0.013333, state=0, timer=0.062493, currentAlpha=31.8714
+(info): TransitionScreen: update() called. dt=0.009779, state=0, timer=0.075826, currentAlpha=38.6713
+(info): TransitionScreen: update() called. dt=0.007529, state=0, timer=0.085605, currentAlpha=43.6586
+(info): TransitionScreen: update() called. dt=0.009142, state=0, timer=0.093134, currentAlpha=47.4983
+(info): TransitionScreen: update() called. dt=0.007558, state=0, timer=0.102276, currentAlpha=52.1608
+(info): TransitionScreen: update() called. dt=0.009392, state=0, timer=0.109834, currentAlpha=56.0153
+(info): TransitionScreen: update() called. dt=0.009614, state=0, timer=0.119226, currentAlpha=60.8053
+(info): TransitionScreen: update() called. dt=0.010231, state=0, timer=0.12884, currentAlpha=65.7084
+(info): TransitionScreen: update() called. dt=0.010684, state=0, timer=0.139071, currentAlpha=70.9262
+(info): TransitionScreen: update() called. dt=0.008392, state=0, timer=0.149755, currentAlpha=76.3751
+(info): TransitionScreen: update() called. dt=0.01049, state=0, timer=0.158147, currentAlpha=80.655
+(info): TransitionScreen: update() called. dt=0.011121, state=0, timer=0.168637, currentAlpha=86.0049
+(info): TransitionScreen: update() called. dt=0.008421, state=0, timer=0.179758, currentAlpha=91.6766
+(info): TransitionScreen: update() called. dt=0.009302, state=0, timer=0.188179, currentAlpha=95.9713
+(info): TransitionScreen: update() called. dt=0.008236, state=0, timer=0.197481, currentAlpha=100.715
+(info): TransitionScreen: update() called. dt=0.008052, state=0, timer=0.205717, currentAlpha=104.916
+(info): TransitionScreen: update() called. dt=0.007979, state=0, timer=0.213769, currentAlpha=109.022
+(info): TransitionScreen: update() called. dt=0.011905, state=0, timer=0.221748, currentAlpha=113.091
+(info): TransitionScreen: update() called. dt=0.008409, state=0, timer=0.233653, currentAlpha=119.163
+(info): TransitionScreen: update() called. dt=0.008679, state=0, timer=0.242062, currentAlpha=123.452
+(info): TransitionScreen: update() called. dt=0.009925, state=0, timer=0.250741, currentAlpha=127.878
+(info): TransitionScreen: update() called. dt=0.013214, state=0, timer=0.260666, currentAlpha=132.94
+(info): TransitionScreen: update() called. dt=0.009341, state=0, timer=0.27388, currentAlpha=139.679
+(info): TransitionScreen: update() called. dt=0.009727, state=0, timer=0.283221, currentAlpha=144.443
+(info): TransitionScreen: update() called. dt=0.010398, state=0, timer=0.292948, currentAlpha=149.404
+(info): TransitionScreen: update() called. dt=0.011448, state=0, timer=0.303346, currentAlpha=154.706
+(info): TransitionScreen: update() called. dt=0.014144, state=0, timer=0.314794, currentAlpha=160.545
+(info): TransitionScreen: update() called. dt=0.01268, state=0, timer=0.328938, currentAlpha=167.758
+(info): TransitionScreen: update() called. dt=0.009293, state=0, timer=0.341618, currentAlpha=174.225
+(info): TransitionScreen: update() called. dt=0.007634, state=0, timer=0.350911, currentAlpha=178.965
+(info): TransitionScreen: update() called. dt=0.010785, state=0, timer=0.358545, currentAlpha=182.858
+(info): TransitionScreen: update() called. dt=0.008275, state=0, timer=0.36933, currentAlpha=188.358
+(info): TransitionScreen: update() called. dt=0.013296, state=0, timer=0.377605, currentAlpha=192.579
+(info): TransitionScreen: update() called. dt=0.009508, state=0, timer=0.390901, currentAlpha=199.36
+(info): TransitionScreen: update() called. dt=0.012844, state=0, timer=0.400409, currentAlpha=204.209
+(info): TransitionScreen: update() called. dt=0.010702, state=0, timer=0.413253, currentAlpha=210.759
+(info): TransitionScreen: update() called. dt=0.011622, state=0, timer=0.423955, currentAlpha=216.217
+(info): TransitionScreen: update() called. dt=0.011979, state=0, timer=0.435577, currentAlpha=222.144
+(info): TransitionScreen: update() called. dt=0.008267, state=0, timer=0.447556, currentAlpha=228.254
+(info): TransitionScreen: update() called. dt=0.011988, state=0, timer=0.455823, currentAlpha=232.47
+(info): TransitionScreen: update() called. dt=0.008892, state=0, timer=0.467811, currentAlpha=238.584
+(info): TransitionScreen: update() called. dt=0.008961, state=0, timer=0.476703, currentAlpha=243.119
+(info): TransitionScreen: update() called. dt=0.00944, state=0, timer=0.485664, currentAlpha=247.689
+(info): TransitionScreen: update() called. dt=0.009123, state=0, timer=0.495104, currentAlpha=252.503
+(info): TransitionScreen: action called for map switch to default
+(info): Loading map: default
+(info): Loaded 54 objects from assets/maps/default\objects.txt
+(info): Loaded player spawn position from file: (379.432, 480.689)
+(info): Loaded 3 spawns from assets/maps/default\spawns.txt
+(info): Loaded 1 transitions.
+(info) <MapManager::spawnNPCs>: Spawning NPCs for map: default
+(info): Try to execute action 0 of 9
+(info): Executing action 0: type=3
+(info): Try to execute action 1 of 9
+(info): Executing action 1: type=8
+(info): Try to execute action 2 of 9
+(info): Executing action 2: type=2
+(info): Waiting for 0.5 seconds.
+(info): Action sequence done for NPC guard_cutscene_1 with 9 actions.
+(info) <NPCManager::createNPC>: Finished running script 'guard_cutscene' for NPC guard_cutscene_1
+(info) <NPCManager::spawnAllNPCs>: Finished spawning all NPCs.
+(info): Player reset to map default spawn.
+(info): continueTransition() called after map switch.
+(info): TransitionScreen: continueTransition() called.
+(info): TransitionScreen: state=2, timer=0
+(info): TransitionScreen: update() called. dt=0.008761, state=2, timer=0, currentAlpha=255
+(info): TransitionScreen: update() called. dt=0.005501, state=2, timer=0.008761, currentAlpha=250.532
+(info): TransitionScreen: update() called. dt=0.004582, state=2, timer=0.014262, currentAlpha=247.726
+(info): TransitionScreen: update() called. dt=0.005145, state=2, timer=0.018844, currentAlpha=245.39
+(info): TransitionScreen: update() called. dt=0.007065, state=2, timer=0.023989, currentAlpha=242.766
+(info): TransitionScreen: update() called. dt=0.005593, state=2, timer=0.031054, currentAlpha=239.162
+(info): TransitionScreen: update() called. dt=0.006085, state=2, timer=0.036647, currentAlpha=236.31
+(info): TransitionScreen: update() called. dt=0.006865, state=2, timer=0.042732, currentAlpha=233.207
+(info): TransitionScreen: update() called. dt=0.005997, state=2, timer=0.049597, currentAlpha=229.706
+(info): TransitionScreen: update() called. dt=0.007109, state=2, timer=0.055594, currentAlpha=226.647
+(info): TransitionScreen: update() called. dt=0.006169, state=2, timer=0.062703, currentAlpha=223.021
+(info): TransitionScreen: update() called. dt=0.006167, state=2, timer=0.068872, currentAlpha=219.875
+(info): TransitionScreen: update() called. dt=0.007529, state=2, timer=0.075039, currentAlpha=216.73
+(info): TransitionScreen: update() called. dt=0.006208, state=2, timer=0.082568, currentAlpha=212.89
+(info): TransitionScreen: update() called. dt=0.007027, state=2, timer=0.088776, currentAlpha=209.724
+(info): TransitionScreen: update() called. dt=0.006245, state=2, timer=0.095803, currentAlpha=206.14
+(info): TransitionScreen: update() called. dt=0.006101, state=2, timer=0.102048, currentAlpha=202.956
+(info): TransitionScreen: update() called. dt=0.006745, state=2, timer=0.108149, currentAlpha=199.844
+(info): TransitionScreen: update() called. dt=0.005233, state=2, timer=0.114894, currentAlpha=196.404
+(info): TransitionScreen: update() called. dt=0.005326, state=2, timer=0.120127, currentAlpha=193.735
+(info): TransitionScreen: update() called. dt=0.006039, state=2, timer=0.125453, currentAlpha=191.019
+(info): TransitionScreen: update() called. dt=0.005331, state=2, timer=0.131492, currentAlpha=187.939
+(info): TransitionScreen: update() called. dt=0.005308, state=2, timer=0.136823, currentAlpha=185.22
+(info): TransitionScreen: update() called. dt=0.006001, state=2, timer=0.142131, currentAlpha=182.513
+(info): TransitionScreen: update() called. dt=0.005358, state=2, timer=0.148132, currentAlpha=179.453
+(info): TransitionScreen: update() called. dt=0.005248, state=2, timer=0.15349, currentAlpha=176.72
+(info): TransitionScreen: update() called. dt=0.006053, state=2, timer=0.158738, currentAlpha=174.044
+(info): TransitionScreen: update() called. dt=0.00532, state=2, timer=0.164791, currentAlpha=170.957
+(info): TransitionScreen: update() called. dt=0.005356, state=2, timer=0.170111, currentAlpha=168.243
+(info): TransitionScreen: update() called. dt=0.006022, state=2, timer=0.175467, currentAlpha=165.512
+(info): TransitionScreen: update() called. dt=0.005262, state=2, timer=0.181489, currentAlpha=162.441
+(info): TransitionScreen: update() called. dt=0.005279, state=2, timer=0.186751, currentAlpha=159.757
+(info): TransitionScreen: update() called. dt=0.006014, state=2, timer=0.19203, currentAlpha=157.065
+(info): TransitionScreen: update() called. dt=0.004668, state=2, timer=0.198044, currentAlpha=153.998
+(info): TransitionScreen: update() called. dt=0.004678, state=2, timer=0.202712, currentAlpha=151.617
+(info): TransitionScreen: update() called. dt=0.006452, state=2, timer=0.20739, currentAlpha=149.231
+(info): TransitionScreen: update() called. dt=0.004445, state=2, timer=0.213842, currentAlpha=145.941
+(info): TransitionScreen: update() called. dt=0.004476, state=2, timer=0.218287, currentAlpha=143.674
+(info): TransitionScreen: update() called. dt=0.005883, state=2, timer=0.222763, currentAlpha=141.391
+(info): TransitionScreen: update() called. dt=0.004917, state=2, timer=0.228646, currentAlpha=138.391
+(info): TransitionScreen: update() called. dt=0.005644, state=2, timer=0.233563, currentAlpha=135.883
+(info): TransitionScreen: update() called. dt=0.004492, state=2, timer=0.239207, currentAlpha=133.004
+(info): TransitionScreen: update() called. dt=0.004723, state=2, timer=0.243699, currentAlpha=130.714
+(info): TransitionScreen: update() called. dt=0.004378, state=2, timer=0.248422, currentAlpha=128.305
+(info): TransitionScreen: update() called. dt=0.006276, state=2, timer=0.2528, currentAlpha=126.072
+(info): TransitionScreen: update() called. dt=0.004668, state=2, timer=0.259076, currentAlpha=122.871
+(info): TransitionScreen: update() called. dt=0.005518, state=2, timer=0.263744, currentAlpha=120.491
+(info): TransitionScreen: update() called. dt=0.00438, state=2, timer=0.269262, currentAlpha=117.676
+(info): TransitionScreen: update() called. dt=0.004831, state=2, timer=0.273642, currentAlpha=115.443
+(info): TransitionScreen: update() called. dt=0.005022, state=2, timer=0.278473, currentAlpha=112.979
+(info): TransitionScreen: update() called. dt=0.004582, state=2, timer=0.283495, currentAlpha=110.418
+(info): TransitionScreen: update() called. dt=0.004826, state=2, timer=0.288077, currentAlpha=108.081
+(info): TransitionScreen: update() called. dt=0.004948, state=2, timer=0.292903, currentAlpha=105.62
+(info): TransitionScreen: update() called. dt=0.004592, state=2, timer=0.297851, currentAlpha=103.096
+(info): TransitionScreen: update() called. dt=0.004549, state=2, timer=0.302443, currentAlpha=100.754
+(info): TransitionScreen: update() called. dt=0.005277, state=2, timer=0.306992, currentAlpha=98.4341
+(info): TransitionScreen: update() called. dt=0.004757, state=2, timer=0.312269, currentAlpha=95.7429
+(info): TransitionScreen: update() called. dt=0.004553, state=2, timer=0.317026, currentAlpha=93.3168
+(info): TransitionScreen: update() called. dt=0.005004, state=2, timer=0.321579, currentAlpha=90.9948
+(info): TransitionScreen: update() called. dt=0.004687, state=2, timer=0.326583, currentAlpha=88.4427
+(info): TransitionScreen: update() called. dt=0.004535, state=2, timer=0.33127, currentAlpha=86.0524
+(info): TransitionScreen: update() called. dt=0.004278, state=2, timer=0.335805, currentAlpha=83.7395
+(info): TransitionScreen: update() called. dt=0.004726, state=2, timer=0.340083, currentAlpha=81.5577
+(info): TransitionScreen: update() called. dt=0.0045, state=2, timer=0.344809, currentAlpha=79.1475
+(info): TransitionScreen: update() called. dt=0.004294, state=2, timer=0.349309, currentAlpha=76.8525
+(info): TransitionScreen: update() called. dt=0.004323, state=2, timer=0.353603, currentAlpha=74.6625
+(info): TransitionScreen: update() called. dt=0.004825, state=2, timer=0.357926, currentAlpha=72.4578
+(info): TransitionScreen: update() called. dt=0.004668, state=2, timer=0.362751, currentAlpha=69.997
+(info): TransitionScreen: update() called. dt=0.004414, state=2, timer=0.367419, currentAlpha=67.6164
+(info): TransitionScreen: update() called. dt=0.004772, state=2, timer=0.371833, currentAlpha=65.3652
+(info): TransitionScreen: update() called. dt=0.00508, state=2, timer=0.376605, currentAlpha=62.9315
+(info): TransitionScreen: update() called. dt=0.004557, state=2, timer=0.381685, currentAlpha=60.3407
+(info): TransitionScreen: update() called. dt=0.00434, state=2, timer=0.386242, currentAlpha=58.0166
+(info): TransitionScreen: update() called. dt=0.006237, state=2, timer=0.390582, currentAlpha=55.8032
+(info): TransitionScreen: update() called. dt=0.004447, state=2, timer=0.396819, currentAlpha=52.6224
+(info): TransitionScreen: update() called. dt=0.004381, state=2, timer=0.401266, currentAlpha=50.3544
+(info): TransitionScreen: update() called. dt=0.005113, state=2, timer=0.405647, currentAlpha=48.1201
+(info): TransitionScreen: update() called. dt=0.004803, state=2, timer=0.41076, currentAlpha=45.5124
+(info): TransitionScreen: update() called. dt=0.004524, state=2, timer=0.415563, currentAlpha=43.0629
+(info): TransitionScreen: update() called. dt=0.004515, state=2, timer=0.420087, currentAlpha=40.7557
+(info): TransitionScreen: update() called. dt=0.005996, state=2, timer=0.424602, currentAlpha=38.453
+(info): TransitionScreen: update() called. dt=0.00457, state=2, timer=0.430598, currentAlpha=35.3951
+(info): TransitionScreen: update() called. dt=0.004505, state=2, timer=0.435168, currentAlpha=33.0644
+(info): TransitionScreen: update() called. dt=0.005865, state=2, timer=0.439673, currentAlpha=30.7668
+(info): TransitionScreen: update() called. dt=0.004657, state=2, timer=0.445538, currentAlpha=27.7757
+(info): TransitionScreen: update() called. dt=0.004631, state=2, timer=0.450195, currentAlpha=25.4006
+(info): TransitionScreen: update() called. dt=0.005108, state=2, timer=0.454826, currentAlpha=23.0388
+(info): TransitionScreen: update() called. dt=0.004944, state=2, timer=0.459934, currentAlpha=20.4337
+(info): TransitionScreen: update() called. dt=0.004531, state=2, timer=0.464878, currentAlpha=17.9123
+(info): TransitionScreen: update() called. dt=0.004752, state=2, timer=0.469409, currentAlpha=15.6014
+(info): TransitionScreen: update() called. dt=0.00594, state=2, timer=0.474161, currentAlpha=13.1779
+(info): TransitionScreen: update() called. dt=0.004402, state=2, timer=0.480101, currentAlpha=10.1485
+(info): TransitionScreen: update() called. dt=0.004507, state=2, timer=0.484503, currentAlpha=7.9035
+(info): TransitionScreen: update() called. dt=0.005751, state=2, timer=0.48901, currentAlpha=5.60493
+(info): TransitionScreen: update() called. dt=0.004865, state=2, timer=0.494761, currentAlpha=2.67191
+(info): TransitionScreen: update() called. dt=0.004752, state=2, timer=0.499626, currentAlpha=0.190765
+(info): TransitionScreen: transition done, popping screen.
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): Try to execute action 3 of 9
+(info): Executing action 3: type=1
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): Try to execute action 4 of 9
+(info): Executing action 4: type=6
+(info): DialogScreen onEnter() for NPC!
+(info): Exiting DialogScreen for NPC!
+(info): NPC dialogue ended for NPC
+(info): Try to execute action 5 of 9
+(info): Executing action 5: type=10
+(info): Calling function: guardShoot
+(info): guardShoot() called for NPC at (915, 915)
+(info): NPC shooting at position: (488, 488)
+(info): State: 0, Moving: 0
+(info): Try to execute action 6 of 9
+(info): Executing action 6: type=2
+(info): Waiting for 0.5 seconds.
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): Try to execute action 7 of 9
+(info): Executing action 7: type=4
+(info): Try to execute action 8 of 9
+(info): Executing action 8: type=11
+(info): DialogScreen onEnter() for NPC!
+(info): Exiting DialogScreen for NPC!
+(info): NPC dialogue ended for NPC
+(info): DialogScreen onEnter() for NPC!
+(info): Exiting DialogScreen for NPC!
+(info): NPC dialogue ended for NPC
+(info): Switching from default to detective_office
+(info): TransitionScreen: onEnter() called. fadeDuration=1
+(info): TransitionScreen: update() called. dt=0.00971, state=0, timer=0, currentAlpha=0
+(info): TransitionScreen: update() called. dt=0.007049, state=0, timer=0.00971, currentAlpha=4.9521
+(info): TransitionScreen: update() called. dt=0.005227, state=0, timer=0.016759, currentAlpha=8.54709
+(info): TransitionScreen: update() called. dt=0.004962, state=0, timer=0.021986, currentAlpha=11.2129
+(info): TransitionScreen: update() called. dt=0.007379, state=0, timer=0.026948, currentAlpha=13.7435
+(info): TransitionScreen: update() called. dt=0.007527, state=0, timer=0.034327, currentAlpha=17.5068
+(info): TransitionScreen: update() called. dt=0.005756, state=0, timer=0.041854, currentAlpha=21.3455
+(info): TransitionScreen: update() called. dt=0.006314, state=0, timer=0.04761, currentAlpha=24.2811
+(info): TransitionScreen: update() called. dt=0.005488, state=0, timer=0.053924, currentAlpha=27.5012
+(info): TransitionScreen: update() called. dt=0.007561, state=0, timer=0.059412, currentAlpha=30.3001
+(info): TransitionScreen: update() called. dt=0.004956, state=0, timer=0.066973, currentAlpha=34.1562
+(info): TransitionScreen: update() called. dt=0.005206, state=0, timer=0.071929, currentAlpha=36.6838
+(info): TransitionScreen: update() called. dt=0.00626, state=0, timer=0.077135, currentAlpha=39.3388
+(info): TransitionScreen: update() called. dt=0.007963, state=0, timer=0.083395, currentAlpha=42.5314
+(info): TransitionScreen: update() called. dt=0.005713, state=0, timer=0.091358, currentAlpha=46.5926
+(info): TransitionScreen: update() called. dt=0.009238, state=0, timer=0.097071, currentAlpha=49.5062
+(info): TransitionScreen: update() called. dt=0.008223, state=0, timer=0.106309, currentAlpha=54.2176
+(info): TransitionScreen: update() called. dt=0.005912, state=0, timer=0.114532, currentAlpha=58.4113
+(info): TransitionScreen: update() called. dt=0.006081, state=0, timer=0.120444, currentAlpha=61.4264
+(info): TransitionScreen: update() called. dt=0.009791, state=0, timer=0.126525, currentAlpha=64.5277
+(info): TransitionScreen: update() called. dt=0.006664, state=0, timer=0.136316, currentAlpha=69.5212
+(info): TransitionScreen: update() called. dt=0.006351, state=0, timer=0.14298, currentAlpha=72.9198
+(info): TransitionScreen: update() called. dt=0.005302, state=0, timer=0.149331, currentAlpha=76.1588
+(info): TransitionScreen: update() called. dt=0.005473, state=0, timer=0.154633, currentAlpha=78.8628
+(info): TransitionScreen: update() called. dt=0.006691, state=0, timer=0.160106, currentAlpha=81.654
+(info): TransitionScreen: update() called. dt=0.006876, state=0, timer=0.166797, currentAlpha=85.0665
+(info): TransitionScreen: update() called. dt=0.004899, state=0, timer=0.173673, currentAlpha=88.5732
+(info): TransitionScreen: update() called. dt=0.006938, state=0, timer=0.178572, currentAlpha=91.0717
+(info): TransitionScreen: update() called. dt=0.007421, state=0, timer=0.18551, currentAlpha=94.6101
+(info): TransitionScreen: update() called. dt=0.005852, state=0, timer=0.192931, currentAlpha=98.3948
+(info): TransitionScreen: update() called. dt=0.007977, state=0, timer=0.198783, currentAlpha=101.379
+(info): TransitionScreen: update() called. dt=0.005397, state=0, timer=0.20676, currentAlpha=105.448
+(info): TransitionScreen: update() called. dt=0.006352, state=0, timer=0.212157, currentAlpha=108.2
+(info): TransitionScreen: update() called. dt=0.006879, state=0, timer=0.218509, currentAlpha=111.44
+(info): TransitionScreen: update() called. dt=0.005534, state=0, timer=0.225388, currentAlpha=114.948
+(info): TransitionScreen: update() called. dt=0.007015, state=0, timer=0.230922, currentAlpha=117.77
+(info): TransitionScreen: update() called. dt=0.005066, state=0, timer=0.237937, currentAlpha=121.348
+(info): TransitionScreen: update() called. dt=0.00584, state=0, timer=0.243003, currentAlpha=123.932
+(info): TransitionScreen: update() called. dt=0.008487, state=0, timer=0.248843, currentAlpha=126.91
+(info): TransitionScreen: update() called. dt=0.005281, state=0, timer=0.25733, currentAlpha=131.238
+(info): TransitionScreen: update() called. dt=0.007415, state=0, timer=0.262611, currentAlpha=133.932
+(info): TransitionScreen: update() called. dt=0.008257, state=0, timer=0.270026, currentAlpha=137.713
+(info): TransitionScreen: update() called. dt=0.008455, state=0, timer=0.278283, currentAlpha=141.924
+(info): TransitionScreen: update() called. dt=0.004731, state=0, timer=0.286738, currentAlpha=146.236
+(info): TransitionScreen: update() called. dt=0.005541, state=0, timer=0.291469, currentAlpha=148.649
+(info): TransitionScreen: update() called. dt=0.006411, state=0, timer=0.29701, currentAlpha=151.475
+(info): TransitionScreen: update() called. dt=0.005111, state=0, timer=0.303421, currentAlpha=154.745
+(info): TransitionScreen: update() called. dt=0.005726, state=0, timer=0.308532, currentAlpha=157.351
+(info): TransitionScreen: update() called. dt=0.007892, state=0, timer=0.314258, currentAlpha=160.272
+(info): TransitionScreen: update() called. dt=0.005573, state=0, timer=0.32215, currentAlpha=164.296
+(info): TransitionScreen: update() called. dt=0.007795, state=0, timer=0.327723, currentAlpha=167.139
+(info): TransitionScreen: update() called. dt=0.0056, state=0, timer=0.335518, currentAlpha=171.114
+(info): TransitionScreen: update() called. dt=0.005661, state=0, timer=0.341118, currentAlpha=173.97
+(info): TransitionScreen: update() called. dt=0.007898, state=0, timer=0.346779, currentAlpha=176.857
+(info): TransitionScreen: update() called. dt=0.005728, state=0, timer=0.354677, currentAlpha=180.885
+(info): TransitionScreen: update() called. dt=0.007662, state=0, timer=0.360405, currentAlpha=183.807
+(info): TransitionScreen: update() called. dt=0.005713, state=0, timer=0.368067, currentAlpha=187.714
+(info): TransitionScreen: update() called. dt=0.00569, state=0, timer=0.37378, currentAlpha=190.628
+(info): TransitionScreen: update() called. dt=0.007846, state=0, timer=0.37947, currentAlpha=193.53
+(info): TransitionScreen: update() called. dt=0.005758, state=0, timer=0.387316, currentAlpha=197.531
+(info): TransitionScreen: update() called. dt=0.006444, state=0, timer=0.393074, currentAlpha=200.468
+(info): TransitionScreen: update() called. dt=0.006993, state=0, timer=0.399518, currentAlpha=203.754
+(info): TransitionScreen: update() called. dt=0.005722, state=0, timer=0.406511, currentAlpha=207.321
+(info): TransitionScreen: update() called. dt=0.007927, state=0, timer=0.412233, currentAlpha=210.239
+(info): TransitionScreen: update() called. dt=0.00563, state=0, timer=0.42016, currentAlpha=214.282
+(info): TransitionScreen: update() called. dt=0.006274, state=0, timer=0.42579, currentAlpha=217.153
+(info): TransitionScreen: update() called. dt=0.007308, state=0, timer=0.432064, currentAlpha=220.353
+(info): TransitionScreen: update() called. dt=0.00569, state=0, timer=0.439372, currentAlpha=224.08
+(info): TransitionScreen: update() called. dt=0.007897, state=0, timer=0.445062, currentAlpha=226.982
+(info): TransitionScreen: update() called. dt=0.005748, state=0, timer=0.452959, currentAlpha=231.009
+(info): TransitionScreen: update() called. dt=0.005747, state=0, timer=0.458707, currentAlpha=233.941
+(info): TransitionScreen: update() called. dt=0.007752, state=0, timer=0.464454, currentAlpha=236.872
+(info): TransitionScreen: update() called. dt=0.00572, state=0, timer=0.472206, currentAlpha=240.825
+(info): TransitionScreen: update() called. dt=0.007967, state=0, timer=0.477926, currentAlpha=243.742
+(info): TransitionScreen: update() called. dt=0.005654, state=0, timer=0.485893, currentAlpha=247.805
+(info): TransitionScreen: update() called. dt=0.005884, state=0, timer=0.491547, currentAlpha=250.689
+(info): TransitionScreen: update() called. dt=0.007612, state=0, timer=0.497431, currentAlpha=253.69
+(info): TransitionScreen: action called for map switch to detective_office
+(info): Loading map: detective_office
+(info): Loaded 63 objects from assets/maps/detective_office\objects.txt
+(info): Loaded player spawn position from file: (460.553, 479.784)
+(info): Loaded 2 spawns from assets/maps/detective_office\spawns.txt
+(info): Loaded 1 transitions.
+(info) <MapManager::spawnNPCs>: Spawning NPCs for map: detective_office
+(info) <NPCManager::createNPC>: Setting waypoints for NPC generic_guard_0
+(info) <NPCManager::spawnAllNPCs>: Finished spawning all NPCs.
+(info): Player placed at custom spawn (581, 480)
+(info): continueTransition() called after map switch.
+(info): TransitionScreen: continueTransition() called.
+(info): TransitionScreen: state=2, timer=0
+(info): TransitionScreen: update() called. dt=0.012617, state=2, timer=0, currentAlpha=255
+(info): TransitionScreen: update() called. dt=0.007612, state=2, timer=0.012617, currentAlpha=248.565
+(info): TransitionScreen: update() called. dt=0.008291, state=2, timer=0.020229, currentAlpha=244.683
+(info): TransitionScreen: update() called. dt=0.007419, state=2, timer=0.02852, currentAlpha=240.455
+(info): TransitionScreen: update() called. dt=0.010731, state=2, timer=0.035939, currentAlpha=236.671
+(info): TransitionScreen: update() called. dt=0.007385, state=2, timer=0.04667, currentAlpha=231.198
+(info): TransitionScreen: update() called. dt=0.009409, state=2, timer=0.054055, currentAlpha=227.432
+(info): TransitionScreen: update() called. dt=0.00737, state=2, timer=0.063464, currentAlpha=222.633
+(info): TransitionScreen: update() called. dt=0.00865, state=2, timer=0.070834, currentAlpha=218.875
+(info): TransitionScreen: update() called. dt=0.007426, state=2, timer=0.079484, currentAlpha=214.463
+(info): TransitionScreen: update() called. dt=0.008013, state=2, timer=0.08691, currentAlpha=210.676
+(info): TransitionScreen: update() called. dt=0.007509, state=2, timer=0.094923, currentAlpha=206.589
+(info): TransitionScreen: update() called. dt=0.010504, state=2, timer=0.102432, currentAlpha=202.76
+(info): TransitionScreen: update() called. dt=0.00767, state=2, timer=0.112936, currentAlpha=197.403
+(info): TransitionScreen: update() called. dt=0.009143, state=2, timer=0.120606, currentAlpha=193.491
+(info): TransitionScreen: update() called. dt=0.007451, state=2, timer=0.129749, currentAlpha=188.828
+(info): TransitionScreen: update() called. dt=0.010448, state=2, timer=0.1372, currentAlpha=185.028
+(info): TransitionScreen: update() called. dt=0.007671, state=2, timer=0.147648, currentAlpha=179.7
+(info): TransitionScreen: update() called. dt=0.009863, state=2, timer=0.155319, currentAlpha=175.787
+(info): TransitionScreen: update() called. dt=0.007753, state=2, timer=0.165182, currentAlpha=170.757
+(info): TransitionScreen: update() called. dt=0.009694, state=2, timer=0.172935, currentAlpha=166.803
+(info): TransitionScreen: update() called. dt=0.007992, state=2, timer=0.182629, currentAlpha=161.859
+(info): TransitionScreen: update() called. dt=0.010006, state=2, timer=0.190621, currentAlpha=157.783
+(info): TransitionScreen: update() called. dt=0.007651, state=2, timer=0.200627, currentAlpha=152.68
+(info): TransitionScreen: update() called. dt=0.008068, state=2, timer=0.208278, currentAlpha=148.778
+(info): TransitionScreen: update() called. dt=0.012128, state=2, timer=0.216346, currentAlpha=144.664
+(info): TransitionScreen: update() called. dt=0.008297, state=2, timer=0.228474, currentAlpha=138.478
+(info): TransitionScreen: update() called. dt=0.008214, state=2, timer=0.236771, currentAlpha=134.247
+(info): TransitionScreen: update() called. dt=0.007528, state=2, timer=0.244985, currentAlpha=130.058
+(info): TransitionScreen: update() called. dt=0.009709, state=2, timer=0.252513, currentAlpha=126.218
+(info): TransitionScreen: update() called. dt=0.007374, state=2, timer=0.262222, currentAlpha=121.267
+(info): TransitionScreen: update() called. dt=0.010701, state=2, timer=0.269596, currentAlpha=117.506
+(info): TransitionScreen: update() called. dt=0.007349, state=2, timer=0.280297, currentAlpha=112.049
+(info): TransitionScreen: update() called. dt=0.009448, state=2, timer=0.287646, currentAlpha=108.301
+(info): TransitionScreen: update() called. dt=0.007362, state=2, timer=0.297094, currentAlpha=103.482
+(info): TransitionScreen: update() called. dt=0.008495, state=2, timer=0.304456, currentAlpha=99.7275
+(info): TransitionScreen: update() called. dt=0.007555, state=2, timer=0.312951, currentAlpha=95.395
+(info): TransitionScreen: update() called. dt=0.009045, state=2, timer=0.320506, currentAlpha=91.542
+(info): TransitionScreen: update() called. dt=0.007484, state=2, timer=0.329551, currentAlpha=86.929
+(info): TransitionScreen: update() called. dt=0.008772, state=2, timer=0.337035, currentAlpha=83.1122
+(info): TransitionScreen: update() called. dt=0.007321, state=2, timer=0.345807, currentAlpha=78.6385
+(info): TransitionScreen: update() called. dt=0.008269, state=2, timer=0.353128, currentAlpha=74.9047
+(info): TransitionScreen: update() called. dt=0.007454, state=2, timer=0.361397, currentAlpha=70.6875
+(info): TransitionScreen: update() called. dt=0.009574, state=2, timer=0.368851, currentAlpha=66.886
+(info): TransitionScreen: update() called. dt=0.007616, state=2, timer=0.378425, currentAlpha=62.0033
+(info): TransitionScreen: update() called. dt=0.00864, state=2, timer=0.386041, currentAlpha=58.1191
+(info): TransitionScreen: update() called. dt=0.007591, state=2, timer=0.394681, currentAlpha=53.7127
+(info): TransitionScreen: update() called. dt=0.008714, state=2, timer=0.402272, currentAlpha=49.8413
+(info): TransitionScreen: update() called. dt=0.007618, state=2, timer=0.410986, currentAlpha=45.3972
+(info): TransitionScreen: update() called. dt=0.008763, state=2, timer=0.418604, currentAlpha=41.512
+(info): TransitionScreen: update() called. dt=0.007691, state=2, timer=0.427367, currentAlpha=37.0428
+(info): TransitionScreen: update() called. dt=0.009388, state=2, timer=0.435058, currentAlpha=33.1204
+(info): TransitionScreen: update() called. dt=0.008492, state=2, timer=0.444446, currentAlpha=28.3326
+(info): TransitionScreen: update() called. dt=0.009776, state=2, timer=0.452938, currentAlpha=24.0016
+(info): TransitionScreen: update() called. dt=0.008042, state=2, timer=0.462714, currentAlpha=19.0159
+(info): TransitionScreen: update() called. dt=0.008286, state=2, timer=0.470756, currentAlpha=14.9145
+(info): TransitionScreen: update() called. dt=0.007801, state=2, timer=0.479042, currentAlpha=10.6886
+(info): TransitionScreen: update() called. dt=0.009357, state=2, timer=0.486843, currentAlpha=6.71009
+(info): TransitionScreen: update() called. dt=0.007484, state=2, timer=0.4962, currentAlpha=1.93802
+(info): TransitionScreen: transition done, popping screen.
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): Reached waypoint, waiting 2s before moving to index 2
+(info): Resuming patrol to waypoint 2 at (304.851, 563.2)
+(info): Reached waypoint, waiting 2s before moving to index 3
+(info): Resuming patrol to waypoint 3 at (594.984, 561.067)
+(info): DialogScreen onEnter() for NPC!
+(info): Skipping invalid dialogue line at index 1, moving to nextIndex 2
+(info): Skipping invalid dialogue line at index 0, moving to nextIndex 1
+(info): Exiting DialogScreen for NPC!
+(info): NPC dialogue ended for NPC
+(info): DialogScreen onEnter() for NPC!
+(info): Skipping invalid dialogue line at index 1, moving to nextIndex 2
+(info): Skipping invalid dialogue line at index 0, moving to nextIndex 1
+(info): Exiting DialogScreen for NPC!
+(info): NPC dialogue ended for NPC
+(info): Reached waypoint, waiting 2s before moving to index 0
+(info): Resuming patrol to waypoint 0 at (101.867, 571.2)
+(info): Switching from detective_office to default
+(info): TransitionScreen: onEnter() called. fadeDuration=1
+(info): TransitionScreen: update() called. dt=0.014347, state=0, timer=0, currentAlpha=0
+(info): TransitionScreen: update() called. dt=0.015722, state=0, timer=0.014347, currentAlpha=7.31697
+(info): TransitionScreen: update() called. dt=0.009158, state=0, timer=0.030069, currentAlpha=15.3352
+(info): TransitionScreen: update() called. dt=0.017853, state=0, timer=0.039227, currentAlpha=20.0058
+(info): TransitionScreen: update() called. dt=0.009317, state=0, timer=0.05708, currentAlpha=29.1108
+(info): TransitionScreen: update() called. dt=0.015561, state=0, timer=0.066397, currentAlpha=33.8625
+(info): TransitionScreen: update() called. dt=0.01455, state=0, timer=0.081958, currentAlpha=41.7986
+(info): TransitionScreen: update() called. dt=0.012093, state=0, timer=0.096508, currentAlpha=49.2191
+(info): TransitionScreen: update() called. dt=0.011684, state=0, timer=0.108601, currentAlpha=55.3865
+(info): TransitionScreen: update() called. dt=0.016039, state=0, timer=0.120285, currentAlpha=61.3454
+(info): TransitionScreen: update() called. dt=0.016259, state=0, timer=0.136324, currentAlpha=69.5252
+(info): TransitionScreen: update() called. dt=0.012182, state=0, timer=0.152583, currentAlpha=77.8173
+(info): TransitionScreen: update() called. dt=0.011363, state=0, timer=0.164765, currentAlpha=84.0302
+(info): TransitionScreen: update() called. dt=0.017423, state=0, timer=0.176128, currentAlpha=89.8253
+(info): TransitionScreen: update() called. dt=0.015346, state=0, timer=0.193551, currentAlpha=98.711
+(info): TransitionScreen: update() called. dt=0.013145, state=0, timer=0.208897, currentAlpha=106.537
+(info): TransitionScreen: update() called. dt=0.012148, state=0, timer=0.222042, currentAlpha=113.241
+(info): TransitionScreen: update() called. dt=0.015751, state=0, timer=0.23419, currentAlpha=119.437
+(info): TransitionScreen: update() called. dt=0.015922, state=0, timer=0.249941, currentAlpha=127.47
+(info): TransitionScreen: update() called. dt=0.015956, state=0, timer=0.265863, currentAlpha=135.59
+(info): TransitionScreen: update() called. dt=0.013974, state=0, timer=0.281819, currentAlpha=143.728
+(info): TransitionScreen: update() called. dt=0.012085, state=0, timer=0.295793, currentAlpha=150.854
+(info): TransitionScreen: update() called. dt=0.01288, state=0, timer=0.307878, currentAlpha=157.018
+(info): TransitionScreen: update() called. dt=0.010386, state=0, timer=0.320758, currentAlpha=163.587
+(info): TransitionScreen: update() called. dt=0.017383, state=0, timer=0.331144, currentAlpha=168.883
+(info): TransitionScreen: update() called. dt=0.016381, state=0, timer=0.348527, currentAlpha=177.749
+(info): TransitionScreen: update() called. dt=0.010947, state=0, timer=0.364908, currentAlpha=186.103
+(info): TransitionScreen: update() called. dt=0.014554, state=0, timer=0.375855, currentAlpha=191.686
+(info): TransitionScreen: update() called. dt=0.015981, state=0, timer=0.390409, currentAlpha=199.109
+(info): TransitionScreen: update() called. dt=0.01284, state=0, timer=0.40639, currentAlpha=207.259
+(info): TransitionScreen: update() called. dt=0.009079, state=0, timer=0.41923, currentAlpha=213.807
+(info): TransitionScreen: update() called. dt=0.011848, state=0, timer=0.428309, currentAlpha=218.438
+(info): TransitionScreen: update() called. dt=0.008505, state=0, timer=0.440157, currentAlpha=224.48
+(info): TransitionScreen: update() called. dt=0.012653, state=0, timer=0.448662, currentAlpha=228.818
+(info): TransitionScreen: update() called. dt=0.016886, state=0, timer=0.461315, currentAlpha=235.271
+(info): TransitionScreen: update() called. dt=0.014737, state=0, timer=0.478201, currentAlpha=243.883
+(info): TransitionScreen: update() called. dt=0.014782, state=0, timer=0.492938, currentAlpha=251.398
+(info): TransitionScreen: action called for map switch to default
+(info): Loading map: default
+(info): Loaded 54 objects from assets/maps/default\objects.txt
+(info): Loaded player spawn position from file: (379.432, 480.689)
+(info): Loaded 3 spawns from assets/maps/default\spawns.txt
+(info): Loaded 1 transitions.
+(info) <MapManager::spawnNPCs>: Spawning NPCs for map: default
+(info): Try to execute action 0 of 9
+(info): Executing action 0: type=3
+(info): Try to execute action 1 of 9
+(info): Executing action 1: type=8
+(info): Try to execute action 2 of 9
+(info): Executing action 2: type=2
+(info): Waiting for 0.5 seconds.
+(info): Action sequence done for NPC guard_cutscene_1 with 9 actions.
+(info) <NPCManager::createNPC>: Finished running script 'guard_cutscene' for NPC guard_cutscene_1
+(info) <NPCManager::spawnAllNPCs>: Finished spawning all NPCs.
+(info): Player reset to map default spawn.
+(info): continueTransition() called after map switch.
+(info): TransitionScreen: continueTransition() called.
+(info): TransitionScreen: state=2, timer=0
+(info): TransitionScreen: update() called. dt=0.008949, state=2, timer=0, currentAlpha=255
+(info): TransitionScreen: update() called. dt=0.010673, state=2, timer=0.008949, currentAlpha=250.436
+(info): TransitionScreen: update() called. dt=0.009629, state=2, timer=0.019622, currentAlpha=244.993
+(info): TransitionScreen: update() called. dt=0.008396, state=2, timer=0.029251, currentAlpha=240.082
+(info): TransitionScreen: update() called. dt=0.006493, state=2, timer=0.037647, currentAlpha=235.8
+(info): TransitionScreen: update() called. dt=0.010227, state=2, timer=0.04414, currentAlpha=232.489
+(info): TransitionScreen: update() called. dt=0.010097, state=2, timer=0.054367, currentAlpha=227.273
+(info): TransitionScreen: update() called. dt=0.012805, state=2, timer=0.064464, currentAlpha=222.123
+(info): TransitionScreen: update() called. dt=0.010129, state=2, timer=0.077269, currentAlpha=215.593
+(info): TransitionScreen: update() called. dt=0.009883, state=2, timer=0.087398, currentAlpha=210.427
+(info): TransitionScreen: update() called. dt=0.010034, state=2, timer=0.097281, currentAlpha=205.387
+(info): TransitionScreen: update() called. dt=0.009583, state=2, timer=0.107315, currentAlpha=200.269
+(info): TransitionScreen: update() called. dt=0.008377, state=2, timer=0.116898, currentAlpha=195.382
+(info): TransitionScreen: update() called. dt=0.00941, state=2, timer=0.125275, currentAlpha=191.11
+(info): TransitionScreen: update() called. dt=0.012144, state=2, timer=0.134685, currentAlpha=186.311
+(info): TransitionScreen: update() called. dt=0.011027, state=2, timer=0.146829, currentAlpha=180.117
+(info): TransitionScreen: update() called. dt=0.009029, state=2, timer=0.157856, currentAlpha=174.493
+(info): TransitionScreen: update() called. dt=0.008516, state=2, timer=0.166885, currentAlpha=169.889
+(info): TransitionScreen: update() called. dt=0.009096, state=2, timer=0.175401, currentAlpha=165.546
+(info): TransitionScreen: update() called. dt=0.009106, state=2, timer=0.184497, currentAlpha=160.907
+(info): TransitionScreen: update() called. dt=0.008706, state=2, timer=0.193603, currentAlpha=156.262
+(info): TransitionScreen: update() called. dt=0.010148, state=2, timer=0.202309, currentAlpha=151.822
+(info): TransitionScreen: update() called. dt=0.011432, state=2, timer=0.212457, currentAlpha=146.647
+(info): TransitionScreen: update() called. dt=0.00982, state=2, timer=0.223889, currentAlpha=140.817
+(info): TransitionScreen: update() called. dt=0.010024, state=2, timer=0.233709, currentAlpha=135.808
+(info): TransitionScreen: update() called. dt=0.010527, state=2, timer=0.243733, currentAlpha=130.696
+(info): TransitionScreen: update() called. dt=0.009848, state=2, timer=0.25426, currentAlpha=125.327
+(info): TransitionScreen: update() called. dt=0.009539, state=2, timer=0.264108, currentAlpha=120.305
+(info): TransitionScreen: update() called. dt=0.009309, state=2, timer=0.273647, currentAlpha=115.44
+(info): TransitionScreen: update() called. dt=0.009892, state=2, timer=0.282956, currentAlpha=110.692
+(info): TransitionScreen: update() called. dt=0.009357, state=2, timer=0.292848, currentAlpha=105.648
+(info): TransitionScreen: update() called. dt=0.009582, state=2, timer=0.302205, currentAlpha=100.875
+(info): TransitionScreen: update() called. dt=0.010888, state=2, timer=0.311787, currentAlpha=95.9886
+(info): TransitionScreen: update() called. dt=0.008602, state=2, timer=0.322675, currentAlpha=90.4357
+(info): TransitionScreen: update() called. dt=0.010289, state=2, timer=0.331277, currentAlpha=86.0487
+(info): TransitionScreen: update() called. dt=0.009822, state=2, timer=0.341566, currentAlpha=80.8013
+(info): TransitionScreen: update() called. dt=0.011047, state=2, timer=0.351388, currentAlpha=75.7921
+(info): TransitionScreen: update() called. dt=0.009568, state=2, timer=0.362435, currentAlpha=70.1581
+(info): TransitionScreen: update() called. dt=0.009084, state=2, timer=0.372003, currentAlpha=65.2784
+(info): TransitionScreen: update() called. dt=0.010372, state=2, timer=0.381087, currentAlpha=60.6456
+(info): TransitionScreen: update() called. dt=0.010182, state=2, timer=0.391459, currentAlpha=55.3559
+(info): TransitionScreen: update() called. dt=0.010874, state=2, timer=0.401641, currentAlpha=50.1631
+(info): TransitionScreen: update() called. dt=0.009709, state=2, timer=0.412515, currentAlpha=44.6173
+(info): TransitionScreen: update() called. dt=0.008397, state=2, timer=0.422224, currentAlpha=39.6657
+(info): TransitionScreen: update() called. dt=0.009741, state=2, timer=0.430621, currentAlpha=35.3833
+(info): TransitionScreen: update() called. dt=0.009184, state=2, timer=0.440362, currentAlpha=30.4153
+(info): TransitionScreen: update() called. dt=0.010296, state=2, timer=0.449546, currentAlpha=25.7315
+(info): TransitionScreen: update() called. dt=0.008944, state=2, timer=0.459842, currentAlpha=20.4806
+(info): TransitionScreen: update() called. dt=0.007794, state=2, timer=0.468786, currentAlpha=15.9191
+(info): TransitionScreen: update() called. dt=0.009189, state=2, timer=0.47658, currentAlpha=11.9442
+(info): TransitionScreen: update() called. dt=0.00949, state=2, timer=0.485769, currentAlpha=7.25778
+(info): TransitionScreen: update() called. dt=0.009684, state=2, timer=0.495259, currentAlpha=2.41787
+(info): TransitionScreen: transition done, popping screen.
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): Try to execute action 3 of 9
+(info): Executing action 3: type=1
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): NPC update: scripted movement state=3
+(info): NPC scripted movement: targetPos=(488, 488)
+(info): Try to execute action 4 of 9
+(info): Executing action 4: type=6
+(info): DialogScreen onEnter() for NPC!
+(info): Exiting DialogScreen for NPC!
+(info): NPC dialogue ended for NPC
+(info): Try to execute action 5 of 9
+(info): Executing action 5: type=10
+(info): Calling function: guardShoot
+(info): guardShoot() called for NPC at (1062.92, 1062.92)
+(info): NPC shooting at position: (488, 488)
+(info): State: 0, Moving: 0
+(info): Try to execute action 6 of 9
+(info): Executing action 6: type=2
+(info): Waiting for 0.5 seconds.
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): NPC update: scripted movement state=0
+(info): Try to execute action 7 of 9
+(info): Executing action 7: type=4
+(info): Try to execute action 8 of 9
+(info): Executing action 8: type=11
+(info): DialogScreen onEnter() for NPC!
+(info): Exiting DialogScreen for NPC!
+(info): NPC dialogue ended for NPC
+(info): DialogScreen onEnter() for NPC!
+(info): Exiting DialogScreen for NPC!
+(info): NPC dialogue ended for NPC
+(info): Switching from default to detective_office
+(info): TransitionScreen: onEnter() called. fadeDuration=1
+(info): TransitionScreen: update() called. dt=0.010604, state=0, timer=0, currentAlpha=0
+(info): TransitionScreen: update() called. dt=0.009243, state=0, timer=0.010604, currentAlpha=5.40804
+(info): TransitionScreen: update() called. dt=0.008337, state=0, timer=0.019847, currentAlpha=10.122
+(info): TransitionScreen: update() called. dt=0.009869, state=0, timer=0.028184, currentAlpha=14.3738
+(info): TransitionScreen: update() called. dt=0.009752, state=0, timer=0.038053, currentAlpha=19.407
+(info): TransitionScreen: update() called. dt=0.01094, state=0, timer=0.047805, currentAlpha=24.3805
+(info): TransitionScreen: update() called. dt=0.010198, state=0, timer=0.058745, currentAlpha=29.9599
+(info): TransitionScreen: update() called. dt=0.008674, state=0, timer=0.068943, currentAlpha=35.1609
+(info): TransitionScreen: update() called. dt=0.009451, state=0, timer=0.077617, currentAlpha=39.5847
+(info): TransitionScreen: update() called. dt=0.008866, state=0, timer=0.087068, currentAlpha=44.4047
+(info): TransitionScreen: update() called. dt=0.010939, state=0, timer=0.095934, currentAlpha=48.9263
+(info): TransitionScreen: update() called. dt=0.010253, state=0, timer=0.106873, currentAlpha=54.5052
+(info): TransitionScreen: update() called. dt=0.009574, state=0, timer=0.117126, currentAlpha=59.7343
+(info): TransitionScreen: update() called. dt=0.009014, state=0, timer=0.1267, currentAlpha=64.617
+(info): TransitionScreen: update() called. dt=0.009509, state=0, timer=0.135714, currentAlpha=69.2141
+(info): TransitionScreen: update() called. dt=0.014725, state=0, timer=0.145223, currentAlpha=74.0637
+(info): TransitionScreen: update() called. dt=0.010144, state=0, timer=0.159948, currentAlpha=81.5735
+(info): TransitionScreen: update() called. dt=0.008761, state=0, timer=0.170092, currentAlpha=86.7469
+(info): TransitionScreen: update() called. dt=0.009091, state=0, timer=0.178853, currentAlpha=91.215
+(info): TransitionScreen: update() called. dt=0.009429, state=0, timer=0.187944, currentAlpha=95.8514
+(info): TransitionScreen: update() called. dt=0.009728, state=0, timer=0.197373, currentAlpha=100.66
+(info): TransitionScreen: update() called. dt=0.008747, state=0, timer=0.207101, currentAlpha=105.622
+(info): TransitionScreen: update() called. dt=0.00928, state=0, timer=0.215848, currentAlpha=110.082
+(info): TransitionScreen: update() called. dt=0.007925, state=0, timer=0.225128, currentAlpha=114.815
+(info): TransitionScreen: update() called. dt=0.010269, state=0, timer=0.233053, currentAlpha=118.857
+(info): TransitionScreen: update() called. dt=0.010508, state=0, timer=0.243322, currentAlpha=124.094
+(info): TransitionScreen: update() called. dt=0.010501, state=0, timer=0.25383, currentAlpha=129.453
+(info): TransitionScreen: update() called. dt=0.009745, state=0, timer=0.264331, currentAlpha=134.809
+(info): TransitionScreen: update() called. dt=0.009016, state=0, timer=0.274076, currentAlpha=139.779
+(info): TransitionScreen: update() called. dt=0.010352, state=0, timer=0.283092, currentAlpha=144.377
+(info): TransitionScreen: update() called. dt=0.008512, state=0, timer=0.293444, currentAlpha=149.656
+(info): TransitionScreen: update() called. dt=0.009439, state=0, timer=0.301956, currentAlpha=153.998
+(info): TransitionScreen: update() called. dt=0.011364, state=0, timer=0.311395, currentAlpha=158.811
+(info): TransitionScreen: update() called. dt=0.008731, state=0, timer=0.322759, currentAlpha=164.607
+(info): TransitionScreen: update() called. dt=0.010852, state=0, timer=0.33149, currentAlpha=169.06
+(info): TransitionScreen: update() called. dt=0.010825, state=0, timer=0.342342, currentAlpha=174.594
+(info): TransitionScreen: update() called. dt=0.009798, state=0, timer=0.353167, currentAlpha=180.115
+(info): TransitionScreen: update() called. dt=0.010488, state=0, timer=0.362965, currentAlpha=185.112
+(info): TransitionScreen: update() called. dt=0.009583, state=0, timer=0.373453, currentAlpha=190.461
+(info): TransitionScreen: update() called. dt=0.010761, state=0, timer=0.383036, currentAlpha=195.348
+(info): TransitionScreen: update() called. dt=0.010571, state=0, timer=0.393797, currentAlpha=200.836
+(info): TransitionScreen: update() called. dt=0.009453, state=0, timer=0.404368, currentAlpha=206.228
+(info): TransitionScreen: update() called. dt=0.009373, state=0, timer=0.413821, currentAlpha=211.049
+(info): TransitionScreen: update() called. dt=0.008427, state=0, timer=0.423194, currentAlpha=215.829
+(info): TransitionScreen: update() called. dt=0.009244, state=0, timer=0.431621, currentAlpha=220.127
+(info): TransitionScreen: update() called. dt=0.010475, state=0, timer=0.440865, currentAlpha=224.841
+(info): TransitionScreen: update() called. dt=0.010855, state=0, timer=0.45134, currentAlpha=230.183
+(info): TransitionScreen: update() called. dt=0.01023, state=0, timer=0.462195, currentAlpha=235.719
+(info): TransitionScreen: update() called. dt=0.008784, state=0, timer=0.472425, currentAlpha=240.937
+(info): TransitionScreen: update() called. dt=0.009697, state=0, timer=0.481209, currentAlpha=245.417
+(info): TransitionScreen: update() called. dt=0.009827, state=0, timer=0.490906, currentAlpha=250.362
+(info): TransitionScreen: action called for map switch to detective_office
+(info): Loading map: detective_office
+(info): Loaded 63 objects from assets/maps/detective_office\objects.txt
+(info): Loaded player spawn position from file: (460.553, 479.784)
+(info): Loaded 2 spawns from assets/maps/detective_office\spawns.txt
+(info): Loaded 1 transitions.
+(info) <MapManager::spawnNPCs>: Spawning NPCs for map: detective_office
+(info) <NPCManager::createNPC>: Setting waypoints for NPC generic_guard_0
+(info) <NPCManager::spawnAllNPCs>: Finished spawning all NPCs.
+(info): Player placed at custom spawn (581, 480)
+(info): continueTransition() called after map switch.
+(info): TransitionScreen: continueTransition() called.
+(info): TransitionScreen: state=2, timer=0
+(info): TransitionScreen: update() called. dt=0.023062, state=2, timer=0, currentAlpha=255
+(info): TransitionScreen: update() called. dt=0.016855, state=2, timer=0.023062, currentAlpha=243.238
+(info): TransitionScreen: update() called. dt=0.017742, state=2, timer=0.039917, currentAlpha=234.642
+(info): TransitionScreen: update() called. dt=0.015129, state=2, timer=0.057659, currentAlpha=225.594
+(info): TransitionScreen: update() called. dt=0.015981, state=2, timer=0.072788, currentAlpha=217.878
+(info): TransitionScreen: update() called. dt=0.016613, state=2, timer=0.088769, currentAlpha=209.728
+(info): TransitionScreen: update() called. dt=0.009539, state=2, timer=0.105382, currentAlpha=201.255
+(info): TransitionScreen: update() called. dt=0.017147, state=2, timer=0.114921, currentAlpha=196.39
+(info): TransitionScreen: update() called. dt=0.016524, state=2, timer=0.132068, currentAlpha=187.645
+(info): TransitionScreen: update() called. dt=0.016958, state=2, timer=0.148592, currentAlpha=179.218
+(info): TransitionScreen: update() called. dt=0.010672, state=2, timer=0.16555, currentAlpha=170.57
+(info): TransitionScreen: update() called. dt=0.016359, state=2, timer=0.176222, currentAlpha=165.127
+(info): TransitionScreen: update() called. dt=0.014637, state=2, timer=0.192581, currentAlpha=156.784
+(info): TransitionScreen: update() called. dt=0.016583, state=2, timer=0.207218, currentAlpha=149.319
+(info): TransitionScreen: update() called. dt=0.012672, state=2, timer=0.223801, currentAlpha=140.861
+(info): TransitionScreen: update() called. dt=0.010843, state=2, timer=0.236473, currentAlpha=134.399
+(info): TransitionScreen: update() called. dt=0.017413, state=2, timer=0.247316, currentAlpha=128.869
+(info): TransitionScreen: update() called. dt=0.010229, state=2, timer=0.264729, currentAlpha=119.988
+(info): TransitionScreen: update() called. dt=0.014643, state=2, timer=0.274958, currentAlpha=114.771
+(info): TransitionScreen: update() called. dt=0.016371, state=2, timer=0.289601, currentAlpha=107.303
+(info): TransitionScreen: update() called. dt=0.011758, state=2, timer=0.305972, currentAlpha=98.9543
+(info): TransitionScreen: update() called. dt=0.018197, state=2, timer=0.31773, currentAlpha=92.9577
+(info): TransitionScreen: update() called. dt=0.015594, state=2, timer=0.335927, currentAlpha=83.6772
+(info): TransitionScreen: update() called. dt=0.017413, state=2, timer=0.351521, currentAlpha=75.7243
+(info): TransitionScreen: update() called. dt=0.010887, state=2, timer=0.368934, currentAlpha=66.8437
+(info): TransitionScreen: update() called. dt=0.014652, state=2, timer=0.379821, currentAlpha=61.2913
+(info): TransitionScreen: update() called. dt=0.010757, state=2, timer=0.394473, currentAlpha=53.8188
+(info): TransitionScreen: update() called. dt=0.013398, state=2, timer=0.40523, currentAlpha=48.3327
+(info): TransitionScreen: update() called. dt=0.017219, state=2, timer=0.418628, currentAlpha=41.4997
+(info): TransitionScreen: update() called. dt=0.013215, state=2, timer=0.435847, currentAlpha=32.718
+(info): TransitionScreen: update() called. dt=0.017087, state=2, timer=0.449062, currentAlpha=25.9784
+(info): TransitionScreen: update() called. dt=0.010115, state=2, timer=0.466149, currentAlpha=17.264
+(info): TransitionScreen: update() called. dt=0.011642, state=2, timer=0.476264, currentAlpha=12.1053
+(info): TransitionScreen: update() called. dt=0.01672, state=2, timer=0.487906, currentAlpha=6.16792
+(info): TransitionScreen: transition done, popping screen.
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): DialogScreen onEnter() for NPC!
+(info): Skipping invalid dialogue line at index 1, moving to nextIndex 2
+(info): Skipping invalid dialogue line at index 0, moving to nextIndex 1
+(info): Exiting DialogScreen for NPC!
+(info): NPC dialogue ended for NPC
+(info): DialogScreen onEnter() for NPC!
+(info): Skipping invalid dialogue line at index 1, moving to nextIndex 2
+(info): Skipping invalid dialogue line at index 0, moving to nextIndex 1
+(info): Exiting DialogScreen for NPC!
+(info): NPC dialogue ended for NPC
+(info): Reached waypoint, waiting 2s before moving to index 2
+(info): Resuming patrol to waypoint 2 at (304.851, 563.2)
+(info): Reached waypoint, waiting 2s before moving to index 3
+(info): Resuming patrol to waypoint 3 at (594.984, 561.067)
+(info): Reached waypoint, waiting 2s before moving to index 0
+(info): Resuming patrol to waypoint 0 at (101.867, 571.2)
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): Reached waypoint, waiting 2s before moving to index 2
+(info): Resuming patrol to waypoint 2 at (304.851, 563.2)
+(info): Reached waypoint, waiting 2s before moving to index 3
+(info): Resuming patrol to waypoint 3 at (594.984, 561.067)
+(info): Reached waypoint, waiting 2s before moving to index 0
+(info): Resuming patrol to waypoint 0 at (101.867, 571.2)
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): Reached waypoint, waiting 2s before moving to index 2
+(info): Resuming patrol to waypoint 2 at (304.851, 563.2)
+(info): Reached waypoint, waiting 2s before moving to index 3
+(info): Resuming patrol to waypoint 3 at (594.984, 561.067)
+(info): Reached waypoint, waiting 2s before moving to index 0
+(info): Resuming patrol to waypoint 0 at (101.867, 571.2)
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): Reached waypoint, waiting 2s before moving to index 2
+(info): Resuming patrol to waypoint 2 at (304.851, 563.2)
+(info): Reached waypoint, waiting 2s before moving to index 3
+(info): Resuming patrol to waypoint 3 at (594.984, 561.067)
+(info): Reached waypoint, waiting 2s before moving to index 0
+(info): Resuming patrol to waypoint 0 at (101.867, 571.2)
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): Reached waypoint, waiting 2s before moving to index 2
+(info): Resuming patrol to waypoint 2 at (304.851, 563.2)
+(info): Reached waypoint, waiting 2s before moving to index 3
+(info): Resuming patrol to waypoint 3 at (594.984, 561.067)
+(info): Reached waypoint, waiting 2s before moving to index 0
+(info): Resuming patrol to waypoint 0 at (101.867, 571.2)
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): Reached waypoint, waiting 2s before moving to index 2
+(info): Resuming patrol to waypoint 2 at (304.851, 563.2)
+(info): Reached waypoint, waiting 2s before moving to index 3
+(info): Resuming patrol to waypoint 3 at (594.984, 561.067)
+(info): Reached waypoint, waiting 2s before moving to index 0
+(info): Resuming patrol to waypoint 0 at (101.867, 571.2)
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): Reached waypoint, waiting 2s before moving to index 2
+(info): Resuming patrol to waypoint 2 at (304.851, 563.2)
+(info): Reached waypoint, waiting 2s before moving to index 3
+(info): Resuming patrol to waypoint 3 at (594.984, 561.067)
+(info): Reached waypoint, waiting 2s before moving to index 0
+(info): Resuming patrol to waypoint 0 at (101.867, 571.2)
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): Reached waypoint, waiting 2s before moving to index 2
+(info): Resuming patrol to waypoint 2 at (304.851, 563.2)
+(info): Reached waypoint, waiting 2s before moving to index 3
+(info): Resuming patrol to waypoint 3 at (594.984, 561.067)
+(info): Reached waypoint, waiting 2s before moving to index 0
+(info): Resuming patrol to waypoint 0 at (101.867, 571.2)
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): Reached waypoint, waiting 2s before moving to index 2
+(info): Resuming patrol to waypoint 2 at (304.851, 563.2)
+(info): Reached waypoint, waiting 2s before moving to index 3
+(info): Resuming patrol to waypoint 3 at (594.984, 561.067)
+(info): Reached waypoint, waiting 2s before moving to index 0
+(info): Resuming patrol to waypoint 0 at (101.867, 571.2)
+(info): Reached waypoint, waiting 2s before moving to index 1
+(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
+(info): Reached waypoint, waiting 2s before moving to index 2

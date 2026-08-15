@@ -19,23 +19,41 @@ NPC::NPC(const NPCType& type, const sf::Vector2f& spawnPos, const std::string& u
     }
 }
 
+void NPC::dialogueEnded() {
+    Log::info << "NPC dialogue ended for NPC" << "\n";
+    if (m_waitingForDialogue) {
+        m_waitingForDialogue = false;
+        advanceScript();   // continue script execution
+    }
+}
+
 void NPC::update(sf::RenderWindow& win, float dt) {
+    // Log::info << "NPC update: state=" << static_cast<int>(state) << ", scriptRunning=" << m_scriptRunning << "\n";
     Character::update(win, dt); // base physics & animation
     if (m_scriptRunning) {
+        if (m_waitingForDialogue) {
+            return;   // wait for dialogue to end
+        }
         // Handle scripted movement (MoveTo)
+        Log::info << "NPC update: scripted movement state=" << static_cast<int>(behaviorState.type) << "\n";
         if (behaviorState.type == BehaviorState::Type::Scripted) {
+            Log::info << "NPC scripted movement: targetPos=(" << behaviorState.targetPos.x << ", " << behaviorState.targetPos.y << ")\n";
             sf::Vector2f currentPos = getPosition();
             sf::Vector2f target = behaviorState.targetPos * Scale::get();
             sf::Vector2f diff = target - currentPos;
-            float distance = std::hypot(diff.x, diff.y);
+            float distance = std::abs(diff.x);
+
             if (distance < 5.f) {
-                // Reached target, advance script
+                // Snap to target (unscaled)
+                pos = behaviorState.targetPos;
+                behaviorState.type = BehaviorState::Type::Idle;
+                idle();
                 advanceScript();
             } else {
-                // Walk towards target
+                // Walk horizontally towards target
                 int dir = (diff.x > 0) ? 1 : -1;
                 walk(dir);
-                // Optional: jump if needed?
+                // Optional: add vertical movement if needed (e.g., jump)
             }
         }
         // Handle Wait timer
@@ -51,14 +69,6 @@ void NPC::update(sf::RenderWindow& win, float dt) {
             if (updateCB) updateCB(*this, dt);
         }
     }
-    sf::Vector2f target = behaviorState.targetPos;
-    //draw a big circle around the target position for debugging
-    sf::CircleShape circle(10.f);
-    circle.setFillColor(sf::Color(255, 0, 0, 100));
-    circle.setPosition(target - sf::Vector2f(10.f, 10.f));
-    circle.setOrigin(sf::Vector2f(10.f, 10.f));
-    win.draw(circle);
-    Log::info << "Target: " << target.x << ", " << target.y << " | Position: " << pos.x << ", " << pos.y << std::endl;
 }
 
 void NPC::runSequence(const std::vector<Action>& actions) {
@@ -69,33 +79,54 @@ void NPC::runSequence(const std::vector<Action>& actions) {
             action.npc = this; // set the NPC pointer
         }
     }
-    m_script = actions;
     m_currentActionIndex = 0;
     m_actionTimer = 0.f;
     m_scriptRunning = true;
     // Pause AI while script runs
     pauseAI(true);
     executeCurrentAction();
+    Log::info << "Action sequence done for NPC " << uniqueID << " with " << m_script.size() << " actions.\n";    
 }
 
 void NPC::executeCurrentAction() {
     if (m_currentActionIndex >= m_script.size()) {
+        Log::info << "NPC script finished." << std::endl;
         // script finished
         m_scriptRunning = false;
         pauseAI(false);
         return;
     }
-
+    Log::info << "Try to execute action " << m_currentActionIndex << " of " << m_script.size() << std::endl;
     const Action& action = m_script[m_currentActionIndex];
+    Log::info << "Executing action " << m_currentActionIndex << ": type=" << static_cast<int>(action.type) << std::endl;
     switch (action.type) {
+        case ActionType::FacePlayer: {
+            Character* player = Player::get().getPlayer();
+            if (!player) {
+                Log::warn << "FacePlayer: Player pointer is null. Skipping.\n";
+                advanceScript();
+                break;
+            }
+            int dir = (player->getPosition().x > getPosition().x) ? 1 : -1;
+            direction = dir;
+            advanceScript();
+            break;
+        }
         case ActionType::MoveTo:
-            // Set target for movement (will be handled in update)
             behaviorState.type = BehaviorState::Type::Scripted;
             behaviorState.targetPos = action.targetPos;
+            m_actionTimer = -1.f;   // no wait timer
+            break;
+
+        case ActionType::MoveRelative:
+            behaviorState.type = BehaviorState::Type::Scripted;
+            behaviorState.targetPos = getPosition() / Scale::get() + action.targetPos;
+            m_actionTimer = -1.f;   // no wait timer
             break;
 
         case ActionType::Wait:
             m_actionTimer = action.duration;
+            Log::info << "Waiting for " << m_actionTimer << " seconds.\n";
             break;
 
         case ActionType::LockPlayer:
@@ -117,17 +148,12 @@ void NPC::executeCurrentAction() {
             break;
 
         case ActionType::ShowDialogue:
-            // Push dialog screen (assume we have a way to get NPC pointer)
-            // The action should have the dialogueId, but we need to know which NPC.
-            // We can pass the NPC pointer to the screen.
-            // We'll implement a helper in NPCManager to push dialog for this NPC.
             if (action.npc) {
                 UIManager::get().pushScreen(std::make_unique<DialogScreen>(action.npc));
             } else {
-                // fallback: use this NPC
                 UIManager::get().pushScreen(std::make_unique<DialogScreen>(this));
             }
-            advanceScript();
+            m_waitingForDialogue = true;   // block script until dialogue closes
             break;
 
         case ActionType::SwapPlayer:
@@ -140,13 +166,17 @@ void NPC::executeCurrentAction() {
             advanceScript();
             break;
 
-        case ActionType::CallFunction:
-            // Look up function in a registry (we can store std::function in a map)
-            // For simplicity, we'll just log.
-            Log::info << "CallFunction: " << action.functionName << std::endl;
-            // Could call a global function registry.
+        case ActionType::CallFunction: {
+            Log::info << "Calling function: " << action.functionName << std::endl;
+            auto it = FunctionRegistry::functions.find(action.functionName);
+            if (it != FunctionRegistry::functions.end()) {
+                it->second(this);
+            } else {
+                Log::warn << "Unknown function: " << action.functionName << std::endl;
+            }
             advanceScript();
             break;
+        }
 
         case ActionType::EndSequence:
             m_scriptRunning = false;
@@ -223,46 +253,50 @@ void NPC::patrolUpdate(float dt) {
     sf::Vector2i tilePos = Tiles::getTileGridPosition(bottomRight);
     tilePos.x += dir * 0.01f;
 
-    bool blockAhead = (Terrain::isSolidTile(tilePos.x + dir, tilePos.y) ||
-                       Terrain::isSolidTile(tilePos.x + dir, tilePos.y + 1));
 
-    bool inDanger = false;
-    if (!Terrain::isSolidTile(tilePos.x, tilePos.y) &&
-        !Terrain::isSolidTile(tilePos.x, tilePos.y - 1) &&
-        !Terrain::isSolidTile(tilePos.x, tilePos.y - 2) &&
-        !Terrain::isSolidTile(tilePos.x, tilePos.y - 3) &&
-        !Terrain::isSolidTile(tilePos.x + dir, tilePos.y) &&
-        !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 1) &&
-        !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 2) &&
-        !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 3)) {
-        inDanger = true;
-    }
+    // prevent jump to prevent unexpected issues, implement jumping characters in script or smth
+    // maybe updateCB, where it checks for position and jump but only if needed
+
+    // bool blockAhead = (Terrain::isSolidTile(tilePos.x + dir, tilePos.y) ||
+    //                    Terrain::isSolidTile(tilePos.x + dir, tilePos.y + 1));
+
+    // bool inDanger = false;
+    // if (!Terrain::isSolidTile(tilePos.x, tilePos.y) &&
+    //     !Terrain::isSolidTile(tilePos.x, tilePos.y - 1) &&
+    //     !Terrain::isSolidTile(tilePos.x, tilePos.y - 2) &&
+    //     !Terrain::isSolidTile(tilePos.x, tilePos.y - 3) &&
+    //     !Terrain::isSolidTile(tilePos.x + dir, tilePos.y) &&
+    //     !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 1) &&
+    //     !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 2) &&
+    //     !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 3)) {
+    //     inDanger = true;
+    // }
 
     // ---- 5. Blocked / danger handling ----
-    if (inDanger) {
-        m_blockedTimer += dt;
-        if (m_blockedTimer > 0.3f && !m_directionReversed) {
-            int prevIndex = (nextWaypoint == 0) ? wps.size() - 1 : nextWaypoint - 1;
-            behaviorState.targetPos = wps[prevIndex];
-            m_directionReversed = true;
-            m_blockedTimer = 0.f;
-            nextWaypoint = prevIndex;
-            return;
-        }
+    // if (inDanger) {
+    //     m_blockedTimer += dt;
+    //     if (m_blockedTimer > 0.3f && !m_directionReversed) {
+    //         int prevIndex = (nextWaypoint == 0) ? wps.size() - 1 : nextWaypoint - 1;
+    //         behaviorState.targetPos = wps[prevIndex];
+    //         m_directionReversed = true;
+    //         m_blockedTimer = 0.f;
+    //         nextWaypoint = prevIndex;
+    //         return;
+    //     }
 
-        if (moving == CharacterMoving::Idle) {
-            walk(dir);
-        }
+    //     if (moving == CharacterMoving::Idle) {
+    //         walk(dir);
+    //     }
 
-        if (onGround()) {
-            if (blockAhead && Terrain::isSolidTile(tilePos.x + dir, tilePos.y + 1)) {
-                jump();
-            } else if (inDanger) {
-                jump();
-            }
-        }
-        return;
-    }
+    //     if (onGround()) {
+    //         if (blockAhead && Terrain::isSolidTile(tilePos.x + dir, tilePos.y + 1)) {
+    //             jump();
+    //         } else if (inDanger) {
+    //             jump();
+    //         }
+    //     }
+    //     return;
+    // }
 
     // ---- 6. Normal movement ----
     m_blockedTimer = 0.f;

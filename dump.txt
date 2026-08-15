@@ -2,10 +2,21 @@
 /* main.cpp */
 #include <game/game.hpp>
 #include <debug/logs.hpp>
+#include <fstream>
 
 int main() {
     Log::Level::set(Logging::Info);
-    Game::Game game("Hello, SFML!", 1200, 600);
+    // pickup map name from assets/map/default_map.txt
+    std::string initialMap;
+    std::ifstream mapFile("assets/maps/default_map.txt");
+    if (mapFile.is_open()) {
+        std::getline(mapFile, initialMap);
+        mapFile.close();
+    } else {
+        Log::warn << "Could not open default_map.txt, using 'default' as initial map.\n";
+        initialMap = "default";
+    }
+    Game::Game game("Hello, SFML!", 1200, 600, initialMap);
     game.run();
     return 0;
 }
@@ -266,7 +277,15 @@ namespace Animations {
         }
     }
 
-    Info get(std::string key) { return animations.at(key); }
+    Info get(std::string key) {
+        auto it = animations.find(key);
+        if (it != animations.end()) {
+            return it->second;
+        }
+        static Log::Scope scope("Animations::get()");
+        scope.error << "Animation key '" << key << "' not found. Returning dummy.\n";
+        return Info();   // empty/default Info
+    }
 }
 
 /* graphics\textures.hpp */
@@ -748,665 +767,6 @@ class GameObject {
     virtual void update(sf::RenderWindow& win, float dt) {}
 };
 
-/* entities\terrain.cpp */
-#include <debug/logs.hpp>
-#include <core/scale.hpp>
-#include <entities/terrain.hpp>
-#include <graphics/tiles.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <fstream>
-#include <sstream>
-#include <core/constants.hpp>
-#include <algorithm> // for std::find
-#include <core/tile_encoding.hpp>
-#include <entities/characters.hpp>
-
-namespace
-{
-    // Tile map
-    TileMap terrain = {
-        {{0, 1}, {1}},
-        {{1, 1}, {1}},
-        {{2, 1}, {1}},
-        {{3, 1}, {1}},
-        {{4, 1}, {10}},
-        {{5, 1}, {10}},
-        {{6, 1}, {10}},
-        {{4, 2}, {1}},
-        {{5, 2}, {1}},
-        {{6, 2}, {1}},
-    };
-
-    // Object storage (unordered for O(1) lookup)
-    ObjectMap objectMap;
-
-    // Solid tile storage
-    SolidMap solidMap;
-
-    // Insertion order (used for drawing and save/load order)
-    std::vector<std::pair<float, float>> objectOrder;
-
-    sf::Vector2f playerSpawnPosition = {2.f, 2.f}; // Default spawn position for the player
-    SpawnMap spawnMap;                             // Map for NPC spawns
-}
-
-namespace Terrain
-{
-
-    const SolidMap &getSolidMap() { return solidMap; }
-
-    void setSolidTile(int x, int y, int type)
-    {
-        if (type <= 0)
-            solidMap.erase({x, y});
-        else
-            solidMap[{x, y}] = type;
-    }
-
-    void eraseSolidTile(int x, int y)
-    {
-        solidMap.erase({x, y});
-    }
-
-    int getSolidTile(int x, int y)
-    {
-        auto it = solidMap.find({x, y});
-        return (it != solidMap.end()) ? it->second : 0;
-    }
-
-    const SpawnMap &getSpawnMap() { return spawnMap; }
-
-    void setSpawn(float x, float y, const SpawnProps &props)
-    {
-        auto key = std::make_pair(x, y);
-        spawnMap[key] = props;
-    }
-
-    void eraseSpawn(float x, float y)
-    {
-        spawnMap.erase({x, y});
-    }
-
-    SpawnProps getSpawn(float x, float y)
-    {
-        auto it = spawnMap.find({x, y});
-        return (it != spawnMap.end()) ? it->second : SpawnProps{};
-    }
-
-    sf::Vector2f getPlayerSpawnPosition() { return playerSpawnPosition; }
-
-    void clearSpawns() { spawnMap.clear(); }
-
-    // ---- Unified file I/O ----
-    // ------------------ Spawn I/O (extended) ------------------
-    void loadSpawnsFromFile(const std::string &filename)
-    {
-        std::ifstream file(filename);
-        if (!file.is_open())
-        {
-            Log::error << "Failed to open spawn file for reading: " << filename << std::endl;
-            return;
-        }
-
-        spawnMap.clear();
-        playerSpawnPosition = {0.f, 0.f}; // reset
-
-        std::string line;
-        int lineNum = 0;
-        while (std::getline(file, line))
-        {
-            lineNum++;
-            if (line.empty() || line[0] == '#')
-                continue;
-
-            // Remove trailing CR if any
-            if (!line.empty() && line.back() == '\r')
-                line.pop_back();
-
-            std::istringstream iss(line);
-            std::vector<std::string> tokens;
-            std::string token;
-            while (iss >> token)
-                tokens.push_back(token);
-
-            // We expect exactly 11 tokens (x, y, key, scale, rot, flipX, flipY, npcTypeId, uniqueID, scriptName, waypoints)
-            if (tokens.size() != 11)
-            {
-                Log::warn << "Spawn load: skipping line " << lineNum << " (expected 11 tokens, got " << tokens.size() << ")" << std::endl;
-                continue;
-            }
-
-            try
-            {
-                float x = std::stof(tokens[0]);
-                float y = std::stof(tokens[1]);
-                std::string characterKey = tokens[2];
-                float scale = std::stof(tokens[3]);
-                float rotation = std::stof(tokens[4]);
-                bool flipX = (std::stoi(tokens[5]) != 0);
-                bool flipY = (std::stoi(tokens[6]) != 0);
-                std::string npcTypeId = tokens[7];
-                // Replace placeholders with empty strings
-                std::string uniqueID = (tokens[8] == "_") ? "" : tokens[8];
-                std::string scriptName = (tokens[9] == "_") ? "" : tokens[9];
-                std::string waypointStr = tokens[10];
-
-                SpawnProps props;
-                props.characterKey = characterKey;
-                props.scale = scale;
-                props.rotation = rotation;
-                props.flipX = flipX;
-                props.flipY = flipY;
-                props.npcTypeId = npcTypeId;
-                props.uniqueID = uniqueID;
-                props.scriptName = scriptName;
-
-                // Parse waypoints from waypointStr
-                if (!waypointStr.empty() && waypointStr != "_")
-                {
-                    std::stringstream wss(waypointStr);
-                    std::string pair;
-                    while (std::getline(wss, pair, ';'))
-                    {
-                        if (pair.empty())
-                            continue;
-                        float wx, wy;
-                        char comma;
-                        std::stringstream ps(pair);
-                        if (ps >> wx >> comma >> wy && comma == ',')
-                        {
-                            props.waypoints.push_back(sf::Vector2f(wx, wy));
-                        }
-                    }
-                }
-
-                if (props.npcTypeId == "player")
-                {
-                    Log::info << "Loaded player spawn position from file: (" << x << ", " << y << ")" << std::endl;
-                    playerSpawnPosition = sf::Vector2f(x, y);
-                }
-
-                spawnMap[{x, y}] = props;
-            }
-            catch (const std::exception &e)
-            {
-                Log::error << "Spawn load: error parsing line " << lineNum << ": " << e.what() << std::endl;
-            }
-        }
-
-        file.close();
-        Log::info << "Loaded " << spawnMap.size() << " spawns from " << filename << std::endl;
-    }
-
-    void saveSpawnsToFile(const std::string &filename)
-    {
-        std::ofstream file(filename);
-        if (!file.is_open())
-        {
-            Log::error << "Failed to open spawn file for writing: " << filename << std::endl;
-            return;
-        }
-
-        file << "# Spawns: x y characterKey scale rotation flipX flipY npcTypeId uniqueID scriptName waypoints\n";
-        file << "# waypoints format: x1,y1;x2,y2;... (semicolon separated, no spaces)\n";
-        file << "# Empty uniqueID or scriptName are stored as '_'\n";
-
-        for (const auto &[pos, props] : spawnMap)
-        {
-            // Build waypoint string (no spaces)
-            std::string waypointStr;
-            for (size_t i = 0; i < props.waypoints.size(); ++i)
-            {
-                if (i > 0)
-                    waypointStr += ";";
-                waypointStr += std::to_string(props.waypoints[i].x) + "," + std::to_string(props.waypoints[i].y);
-            }
-            if (waypointStr.empty())
-                waypointStr = "_"; // placeholder for empty waypoints
-
-            // Use '_' for empty strings
-            std::string uid = props.uniqueID.empty() ? "_" : props.uniqueID;
-            std::string scr = props.scriptName.empty() ? "_" : props.scriptName;
-
-            file << pos.first << ' ' << pos.second << ' '
-                 << props.characterKey << ' '
-                 << props.scale << ' '
-                 << props.rotation << ' '
-                 << (props.flipX ? 1 : 0) << ' '
-                 << (props.flipY ? 1 : 0) << ' '
-                 << props.npcTypeId << ' '
-                 << uid << ' '
-                 << scr << ' '
-                 << waypointStr << '\n';
-        }
-
-        file.close();
-        Log::info << "Spawns saved to " << filename << std::endl;
-    }
-
-    void setPlayerSpawnPosition(const sf::Vector2f &pos)
-    {
-        playerSpawnPosition = pos;
-    }
-
-    void loadSolidFromFile(const std::string &filename)
-    {
-        std::ifstream file(filename);
-        if (!file.is_open())
-            return;
-        solidMap.clear();
-        std::string line;
-        while (std::getline(file, line))
-        {
-            if (line.empty())
-                continue;
-            std::istringstream iss(line);
-            int x, y, type;
-            char comma1, comma2;
-            if (iss >> x >> comma1 >> y >> comma2 >> type)
-            {
-                if (comma1 == ',' && comma2 == ',')
-                {
-                    solidMap[{x, y}] = type;
-                }
-            }
-        }
-    }
-
-    void saveSolidToFile(const std::string &filename)
-    {
-        std::ofstream file(filename);
-        if (!file.is_open())
-            return;
-        for (const auto &[pos, type] : solidMap)
-        {
-            file << pos.first << "," << pos.second << "," << type << "\n";
-        }
-    }
-
-    bool isSolidTile(int x, int y)
-    {
-        if (getSolidTile(x, y) > 0)
-            return true;
-        return false;
-    }
-
-    std::vector<int> getTile(int x, int y)
-    {
-        auto it = terrain.find({x, y});
-        if (it != terrain.end())
-        {
-            return it->second;
-        }
-        return {};
-    }
-
-    void setTile(int x, int y, int encodedTile)
-    {
-        if (encodedTile < 0 || getTileIndex(encodedTile) < 0)
-        {
-            terrain.erase({x, y});
-        }
-        else
-        {
-            terrain[{x, y}] = {encodedTile};
-        }
-    }
-
-    void addTile(int x, int y, int encodedTile)
-    {
-        auto &vec = terrain[{x, y}];
-        if (encodedTile < 0 || getTileIndex(encodedTile) < 0)
-        {
-            vec.erase(std::remove(vec.begin(), vec.end(), encodedTile), vec.end());
-        }
-        else
-        {
-            vec.push_back(encodedTile);
-        }
-    }
-
-    void setTileVector(int x, int y, const std::vector<int> &encodedTiles)
-    {
-        if (encodedTiles.empty())
-        {
-            terrain.erase({x, y});
-        }
-        else
-        {
-            terrain[{x, y}] = encodedTiles;
-        }
-    }
-
-    // ------------------ Tile functions (unchanged) ------------------
-    void draw(sf::RenderWindow &win, float dt)
-    {
-        for (const auto &[pos, tile_ids] : terrain)
-        {
-            for (int encoded : tile_ids)
-            {
-                int idx = getTileIndex(encoded);
-                int rot = getTileRotation(encoded);
-                int flip = getTileFlip(encoded);
-                sf::Sprite s = Tiles::getTileSprite(idx);
-                auto [x, y] = pos;
-                sf::FloatRect bounds = s.getLocalBounds();
-                s.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
-                sf::Vector2f tilePos = Tiles::getTilePosition(x, y);
-                s.setPosition(tilePos + sf::Vector2f(bounds.size.x / 2.f * Scale::get(),
-                                                     bounds.size.y / 2.f * Scale::get()));
-                s.setScale(Scale::getVec());
-                s.setRotation(sf::Angle(sf::degrees(rot * 90.f)));
-                if (flip & 1)
-                    s.scale({-1.f, 1.f});
-                if (flip & 2)
-                    s.scale({1.f, -1.f});
-                win.draw(s);
-            }
-        }
-
-        // Draw objects in insertion order (oldest first, newest last = on top)
-        for (const auto &key : objectOrder)
-        {
-            auto it = objectMap.find(key);
-            if (it == objectMap.end())
-                continue; // safety
-            const auto &props = it->second;
-            sf::Sprite s = Objects::getObjectSprite(props.index);
-            sf::FloatRect bounds = s.getLocalBounds();
-            sf::Vector2f worldPos(key.first * Scale::get(), key.second * Scale::get());
-            s.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
-            s.setPosition(worldPos);
-            s.setScale(Scale::getVec() * props.scale);
-            s.setRotation(sf::Angle(sf::degrees(props.rotation)));
-            if (props.flipX)
-                s.scale({-1.f, 1.f});
-            if (props.flipY)
-                s.scale({1.f, -1.f});
-            win.draw(s);
-        }
-    }
-
-    void setMap(const TileMap &new_map)
-    {
-        terrain = new_map;
-    }
-
-    const TileMap &getMap()
-    {
-        return terrain;
-    }
-
-    void update(float dt)
-    {
-        // Not used
-    }
-
-    // ------------------ Tile file I/O ------------------
-    void loadFromFile(const std::string &filename)
-    {
-        std::ifstream file(filename);
-        if (!file.is_open())
-            return;
-        terrain.clear();
-        std::string line;
-        while (std::getline(file, line))
-        {
-            if (line.empty())
-                continue;
-            std::istringstream iss(line);
-            int x, y, id;
-            char comma1, comma2;
-            if (iss >> x >> comma1 >> y >> comma2 >> id)
-            {
-                if (comma1 == ',' && comma2 == ',')
-                {
-                    terrain[{x, y}].push_back(id);
-                }
-            }
-        }
-    }
-
-    void saveToFile(const std::string &filename)
-    {
-        std::ofstream file(filename);
-        if (!file.is_open())
-            return;
-        for (const auto &[pos, ids] : terrain)
-        {
-            for (const auto &id : ids)
-            {
-                file << pos.first << "," << pos.second << "," << id << "\n";
-            }
-        }
-    }
-
-    void eraseTile(int x, int y)
-    {
-        terrain.erase({x, y});
-    }
-
-    // ------------------ Object management (with order) ------------------
-    const ObjectMap &getObjectMap()
-    {
-        return objectMap;
-    }
-
-    const std::vector<std::pair<float, float>> &getObjectOrder()
-    {
-        return objectOrder;
-    }
-
-    void setObject(float x, float y, const ObjectProps &props)
-    {
-        std::pair<float, float> key = {x, y};
-        auto it = objectMap.find(key);
-        if (it == objectMap.end())
-        {
-            // New key – add to order vector
-            objectOrder.push_back(key);
-        }
-        objectMap[key] = props;
-    }
-
-    void eraseObject(float x, float y)
-    {
-        std::pair<float, float> key = {x, y};
-        objectMap.erase(key);
-        // Remove from order vector
-        auto it = std::find(objectOrder.begin(), objectOrder.end(), key);
-        if (it != objectOrder.end())
-        {
-            objectOrder.erase(it);
-        }
-    }
-
-    ObjectProps getObject(float x, float y)
-    {
-        auto it = objectMap.find({x, y});
-        if (it != objectMap.end())
-        {
-            return it->second;
-        }
-        return {0.f, -1};
-    }
-
-    // ------------------ Object file I/O (preserving order) ------------------
-    void loadObjectsFromFile(const std::string &filename)
-    {
-        std::ifstream file(filename);
-        if (!file.is_open())
-        {
-            Log::error << "Failed to open objects file: " << filename << std::endl;
-            return;
-        }
-        objectMap.clear();
-        objectOrder.clear();
-        std::string line;
-        while (std::getline(file, line))
-        {
-            if (line.empty())
-                continue;
-            if (!line.empty() && line.back() == '\r')
-                line.pop_back();
-
-            // Split by comma
-            std::vector<std::string> tokens;
-            std::stringstream ss(line);
-            std::string token;
-            while (std::getline(ss, token, ','))
-            {
-                tokens.push_back(token);
-            }
-
-            if (tokens.size() != 4 && tokens.size() != 7)
-            {
-                Log::warn << "Invalid object line (expected 4 or 7 tokens): " << line << std::endl;
-                continue;
-            }
-
-            try
-            {
-                float x = std::stof(tokens[0]);
-                float y = std::stof(tokens[1]);
-                int index = std::stoi(tokens[2]);
-                float scale = std::stof(tokens[3]);
-
-                ObjectProps props;
-                props.scale = scale;
-                props.index = index;
-
-                if (tokens.size() == 7)
-                {
-                    // New format: rotation, flipX, flipY
-                    props.rotation = std::stof(tokens[4]);
-                    props.flipX = (std::stoi(tokens[5]) != 0);
-                    props.flipY = (std::stoi(tokens[6]) != 0);
-                }
-                else
-                {
-                    // Old format: default rotation=0, no flips
-                    props.rotation = 0.f;
-                    props.flipX = false;
-                    props.flipY = false;
-                }
-
-                std::pair<float, float> key = {x, y};
-                objectMap[key] = props;
-                objectOrder.push_back(key);
-            }
-            catch (const std::exception &e)
-            {
-                Log::warn << "Failed to parse object line: " << line << " - " << e.what() << std::endl;
-            }
-        }
-        Log::info << "Loaded " << objectMap.size() << " objects from " << filename << std::endl;
-    }
-
-    void saveObjectsToFile(const std::string &filename)
-    {
-        std::ofstream file(filename);
-        if (!file.is_open())
-            return;
-        for (const auto &key : objectOrder)
-        {
-            auto it = objectMap.find(key);
-            if (it == objectMap.end())
-                continue;
-            const auto &props = it->second;
-            file << key.first << ","
-                 << key.second << ","
-                 << props.index << ","
-                 << props.scale << ","
-                 << props.rotation << ","
-                 << (props.flipX ? 1 : 0) << ","
-                 << (props.flipY ? 1 : 0) << "\n";
-        }
-    }
-}
-
-/* entities\terrain.hpp */
-#pragma once
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <unordered_map>
-#include <vector>
-#include <utility>
-#include <functional>
-#include <graphics/tiles.hpp>
-#include <entities/objects.hpp>
-
-using SolidMap = std::map<std::pair<int, int>, int>;
-struct NpcSpawn {
-    sf::Vector2f position;
-    std::string characterKey;   // matches Characters::... constants
-};
-
-struct SpawnProps {
-    std::string characterKey;
-    float scale = 1.f;
-    float rotation = 0.f;
-    bool flipX = false;
-    bool flipY = false;
-    std::string npcTypeId;
-    std::string uniqueID;
-    std::string scriptName;   // NEW: if not empty, this NPC will run this script on spawn/trigger
-    std::vector<sf::Vector2f> waypoints;
-};
-
-using SpawnMap = std::map<std::pair<float, float>, SpawnProps>;
-
-namespace Terrain {
-    void draw(sf::RenderWindow& win, float dt);
-    void setMap(const TileMap& new_map);
-    const TileMap& getMap();
-    void update(float dt);
-    void loadFromFile(const std::string& filename);
-    void saveToFile(const std::string& filename);
-    // New overloads – keep existing ones for backward compatibility if needed
-    void setTile(int x, int y, int encodedTile);              // replaces old setTile
-    void addTile(int x, int y, int encodedTile);              // replaces old addTile
-    void setTileVector(int x, int y, const std::vector<int>& encodedTiles);
-    std::vector<int> getTile(int x, int y);                   // returns encoded ints
-    void eraseTile(int x, int y);
-
-    const SolidMap& getSolidMap();
-    void setSolidTile(int x, int y, int type);   // type > 0 = solid
-    void eraseSolidTile(int x, int y);
-    int getSolidTile(int x, int y);              // returns 0 if none
-    void loadSolidFromFile(const std::string& filename);
-    void saveSolidToFile(const std::string& filename);
-
-    // Update isSolidTile to check both normal tiles and solid layer
-    bool isSolidTile(int x, int y);  // already declared; we'll modify its implementation
-
-    // Object functions
-    const ObjectMap& getObjectMap();                         // for lookups (may be unordered)
-    const std::vector<std::pair<float,float>>& getObjectOrder();  // insertion order
-    void setObject(float x, float y, const ObjectProps& props);
-    void eraseObject(float x, float y);
-    void loadObjectsFromFile(const std::string& filename);
-    void saveObjectsToFile(const std::string& filename);
-    ObjectProps getObject(float x, float y);
-
-    const SpawnMap& getSpawnMap();
-    void setSpawn(float x, float y, const SpawnProps& props);
-    void eraseSpawn(float x, float y);
-    SpawnProps getSpawn(float x, float y);  // returns empty key if not found
-    void clearSpawns();
-
-    void loadSpawnsFromFile(const std::string& filename);
-    void saveSpawnsToFile(const std::string& filename);
-
-    // Unified load/save for all spawns (replaces the old single-spawn functions)
-    void loadSpawnsFromFile(const std::string& filename);
-    void saveSpawnsToFile(const std::string& filename);
-
-    sf::Vector2f getPlayerSpawnPosition();  // returns default if none set
-    void setPlayerSpawnPosition(const sf::Vector2f& pos);
-
-
-}
-
 /* entities\characters.hpp */
 // src/entities/characters.hpp
 #pragma once
@@ -1420,7 +780,7 @@ namespace Terrain {
 #include <core/constants.hpp>
 #include <core/scale.hpp>
 #include <graphics/tiles.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 
 // Animation key constants (declared as extern)
 namespace Anim {
@@ -1499,11 +859,15 @@ class Character : public GameObject {
     // ---------- DEBUG ----------
     void drawDebugBounds(sf::RenderWindow& win);
 
+    
 public:
     void init();
     sf::FloatRect getBounds();
     sf::FloatRect getFeetBounds();
     Character(std::string c = Characters::Fighter_Boss, bool playerControls = true);
+    void snapToGround();
+    void resetToSpawn() { pos = SPAWN_POS(); snapToGround(); vel = sf::Vector2f(0.f, 0.f); state = CharacterState::None; moving = CharacterMoving::Idle; timer = 0.f; }
+    void resetToPosition(sf::Vector2f newPos) { pos = newPos; snapToGround(); vel = sf::Vector2f(0.f, 0.f); state = CharacterState::None; moving = CharacterMoving::Idle; timer = 0.f; }
     
     inline sf::Vector2f getPosition() const { return pos * Scale::get(); }
     inline sf::Vector2f getSize() const { return sf::Vector2f(128.f, 128.f); } // Placeholder size
@@ -1537,7 +901,7 @@ public:
 #include <debug/logs.hpp>
 #include <core/scale.hpp>
 #include <core/collision.hpp>    // Fixed spelling!
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <cmath>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/Keyboard.hpp>
@@ -1739,9 +1103,29 @@ void Character::resolveCollision() {
     }
 }
 
+void Character::snapToGround() {
+    // Move down until we are on the ground, but limit iterations to avoid infinite loops.
+    const int MAX_ITER = 100;
+    for (int i = 0; i < MAX_ITER; ++i) {
+        if (onGround())
+            break;
+        pos.y += 0.5f;   // move down by half a pixel (unscaled)
+    }
+    // If we still aren't on the ground, try moving up a bit (shouldn't happen).
+    if (!onGround()) {
+        for (int i = 0; i < MAX_ITER; ++i) {
+            pos.y -= 0.5f;
+            if (onGround()) break;
+        }
+    }
+}
+
 // ---------- ANIMATION ----------
 void Character::animate(sf::RenderWindow& win, float dt) {
     std::string animKey = Anim::Idle;
+    // if (!m_playerControls) {
+    //     Log::info << "animate() using key: " << character << animKey << "\n";
+    // }
     if (moving == CharacterMoving::Walking) animKey = Anim::Walk;
     else if (moving == CharacterMoving::Running) animKey = Anim::Run;
 
@@ -1821,6 +1205,10 @@ void Character::run() {
 }
 
 void Character::shoot() {
+    if ( !m_playerControls ) {
+        Log::info << "NPC shooting at position: (" << pos.x << ", " << pos.y << ")\n";
+        Log::info << "State: " << static_cast<int>(state) << ", Moving: " << static_cast<int>(moving) << "\n";
+    }
     if ( state != CharacterState::None) return;
     if (state != CharacterState::Shooting) timer = 0;
     state = CharacterState::Shooting;
@@ -1848,7 +1236,7 @@ void Character::jump() {
 
 void Character::draw(sf::RenderWindow& win, float dt) {
     animate(win, dt);
-    drawDebugBounds(win);
+    // drawDebugBounds(win);
 }
 
 void Character::update(sf::RenderWindow& win, float dt) {
@@ -1900,130 +1288,12 @@ void Characters::setPlayerCharacter(const std::string& characterKey) {
     Player = characterKey;
 }
 
-/* entities\objects.hpp */
-#pragma once
-
-#include <graphics/textures.hpp>
-#include <SFML/Graphics.hpp>
-#include <map>
-
-struct ObjectProps {
-  float scale;
-  int index;
-  float rotation = 0.f;   // degrees
-  bool flipX = false;
-  bool flipY = false;
-};
-
-#include <unordered_map>
-#include <utility>
-#include <functional>
-
-namespace std {
-  // to fix unordered_map with std::pair<float, float> as key
-    template<>
-    struct hash<std::pair<float, float>> {
-        std::size_t operator()(const std::pair<float, float>& p) const {
-            // Combine the hash of both floats
-            auto h1 = std::hash<float>{}(p.first);
-            auto h2 = std::hash<float>{}(p.second);
-            // Simple combine (XOR with shift)
-            return h1 ^ (h2 << 1);
-        }
-    };
-}
-
-using ObjectMap = std::unordered_map<std::pair<float, float>, ObjectProps>;
-
-namespace Objects {
-  void load();
-  sf::Sprite getObjectSprite(int index);
-  int getCount();   // new
-}
-
-/* entities\objects.cpp */
-#include <entities/objects.hpp>
-#include <graphics/textures.hpp>
-#include <SFML/Graphics.hpp>
-
-namespace Objects
-{
-  namespace {
-    static int totalObjects = 0;
-
-    std::string getObjectKey(int index) {
-      return "object_" + std::to_string(index + 1);
-    }
-  }
-
-  void load() {
-    static const std::vector<std::pair<std::string, int>> objectKeys = {
-      // powerstation
-        {"power_station/objects/decoration", 27},
-        {"power_station/objects/tube", 11},
-
-      // industrial
-        {"industrial_zone/objects/barrel", 4},
-        {"industrial_zone/objects/bench", 1},
-        {"industrial_zone/objects/board", 3},
-        {"industrial_zone/objects/box", 8},
-        {"industrial_zone/objects/bucket", 1},
-        {"industrial_zone/objects/fence", 1},
-        {"industrial_zone/objects/fire-extinguisher", 3},
-        {"industrial_zone/objects/flag", 1},
-        {"industrial_zone/objects/ladder", 3},
-        {"industrial_zone/objects/locker", 4},
-        {"industrial_zone/objects/mop", 1},
-        {"industrial_zone/objects/pointer", 2},
-        {"industrial_zone/objects/numbers", 10},
-
-      // exclusion zone
-        {"exclusion_zone/objects/grass", 24},
-        {"exclusion_zone/objects/stones", 6},
-        {"exclusion_zone/objects/trees", 18},
-        {"exclusion_zone/objects/other/box", 4},
-        {"exclusion_zone/objects/other/pointer", 3},
-
-      // factory
-        {"factory/objects/barrel", 4},
-        {"factory/objects/boxes", 6},
-        {"factory/objects/icons", 12},
-        {"factory/objects/ladders", 8},
-        {"factory/objects/monitors", 9},
-
-      // billboards
-        {"billboards/billboards", 8},
-        {"billboards/ads/22x40", 15},
-        {"billboards/ads/64x64", 15},
-        {"billboards/ads/128x64", 15},
-    };
-    
-    for ( const auto& [path, count] : objectKeys) {
-      for (int i = 0; i < count; ++i) {
-        std::string key = getObjectKey(totalObjects);
-        std::string fullPath = path + "/" + std::to_string(i + 1) + ".png";
-        Textures::load(key, fullPath);
-        totalObjects++;
-      }
-    }
-  }
-
-  sf::Sprite getObjectSprite(int index) {
-    std::string key = getObjectKey(index);
-    return sf::Sprite(Textures::get(key));
-  }
-
-  int getCount() {
-    return totalObjects;
-  }
-}
-
 /* entities\npc.hpp */
 #pragma once
 #include "characters.hpp"
 #include "npc_types.hpp"
 #include <functional>
-#include <entities/script_registry.hpp>
+#include <story/script_registry.hpp>
 
 class NPC : public Character
 {
@@ -2065,9 +1335,11 @@ public:
 
     // Run a script (sequence)
     void runSequence(const std::vector<Action> &actions);
+    void dialogueEnded(); 
 
 private:
 private:
+    bool m_waitingForDialogue = false;
     bool m_aiPaused = false;
     float m_blockedTimer = 0.f;       // cooldown to prevent rapid direction changes
     bool m_directionReversed = false; // to avoid flipping multiple times per frame
@@ -2084,6 +1356,10 @@ private:
 
     std::vector<sf::Vector2f> m_waypoints; // if non‑empty, used instead of type.waypoints
     size_t m_waypointIndex = 0;
+    float m_waitTime = 2.0f;        // how long to wait between waypoints (seconds)
+    bool  m_waiting = false;        // true while waiting
+    float m_waitTimer = 0.f;        // current remaining wait time
+    int   m_nextWaypointAfterWait = 0;
 
     // ---- Helper for script execution ----
     void executeCurrentAction();
@@ -2139,23 +1415,41 @@ NPC::NPC(const NPCType& type, const sf::Vector2f& spawnPos, const std::string& u
     }
 }
 
+void NPC::dialogueEnded() {
+    Log::info << "NPC dialogue ended for NPC" << "\n";
+    if (m_waitingForDialogue) {
+        m_waitingForDialogue = false;
+        advanceScript();   // continue script execution
+    }
+}
+
 void NPC::update(sf::RenderWindow& win, float dt) {
+    // Log::info << "NPC update: state=" << static_cast<int>(state) << ", scriptRunning=" << m_scriptRunning << "\n";
     Character::update(win, dt); // base physics & animation
     if (m_scriptRunning) {
+        if (m_waitingForDialogue) {
+            return;   // wait for dialogue to end
+        }
         // Handle scripted movement (MoveTo)
+        Log::info << "NPC update: scripted movement state=" << static_cast<int>(behaviorState.type) << "\n";
         if (behaviorState.type == BehaviorState::Type::Scripted) {
+            Log::info << "NPC scripted movement: targetPos=(" << behaviorState.targetPos.x << ", " << behaviorState.targetPos.y << ")\n";
             sf::Vector2f currentPos = getPosition();
             sf::Vector2f target = behaviorState.targetPos * Scale::get();
             sf::Vector2f diff = target - currentPos;
-            float distance = std::hypot(diff.x, diff.y);
+            float distance = std::abs(diff.x);
+
             if (distance < 5.f) {
-                // Reached target, advance script
+                // Snap to target (unscaled)
+                pos = behaviorState.targetPos;
+                behaviorState.type = BehaviorState::Type::Idle;
+                idle();
                 advanceScript();
             } else {
-                // Walk towards target
+                // Walk horizontally towards target
                 int dir = (diff.x > 0) ? 1 : -1;
                 walk(dir);
-                // Optional: jump if needed?
+                // Optional: add vertical movement if needed (e.g., jump)
             }
         }
         // Handle Wait timer
@@ -2171,50 +1465,64 @@ void NPC::update(sf::RenderWindow& win, float dt) {
             if (updateCB) updateCB(*this, dt);
         }
     }
-    sf::Vector2f target = behaviorState.targetPos;
-    //draw a big circle around the target position for debugging
-    sf::CircleShape circle(10.f);
-    circle.setFillColor(sf::Color(255, 0, 0, 100));
-    circle.setPosition(target - sf::Vector2f(10.f, 10.f));
-    circle.setOrigin(sf::Vector2f(10.f, 10.f));
-    win.draw(circle);
-    Log::info << "Target: " << target.x << ", " << target.y << " | Position: " << pos.x << ", " << pos.y << std::endl;
 }
 
 void NPC::runSequence(const std::vector<Action>& actions) {
     m_script = actions;
+    m_waiting = false;
     for (auto& action : m_script) {
         if (action.type == ActionType::ShowDialogue || action.type == ActionType::SwapPlayer) {
             action.npc = this; // set the NPC pointer
         }
     }
-    m_script = actions;
     m_currentActionIndex = 0;
     m_actionTimer = 0.f;
     m_scriptRunning = true;
     // Pause AI while script runs
     pauseAI(true);
     executeCurrentAction();
+    Log::info << "Action sequence done for NPC " << uniqueID << " with " << m_script.size() << " actions.\n";    
 }
 
 void NPC::executeCurrentAction() {
     if (m_currentActionIndex >= m_script.size()) {
+        Log::info << "NPC script finished." << std::endl;
         // script finished
         m_scriptRunning = false;
         pauseAI(false);
         return;
     }
-
+    Log::info << "Try to execute action " << m_currentActionIndex << " of " << m_script.size() << std::endl;
     const Action& action = m_script[m_currentActionIndex];
+    Log::info << "Executing action " << m_currentActionIndex << ": type=" << static_cast<int>(action.type) << std::endl;
     switch (action.type) {
+        case ActionType::FacePlayer: {
+            Character* player = Player::get().getPlayer();
+            if (!player) {
+                Log::warn << "FacePlayer: Player pointer is null. Skipping.\n";
+                advanceScript();
+                break;
+            }
+            int dir = (player->getPosition().x > getPosition().x) ? 1 : -1;
+            direction = dir;
+            advanceScript();
+            break;
+        }
         case ActionType::MoveTo:
-            // Set target for movement (will be handled in update)
             behaviorState.type = BehaviorState::Type::Scripted;
             behaviorState.targetPos = action.targetPos;
+            m_actionTimer = -1.f;   // no wait timer
+            break;
+
+        case ActionType::MoveRelative:
+            behaviorState.type = BehaviorState::Type::Scripted;
+            behaviorState.targetPos = getPosition() / Scale::get() + action.targetPos;
+            m_actionTimer = -1.f;   // no wait timer
             break;
 
         case ActionType::Wait:
             m_actionTimer = action.duration;
+            Log::info << "Waiting for " << m_actionTimer << " seconds.\n";
             break;
 
         case ActionType::LockPlayer:
@@ -2236,17 +1544,12 @@ void NPC::executeCurrentAction() {
             break;
 
         case ActionType::ShowDialogue:
-            // Push dialog screen (assume we have a way to get NPC pointer)
-            // The action should have the dialogueId, but we need to know which NPC.
-            // We can pass the NPC pointer to the screen.
-            // We'll implement a helper in NPCManager to push dialog for this NPC.
             if (action.npc) {
                 UIManager::get().pushScreen(std::make_unique<DialogScreen>(action.npc));
             } else {
-                // fallback: use this NPC
                 UIManager::get().pushScreen(std::make_unique<DialogScreen>(this));
             }
-            advanceScript();
+            m_waitingForDialogue = true;   // block script until dialogue closes
             break;
 
         case ActionType::SwapPlayer:
@@ -2259,13 +1562,17 @@ void NPC::executeCurrentAction() {
             advanceScript();
             break;
 
-        case ActionType::CallFunction:
-            // Look up function in a registry (we can store std::function in a map)
-            // For simplicity, we'll just log.
-            Log::info << "CallFunction: " << action.functionName << std::endl;
-            // Could call a global function registry.
+        case ActionType::CallFunction: {
+            Log::info << "Calling function: " << action.functionName << std::endl;
+            auto it = FunctionRegistry::functions.find(action.functionName);
+            if (it != FunctionRegistry::functions.end()) {
+                it->second(this);
+            } else {
+                Log::warn << "Unknown function: " << action.functionName << std::endl;
+            }
             advanceScript();
             break;
+        }
 
         case ActionType::EndSequence:
             m_scriptRunning = false;
@@ -2302,114 +1609,123 @@ void NPC::updateBehavior(float dt) {
 void NPC::patrolUpdate(float dt) {
     const auto& wps = getWaypoints();
     if (wps.empty()) {
-        // If no waypoints, switch to idle
         behaviorState.type = BehaviorState::Type::Idle;
         return;
     }
 
-    sf::Vector2f currentPos = pos;
-    sf::FloatRect bounds = getBounds();
-    sf::Vector2f center = bounds.position + bounds.size / 2.f;
+    // ---- 1. Compute target and character centre in UNSCALED coordinates ----
     sf::Vector2f target = behaviorState.targetPos;
-    sf::Vector2f diff = target - center;
-    
-    float distance = std::hypot(target.x - center.x, target.y - center.y);
+    sf::Vector2f center = pos + sf::Vector2f(
+        Character::OFFSET_X + Character::BASE_WIDTH / 2.f,
+        Character::OFFSET_Y + Character::BASE_HEIGHT / 2.f
+    );
 
+    sf::Vector2f diff = target - center;
+    float distance = std::abs(diff.x);
+
+    // ---- 2. Reached waypoint? ----
     if (distance < 5.f) {
-        nextWaypoint = (nextWaypoint + 1) % wps.size();
-        behaviorState.targetPos = wps[nextWaypoint];
-        m_blockedTimer = 0.f;
-        m_directionReversed = false;
-        idle();
+        // Start waiting before moving to next waypoint
+        m_waiting = true;
+        m_waitTimer = m_waitTime;
+        m_nextWaypointAfterWait = (nextWaypoint + 1) % wps.size(); // next index
+
+        // Stop moving and switch to idle behavior
+        behaviorState.type = BehaviorState::Type::Idle;
+        moving = CharacterMoving::Idle;
+        vel.x = 0.f;
+
+        Log::info << "Reached waypoint, waiting " << m_waitTime << "s before moving to index " << m_nextWaypointAfterWait << std::endl;
         return;
     }
 
+    // ---- 3. Direction (now correct) ----
     int dir = (diff.x > 0) ? 1 : -1;
 
-    // Get tile position at feet level (bottom-right)
-    sf::FloatRect charBox = getBounds();
+    // ---- 4. Obstacle / danger checks (using scaled coordinates, as before) ----
+    float s = Scale::get();
+    sf::FloatRect charBox = getBounds();                 // scaled
     sf::Vector2f bottomRight = charBox.position + charBox.size;
     sf::Vector2i tilePos = Tiles::getTileGridPosition(bottomRight);
     tilePos.x += dir * 0.01f;
 
-    // // ---- Obstacle checks ----
-    bool blockAhead = (Terrain::isSolidTile(tilePos.x + dir, tilePos.y) ||
-                       Terrain::isSolidTile(tilePos.x + dir, tilePos.y + 1));
 
-    // // ensure room for player
-    // bool jumpable = (
-    //     Terrain::isSolidTile(tilePos.x + dir, tilePos.y + 1) &&
+    // prevent jump to prevent unexpected issues, implement jumping characters in script or smth
+    // maybe updateCB, where it checks for position and jump but only if needed
+
+    // bool blockAhead = (Terrain::isSolidTile(tilePos.x + dir, tilePos.y) ||
+    //                    Terrain::isSolidTile(tilePos.x + dir, tilePos.y + 1));
+
+    // bool inDanger = false;
+    // if (!Terrain::isSolidTile(tilePos.x, tilePos.y) &&
+    //     !Terrain::isSolidTile(tilePos.x, tilePos.y - 1) &&
+    //     !Terrain::isSolidTile(tilePos.x, tilePos.y - 2) &&
+    //     !Terrain::isSolidTile(tilePos.x, tilePos.y - 3) &&
+    //     !Terrain::isSolidTile(tilePos.x + dir, tilePos.y) &&
     //     !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 1) &&
     //     !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 2) &&
-    //     !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 3));
+    //     !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 3)) {
+    //     inDanger = true;
+    // }
 
-    // Check for danger: no solid tile below the character in a vertical strip
-    bool inDanger = false;
-    if (!Terrain::isSolidTile(tilePos.x, tilePos.y) &&
-        !Terrain::isSolidTile(tilePos.x, tilePos.y - 1) &&
-        !Terrain::isSolidTile(tilePos.x, tilePos.y - 2) &&
-        !Terrain::isSolidTile(tilePos.x, tilePos.y - 3) &&
-        !Terrain::isSolidTile(tilePos.x + dir, tilePos.y) &&
-        !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 1) &&
-        !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 2) &&
-        !Terrain::isSolidTile(tilePos.x + dir, tilePos.y - 3)) {
-        inDanger = true;
-    }
+    // ---- 5. Blocked / danger handling ----
+    // if (inDanger) {
+    //     m_blockedTimer += dt;
+    //     if (m_blockedTimer > 0.3f && !m_directionReversed) {
+    //         int prevIndex = (nextWaypoint == 0) ? wps.size() - 1 : nextWaypoint - 1;
+    //         behaviorState.targetPos = wps[prevIndex];
+    //         m_directionReversed = true;
+    //         m_blockedTimer = 0.f;
+    //         nextWaypoint = prevIndex;
+    //         return;
+    //     }
 
-    // ---- Handle blockage ----
-    if (inDanger) {
-        m_blockedTimer += dt;
+    //     if (moving == CharacterMoving::Idle) {
+    //         walk(dir);
+    //     }
 
-        // If blocked for more than 0.3 seconds, reverse direction
-        if (m_blockedTimer > 0.3f && !m_directionReversed) {
-            int prevIndex = (nextWaypoint == 0) ? wps.size() - 1 : nextWaypoint - 1;
-            behaviorState.targetPos = wps[prevIndex];
-            m_directionReversed = true;
-            m_blockedTimer = 0.f;
-            nextWaypoint = prevIndex;
-            return;
-        }
+    //     if (onGround()) {
+    //         if (blockAhead && Terrain::isSolidTile(tilePos.x + dir, tilePos.y + 1)) {
+    //             jump();
+    //         } else if (inDanger) {
+    //             jump();
+    //         }
+    //     }
+    //     return;
+    // }
 
-        // Movement: try to walk even when blocked (collision resolution will handle)
-        if ( moving == CharacterMoving::Idle) {
-            walk(dir);
-        }
-
-        // JUMP ONLY IF WE ARE ON GROUND AND BLOCK AHEAD (to climb over a step)
-        // Also jump if in danger (falling off edge)
-        if (onGround()) {
-            if (blockAhead) {
-                // Only jump if there is a solid tile below the block ahead (meaning it's a climbable step)
-                // Check tile below the block ahead
-                if (Terrain::isSolidTile(tilePos.x + dir, tilePos.y + 1)) {
-                    jump();
-                }
-            } else if (inDanger) {
-                jump();
-            }
-        }
-        return;
-    }
-
-    // ---- No obstacles: move normally ----
+    // ---- 6. Normal movement ----
     m_blockedTimer = 0.f;
     m_directionReversed = false;
 
-    // Movement
     if (distance > 100.f && moving == CharacterMoving::Idle) {
         walk(dir);
     }
-
-    // Optional: if there's a block at foot level ahead, and we are on ground, jump to climb
-    // if (onGround() && Terrain::isSolidTile(tilePos.x + dir, tilePos.y)) {
-    //     // Only jump if that block is a climbable step (has ground below it)
-    //     if (Terrain::isSolidTile(tilePos.x + dir, tilePos.y + 1)) {
-    //         jump();
-    //     }
-    // }
 }
 
-void NPC::idleUpdate(float dt) { /* do nothing */ }
+void NPC::idleUpdate(float dt) {
+    if (m_waiting) {
+        m_waitTimer -= dt;
+        if (m_waitTimer <= 0.f) {
+            // Waiting finished: move to the next waypoint
+            m_waiting = false;
+            nextWaypoint = m_nextWaypointAfterWait;
+            const auto& wps = getWaypoints();
+            if (!wps.empty()) {
+                behaviorState.targetPos = wps[nextWaypoint];
+                behaviorState.type = BehaviorState::Type::Patrol;
+                moving = CharacterMoving::Idle;   // allow new direction on next frame
+                vel.x = 0.f;
+                Log::info << "Resuming patrol to waypoint " << nextWaypoint << " at (" 
+                          << wps[nextWaypoint].x << ", " << wps[nextWaypoint].y << ")" << std::endl;
+            } else {
+                behaviorState.type = BehaviorState::Type::Idle; // no waypoints, stay idle
+            }
+        }
+    }
+    // If not waiting, do nothing (or you can add other idle behaviours)
+}
+
 void NPC::followUpdate(float dt) { /* implement later */ }
 void NPC::scriptedUpdate(float dt) { /* implement later */ }
 
@@ -2481,6 +1797,9 @@ public:
         return ids;
     }
 
+    void clearAll(); // clears npcStorage, npcList, npcMap, pendingAutoTalks
+    NPC* getNearestInteractable(const sf::Vector2f& playerPos) const; // new
+
 private:
     NPCManager() = default;
     std::vector<std::unique_ptr<NPC>> npcStorage;
@@ -2496,7 +1815,8 @@ private:
 /* entities\npc_manager.cpp */
 #include "npc_manager.hpp"
 #include <debug/logs.hpp>
-#include <entities/script_registry.hpp>
+#include <story/script_registry.hpp>
+#include <story/story_manager.hpp>
 
 NPCManager& NPCManager::get() {
     static NPCManager instance;
@@ -2508,10 +1828,12 @@ void NPCManager::registerType(const NPCType& type) {
 }
 
 NPC* NPCManager::createNPC(const SpawnProps& props, const sf::Vector2f& pos) {
+
+    Log::Scope scope("NPCManager::createNPC");
     // Use props.npcTypeId as typeId
     auto it = typeRegistry.find(props.npcTypeId);
     if (it == typeRegistry.end()) {
-        Log::error << "Unknown NPC type: " << props.npcTypeId << std::endl;
+        scope.error << "Unknown NPC type: " << props.npcTypeId << std::endl;
         return nullptr;
     }
     const NPCType& type = it->second;
@@ -2531,15 +1853,32 @@ NPC* NPCManager::createNPC(const SpawnProps& props, const sf::Vector2f& pos) {
         auto scriptIt = ScriptRegistry::scripts.find(props.scriptName);
         if (scriptIt != ScriptRegistry::scripts.end()) {
             raw->runSequence(scriptIt->second);
+            scope.info << "Finished running script '" << props.scriptName << "' for NPC " << id << std::endl;
         } else {
-            Log::warn << "Script '" << props.scriptName << "' not found in registry." << std::endl;
+            scope.warn << "Script '" << props.scriptName << "' not found in registry." << std::endl;
         }
     }
     if (!props.waypoints.empty()) {
+        scope.info << "Setting waypoints for NPC " << id << std::endl;
         raw->setWaypoints(props.waypoints);
     }
 
     return raw;
+}
+
+void NPCManager::clearAll() {
+    npcStorage.clear();
+    npcList.clear();
+    npcMap.clear();
+    pendingAutoTalks.clear();
+}
+
+void guardShoot(NPC* npc) {
+    if (!npc) return;
+    Log::info << "guardShoot() called for NPC at (" << npc->getPosition().x << ", " << npc->getPosition().y << ")\n";
+    // Set the character state to Shooting so the animation plays.
+    npc->shoot();   // Character::shoot() sets state to Shooting and resets timer
+    // Optionally spawn a visual bullet or flash here.
 }
 
 void NPCManager::loadDefinitions() {
@@ -2595,7 +1934,23 @@ void NPCManager::loadDefinitions() {
     };
     registerType(guard);
 
+    NPCType guardCutscene;
+    guardCutscene.id = "guard_cutscene";
+    guardCutscene.characterKey = Characters::Fighter_Boss;  // same sprite as generic guard
+    guardCutscene.behaviorType = "idle";                   // or "patrol" if you want
+    guardCutscene.dialogue = {
+        {"guard_shoot_intro", "Guard", "Stop right there, criminal! You're under arrest!", "", "", -1, {}},
+        {"guard_shoot_2", "Guard", "Take this!", "", "", -1, {}}
+    };
+    registerType(guardCutscene);
+
+    FunctionRegistry::registerFunction("guardShoot", guardShoot);
+    FunctionRegistry::registerFunction("setFlag_guardshoot_started", [](NPC* npc) {
+        StoryManager::get().setFlag("guardshoot_started");
+    });
+
 }
+
 
 const NPCType* NPCManager::getType(const std::string& typeId) const {
     auto it = typeRegistry.find(typeId);
@@ -2660,7 +2015,20 @@ void NPCManager::draw(sf::RenderWindow& win, float dt) {
     }
 }
 
+// entities/npc_manager.cpp
+NPC* NPCManager::getNearestInteractable(const sf::Vector2f& playerPos) const {
+    for (NPC* npc : npcList) {
+        sf::Vector2f npcPos = npc->getPosition();
+        float dist = std::hypot(playerPos.x - npcPos.x, playerPos.y - npcPos.y);
+        if (dist <= npc->getType().talkRadius) {
+            return npc;   // return the first one found (you could also pick the closest)
+        }
+    }
+    return nullptr;
+}
+
 void NPCManager::spawnAllNPCs() {
+    Log::Scope scope("NPCManager::spawnAllNPCs");
     for (const auto& [pos, props] : Terrain::getSpawnMap()) {
         sf::Vector2f worldPos(pos.first, pos.second);
         if (props.characterKey == "Player" || props.npcTypeId == "player") {
@@ -2673,6 +2041,7 @@ void NPCManager::spawnAllNPCs() {
             }
         }
     }
+    scope.info << "Finished spawning all NPCs." << std::endl;
 }
 
 void NPCManager::setPlayer(Character* player) {
@@ -2733,15 +2102,22 @@ public:
     void swapTo(Character* newChar);    // take control of an NPC (or any Character)
     void swapBack();                    // revert to the previous character
     bool canSwapBack() const { return m_characterStack.size() > 1; }
+
+    
+    void setTooltip(const std::string& text);
+    void clearTooltip();
+    void drawTooltip(sf::RenderWindow& win) const;
     
     private:
     Player() = default;  // private constructor
     Character* player = nullptr;
      std::vector<Character*> m_characterStack;
+     std::string m_tooltipText;
 };
 
 /* entities\player.cpp */
 #include <entities/player.hpp>
+#include <ui/ui_manager.hpp>
 
 void Player::update(sf::RenderWindow &win, float dt)
 {
@@ -2761,6 +2137,7 @@ void Player::draw(sf::RenderWindow &win, float dt)
     return;
   }
   player->draw(win, dt);
+  drawTooltip(win);
 }
 
 void Player::init()
@@ -2840,66 +2217,107 @@ void Player::swapBack() {
     }
 }
 
-/* entities\script_registry.hpp */
-// ScriptRegistry.hpp
-#pragma once
-
-#include <vector>
-#include <unordered_map>
-#pragma once
-#include <vector>
-#include <unordered_map>
-#include <string>
-#include <SFML/System/Vector2.hpp>
-
-class NPC; // forward
-
-enum class ActionType {
-    MoveTo,
-    Wait,
-    LockPlayer,
-    UnlockPlayer,
-    PlayAnimation,
-    ShowDialogue,
-    SwapPlayer,
-    CallFunction,
-    EndSequence
-};
-
-struct Action {
-    ActionType type;
-    float duration = 0.f;
-    sf::Vector2f targetPos;
-    std::string animKey;
-    std::string dialogueId;
-    std::string functionName;
-    NPC* npc = nullptr;   // for SwapPlayer
-};
-
-using Script = std::vector<Action>;
-
-namespace ScriptRegistry {
-  extern std::unordered_map<std::string, Script> scripts;
-  void init();
+void Player::setTooltip(const std::string& text) {
+    m_tooltipText = text;
 }
 
-/* entities\script_registry.cpp */
-#include <entities/script_registry.hpp>
+void Player::clearTooltip() {
+    m_tooltipText.clear();
+}
 
-namespace ScriptRegistry {
-    std::unordered_map<std::string, Script> scripts;
-  }
-  
-void ScriptRegistry::init() {
-  scripts["detective_intro"] = {
-    {ActionType::MoveTo, 0, {10.f, 5.f}},   // approach player
-    {ActionType::LockPlayer},
-    {ActionType::PlayAnimation, 0, {}, "talk"},
-    {ActionType::ShowDialogue, 0, {}, "detective_intro"},
-    {ActionType::Wait, 1.0f},               // pause after dialogue
-    {ActionType::UnlockPlayer},
-    {ActionType::EndSequence}
-  };
+void Player::drawTooltip(sf::RenderWindow& win) const {
+    if (m_tooltipText.empty() || !player) return;
+
+    // 1. Player head world position -> screen coordinates
+    sf::FloatRect bounds = player->getBounds();
+    sf::Vector2f headWorld = bounds.position + sf::Vector2f(bounds.size.x / 2.f, 0.f);
+    headWorld.y -= 20.f;   // offset above head
+    sf::Vector2f headScreen = win.mapCoordsToPixel(headWorld);
+
+    sf::Font& font = UIManager::get().getFont();
+
+    // 2. UI constants (pixel sizes, no scaling)
+    const float circleRadius  = 22.f;
+    const float fontSizeKey   = 20.f;
+    const float fontSizeLabel = 18.f;
+    const float padding       = 14.f;
+    const float gap           = 12.f;      // between circle and label
+    const float pointerSize   = 12.f;      // triangle height
+    const float borderThick   = 2.f;
+    const float cornerRadius  = 8.f;       // for rounded corners (we'll approximate)
+
+    // 3. Build label text
+    sf::Text labelText(font, m_tooltipText, fontSizeLabel);
+    labelText.setFillColor(sf::Color::White);
+    sf::FloatRect labelBounds = labelText.getLocalBounds();
+
+    // 4. Build "E" circle
+    sf::CircleShape circle(circleRadius);
+    circle.setFillColor(sf::Color(20, 20, 30, 230));   // dark with slight blue tint
+    circle.setOutlineColor(sf::Color(180, 200, 255));  // light blue border
+    circle.setOutlineThickness(borderThick);
+
+    sf::Text keyText(font, "E", fontSizeKey);
+    keyText.setFillColor(sf::Color(180, 200, 255));    // light blue to match border
+    sf::FloatRect keyBounds = keyText.getLocalBounds();
+
+    // 5. Layout dimensions
+    float totalWidth  = circleRadius * 2 + gap + labelBounds.size.x + padding * 2;
+    float totalHeight = std::max(circleRadius * 2, labelBounds.size.y) + padding * 2;
+    float totalHeightWithPointer = totalHeight + pointerSize;
+
+    // 6. Position the bubble so its bottom‑center aligns with headScreen
+    float bubbleX = headScreen.x - totalWidth / 2.f;
+    float bubbleY = headScreen.y - totalHeightWithPointer - 5.f; // 5px extra gap
+
+    // 7. Background rectangle (rounded corners approximated using a sprite – we'll keep it simple)
+    sf::RectangleShape background({totalWidth, totalHeight});
+    background.setPosition({bubbleX, bubbleY});
+    background.setFillColor(sf::Color(15, 15, 25, 220));   // dark blue‑black
+    background.setOutlineColor(sf::Color(180, 200, 255));
+    background.setOutlineThickness(borderThick);
+
+    // 8. Pointer triangle (points down to player's head)
+    sf::ConvexShape pointer;
+    pointer.setPointCount(3);
+    float pointerX = headScreen.x;
+    float pointerY = bubbleY + totalHeight;
+    pointer.setPoint(0, {pointerX - pointerSize, pointerY});
+    pointer.setPoint(1, {pointerX, pointerY + pointerSize});
+    pointer.setPoint(2, {pointerX + pointerSize, pointerY});
+    pointer.setFillColor(sf::Color(15, 15, 25, 220));
+    pointer.setOutlineColor(sf::Color(180, 200, 255));
+    pointer.setOutlineThickness(borderThick);
+
+    // 9. Position elements inside the bubble
+    // Circle (centered vertically, left‑aligned with padding)
+    float circleX = bubbleX + padding;
+    float circleY = bubbleY + (totalHeight - circleRadius * 2) / 2.f;
+    circle.setPosition({circleX, circleY});
+
+    // Key text (centered inside circle)
+    float keyX = circleX + circleRadius - keyBounds.size.x / 2.f;
+    float keyY = circleY + circleRadius - keyBounds.size.y / 2.f - 2.f;
+    keyText.setPosition({keyX, keyY});
+
+    // Label text (to the right of circle, vertically centered)
+    float labelX = circleX + circleRadius * 2 + gap;
+    float labelY = bubbleY + (totalHeight - labelBounds.size.y) / 2.f - 2.f;
+    labelText.setPosition({labelX, labelY});
+
+    // 10. Draw in UI view (default view)
+    sf::View originalView = win.getView();
+    win.setView(win.getDefaultView());
+
+    // Draw background and pointer first (so they are behind text)
+    win.draw(background);
+    win.draw(pointer);
+    win.draw(circle);
+    win.draw(keyText);
+    win.draw(labelText);
+
+    // Restore view
+    win.setView(originalView);
 }
 
 /* editor\level_editor.hpp */
@@ -2910,6 +2328,7 @@ void ScriptRegistry::init() {
 #include "solid_editor.hpp"
 #include "spawn_editor.hpp"
 #include "waypoint_editor.hpp"
+#include <sstream>
 
 class LevelEditor {
 public:
@@ -2919,7 +2338,7 @@ public:
     void setActive(bool active);
     bool isActive() const;
 
-    void init(); // calls tileEditor.init() and objectEditor.init()
+    void init();
 
 private:
     enum class Mode { Tile, Object, Solid, Spawn, Waypoint };
@@ -2933,6 +2352,13 @@ private:
     SpawnEditor spawnEditor;
     WaypointEditor waypointEditor;
 
+    // ---- UI elements for world coordinates ----
+    sf::Text m_positionText;
+    sf::RectangleShape m_positionBg;
+
+    // ---- Store last mouse world position for clipboard copy ----
+    sf::Vector2f m_lastMouseWorld;
+
     void switchMode(Mode mode);
 };
 
@@ -2940,9 +2366,12 @@ private:
 #include "level_editor.hpp"
 #include <core/constants.hpp>
 #include <iostream>
+#include <SFML/Window/Mouse.hpp>
+#include <SFML/Window/Clipboard.hpp>
+#include <ui/ui_manager.hpp>
 
 LevelEditor::LevelEditor()
-    : tileEditor(font), objectEditor(font), solidEditor(font), spawnEditor(font), waypointEditor(font)
+    : tileEditor(font), objectEditor(font), solidEditor(font), spawnEditor(font), waypointEditor(font), m_positionText(font)
 {
     if (!font.openFromFile("assets/fonts/orbitron.ttf"))
     {
@@ -2955,6 +2384,17 @@ LevelEditor::LevelEditor()
     spawnEditor.setActive(false);
     spawnEditor.setPaletteVisible(false);
     waypointEditor.setActive(false);
+
+    // ---- Init position display ----
+    m_positionText.setFont(font);
+    m_positionText.setCharacterSize(16);
+    m_positionText.setFillColor(sf::Color::White);
+    m_positionText.setString("X: 0.0  Y: 0.0");
+
+    m_positionBg.setFillColor(sf::Color(0, 0, 0, 180));
+    m_positionBg.setOutlineColor(sf::Color::White);
+    m_positionBg.setOutlineThickness(1.f);
+    m_lastMouseWorld = sf::Vector2f(0.f, 0.f);
 }
 
 void LevelEditor::init()
@@ -3063,6 +2503,19 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
             if (currentMode == Mode::Tile)
                 tileEditor.toggleStackMode();
             break;
+        case sf::Keyboard::Scancode::C:
+            {
+                // Copy coordinates to clipboard
+                std::ostringstream oss;
+                oss.precision(1);
+                oss << std::fixed << m_lastMouseWorld.x << ", " << m_lastMouseWorld.y;
+                sf::Clipboard::setString(oss.str());
+                // Optionally log or show feedback (we can update the position text temporarily)
+                std::string msg = "Copied: " + oss.str();
+                m_positionText.setString(msg);
+                // We'll let the normal draw update it later, so it's fine.
+                break;
+            }
         default:
             break;
         }
@@ -3103,7 +2556,6 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
         solidEditor.handleEvent(event, window);
     else if (currentMode == Mode::Spawn)
         spawnEditor.handleEvent(event, window);
-    // Forward event
     else if (currentMode == Mode::Waypoint)
         waypointEditor.handleEvent(event, window);
     else
@@ -3112,8 +2564,12 @@ void LevelEditor::handleEvent(const sf::Event &event, sf::RenderWindow &window)
 
 void LevelEditor::draw(sf::RenderWindow &window)
 {
-    if (!active)
-        return;
+    if (!active) return;
+
+    // 1. Save the current (world) view before any editor changes it
+    sf::View worldView = window.getView();
+
+    // 2. Draw the active editor (may change view to default)
     if (currentMode == Mode::Tile)
         tileEditor.draw(window);
     else if (currentMode == Mode::Solid)
@@ -3124,6 +2580,44 @@ void LevelEditor::draw(sf::RenderWindow &window)
         waypointEditor.draw(window);
     else
         objectEditor.draw(window);
+
+    
+    window.setView(worldView); // before computing world coordinates
+    // ---- Draw world coordinates (bottom right) ----
+    sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+    // Use the saved worldView to get world coordinates
+    sf::Vector2f mouseWorld = window.mapPixelToCoords(mousePixel, worldView);
+    m_lastMouseWorld = mouseWorld / Scale::get();
+    
+    // Update text
+    std::ostringstream oss;
+    oss.precision(1);
+    oss << std::fixed << "X: " << m_lastMouseWorld.x << "  Y: " << m_lastMouseWorld.y;
+    m_positionText.setString(oss.str());
+
+    // Compute size and position (bottom right, 10px padding)
+    sf::FloatRect textBounds = m_positionText.getLocalBounds();
+    float padding = 10.f;
+    float bgWidth = textBounds.size.x + padding * 2.f;
+    float bgHeight = textBounds.size.y + padding * 2.f;
+    float bgX = window.getSize().x - bgWidth - padding;
+    float bgY = window.getSize().y - bgHeight - padding;
+
+    m_positionBg.setSize({bgWidth, bgHeight});
+    m_positionBg.setPosition({bgX, bgY});
+
+    // Center text inside the background
+    m_positionText.setPosition({
+        bgX + padding,
+        bgY + padding
+    });
+
+    // before drawing
+    window.setView(UIManager::get().getUIView(window)); // Restore the UI view
+
+    // Draw
+    window.draw(m_positionBg);
+    window.draw(m_positionText);
 }
 
 /* editor\undo_stack.hpp */
@@ -3573,7 +3067,7 @@ private:
 #include <core/constants.hpp>
 #include <graphics/tiles.hpp>
 #include <core/scale.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <algorithm>
 #include <cmath>
 #include <core/tile_encoding.hpp>
@@ -3929,7 +3423,7 @@ void TileEditor::redo() { undoStack.redo(); }
 #include <SFML/Graphics.hpp>
 #include "undo_stack.hpp"
 #include "palette.hpp"
-#include <entities/objects.hpp>
+#include <map/objects.hpp>
 
 struct ObjectChange {
     float x, y;
@@ -3989,8 +3483,8 @@ private:
 
 /* editor\object_editor.cpp */
 #include "object_editor.hpp"
-#include <entities/terrain.hpp>
-#include <entities/objects.hpp>
+#include <map/terrain.hpp>
+#include <map/objects.hpp>
 #include <core/scale.hpp>
 #include <core/constants.hpp>
 #include <algorithm>
@@ -4298,7 +3792,7 @@ private:
 
 /* editor\solid_editor.cpp */
 #include "solid_editor.hpp"
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <core/constants.hpp>
 #include <core/scale.hpp>
 #include <graphics/tiles.hpp>
@@ -4919,7 +4413,7 @@ void SpawnEditor::togglePaletteVisibility() { showPalette = !showPalette; }
 #include "undo_stack.hpp"
 #include "palette.hpp"
 #include <entities/npc_manager.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <string>
 #include <vector>
 
@@ -5013,7 +4507,7 @@ private:
 /* editor\waypoint_editor.hpp */
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <entities/npc_manager.hpp>
 #include <editor/undo_stack.hpp>
 #include <editor/spawn_editor.hpp>
@@ -5063,7 +4557,7 @@ private:
 /* editor\waypoint_editor.cpp */
 #include "waypoint_editor.hpp"
 #include <core/scale.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <debug/logs.hpp>
 #include <algorithm>
 #include <cmath>
@@ -5332,6 +4826,7 @@ public:
 
     // Whether this screen blocks input to screens below
     virtual bool blocksInput() const { return true; }
+    virtual bool displayBelow() const { return true; } // Whether to display screens below this one
 
     // Whether the game should update while this screen is on top
     virtual bool blocksGameUpdate() const { return true; }
@@ -5363,7 +4858,7 @@ public:
         }
     }
     sf::Font& getFont() { return m_font; } // Provide access to a shared font
-    static sf::View getUIView(sf::RenderWindow& window) {
+    static sf::View getUIView(const sf::RenderWindow& window) {
         static sf::View uiView = window.getDefaultView();
         uiView.setSize(sf::Vector2f(window.getSize()));
         uiView.setCenter(sf::Vector2f(window.getSize()) / 2.f);
@@ -5407,19 +4902,29 @@ bool UIManager::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
 }
 
 void UIManager::update(float dt, bool& gameShouldUpdate) {
-    gameShouldUpdate = true;
+    if (m_screens.empty())
+        return;
+    
     for (auto it = m_screens.rbegin(); it != m_screens.rend(); ++it) {
+        bool blocks = (*it)->blocksGameUpdate();   // store flag before update
+        gameShouldUpdate = !blocks;
         (*it)->update(dt);
-        if ((*it)->blocksGameUpdate()) {
-            gameShouldUpdate = false;
-            break;
+        if ( gameShouldUpdate ) {
+            break; // screens below are blocked
         }
     }
 }
 
 void UIManager::draw(sf::RenderWindow& window) const {
-    for (auto& screen : m_screens)
-        screen->draw(window);
+    auto start = m_screens.begin();
+    for (auto it = m_screens.begin(); it != m_screens.end(); ++it) {
+        if (!(*it)->displayBelow()) {
+            start = it;
+        }
+    }
+    for (auto it = start; it != m_screens.end(); ++it) {
+        (*it)->draw(window);
+    }
 }
 
 /* ui\dialog_screen.hpp */
@@ -5519,6 +5024,7 @@ void DialogScreen::moveToLine(int index)
 // Update onEnter()
 void DialogScreen::onEnter()
 {
+  Log::info << "DialogScreen onEnter() for NPC!" << std::endl;
   if (!npc->getType().dialogue.empty())
   {
     moveToLine(0); // start from index 0, but it will skip if invalid
@@ -5831,9 +5337,13 @@ void DialogScreen::draw(sf::RenderWindow &window)
   }
 }
 
-void DialogScreen::onExit()
-{
-  // optional cleanup
+void DialogScreen::onExit() {
+  if (npc) {
+      Log::info << "Exiting DialogScreen for NPC!" << std::endl;
+        npc->dialogueEnded();
+    } else {
+      Log::info << "Exiting DialogScreen with null NPC!" << std::endl;
+    }
 }
 
 /* ui\main_menu.hpp */
@@ -5842,18 +5352,19 @@ void DialogScreen::onExit()
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
+#include <game/game.hpp>
 
 class MainMenu : public UIScreen {
 public:
-    MainMenu();
 
-    void onEnter() override;
-    void onExit() override;
-    bool handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
-    void update(float dt) override;
-    void draw(sf::RenderWindow& window) override;
+void onEnter() override;
+void onExit() override;
+bool handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
+void update(float dt) override;
+void draw(sf::RenderWindow& window) override;
 
-    bool blocksGameUpdate() const override { return true; }   // pause game
+MainMenu(Game::Game* gameInstance);
+bool blocksGameUpdate() const override { return true; }   // pause game
 
 private:
     enum Option {
@@ -5875,6 +5386,7 @@ private:
 
     void updateLayout(sf::RenderWindow& window);
     void executeSelected();
+    Game::Game* game = nullptr; // Pointer to the game instance for starting a new game
 };
 
 /* ui\main_menu.cpp */
@@ -5883,8 +5395,9 @@ private:
 #include <debug/logs.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
+#include <ui/options_menu.hpp>
 
-MainMenu::MainMenu(): titleLine1(font), titleLine2(font) {
+MainMenu::MainMenu(Game::Game* gameInstance) : game(gameInstance), titleLine1(UIManager::get().getFont()), titleLine2(UIManager::get().getFont()) {
     labels = {"New Game", "Continue", "Options", "Quit"};
     font = UIManager::get().getFont();
 
@@ -6044,11 +5557,11 @@ void MainMenu::executeSelected() {
             UIManager::get().popScreen();
             break;
         case Options:
-            Log::info << "MainMenu: Options selected (not implemented).\n";
+            UIManager::get().pushScreen(std::make_unique<OptionsMenu>());
             break;
         case Quit:
             Log::info << "MainMenu: Quit selected.\n";
-            UIManager::get().popScreen();
+            game->quit();
             break;
     }
 }
@@ -6085,6 +5598,716 @@ void MainMenu::draw(sf::RenderWindow& window) {
         window.draw(txt);
     }
 }
+
+/* ui\transition_screen.hpp */
+#pragma once
+#include <ui/ui_screen.hpp>
+#include <functional>
+#include <SFML/Graphics/RectangleShape.hpp>
+
+class TransitionScreen : public UIScreen {
+public:
+    using Callback = std::function<void(TransitionScreen&)>;
+
+    TransitionScreen(Callback callback, float fadeDuration = 0.5f);
+
+    void onEnter() override;
+    void update(float dt) override;
+    void draw(sf::RenderWindow& window) override;
+    bool handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
+
+    bool blocksGameUpdate() const override { return true; }
+    bool blocksInput() const override { return true; }
+
+    void continueTransition();
+
+    // Static helper: push a transition screen that runs the given action
+    static void performWithFade(std::function<void()> action, float fadeDuration = 0.5f);
+
+private:
+    enum class State { FadingOut, Waiting, FadingIn, Done };
+    State state = State::FadingOut;
+    Callback callback;
+    float fadeDuration;
+    float timer = 0.f;
+    sf::RectangleShape overlay;
+    float currentAlpha = 0.f; // 0–255
+};
+
+/* ui\transition_screen.cpp */
+#include "transition_screen.hpp"
+#include <ui/ui_manager.hpp>
+#include <debug/logs.hpp>
+
+TransitionScreen::TransitionScreen(Callback cb, float duration)
+    : callback(std::move(cb)), fadeDuration(duration) {
+    overlay.setFillColor(sf::Color::Black);
+}
+
+void TransitionScreen::onEnter() {
+  Log::info << "TransitionScreen: onEnter() called. fadeDuration=" << fadeDuration << "\n";
+    state = State::FadingOut;
+    timer = 0.f;
+    currentAlpha = 0.f;
+}
+
+void TransitionScreen::update(float dt) {
+  Log::info << "TransitionScreen: update() called. dt=" << dt << ", state=" << static_cast<int>(state) << ", timer=" << timer << ", currentAlpha=" << currentAlpha << "\n";
+    switch (state) {
+        case State::FadingOut: {
+            timer += dt;
+            float half = fadeDuration / 2.f;
+            float progress = (half > 0.f) ? timer / half : 1.f;
+            if (progress >= 1.f) {
+                currentAlpha = 255.f;
+                state = State::Waiting;
+                timer = 0.f;
+                if (callback) {
+                    callback(*this);
+                } else {
+                    continueTransition();
+                }
+            } else {
+                currentAlpha = 255.f * progress;
+            }
+            break;
+        }
+        case State::Waiting:
+            // wait for continueTransition()
+            break;
+        case State::FadingIn: {
+            timer += dt;
+            float half = fadeDuration / 2.f;
+            float progress = (half > 0.f) ? timer / half : 1.f;
+            if (progress >= 1.f) {
+                currentAlpha = 0.f;
+                state = State::Done;
+                Log::info << "TransitionScreen: transition done, popping screen.\n";
+                UIManager::get().popScreen();
+            } else {
+                currentAlpha = 255.f * (1.f - progress);
+            }
+            break;
+        }
+        case State::Done:
+            break;
+    }
+}
+
+void TransitionScreen::draw(sf::RenderWindow& window) {
+    if (currentAlpha <= 0.f) return;
+    auto size = window.getSize();
+    overlay.setSize(sf::Vector2f(size));
+    overlay.setPosition({0.f, 0.f});
+    overlay.setFillColor(sf::Color(0, 0, 0, static_cast<uint8_t>(currentAlpha)));
+    window.draw(overlay);
+}
+
+bool TransitionScreen::handleEvent(const sf::Event&, sf::RenderWindow&) {
+    // Consume all events during transition to prevent accidental input
+    return true;
+}
+
+void TransitionScreen::continueTransition() {
+  Log::info << "TransitionScreen: continueTransition() called.\n";
+    if (state == State::Waiting) {
+        state = State::FadingIn;
+        timer = 0.f;
+    } else {
+        Log::warn << "TransitionScreen::continueTransition() called in wrong state\n";
+    }
+  Log::info << "TransitionScreen: state=" << static_cast<int>(state) << ", timer=" << timer << "\n";
+}
+
+void TransitionScreen::performWithFade(std::function<void()> action, float fadeDuration) {
+    auto wrapper = [action = std::move(action)](TransitionScreen& screen) {
+      Log::info << "TransitionScreen: performWithFade wrapper called.\n";
+        if (action) action();
+        screen.continueTransition();
+        Log::info << "TransitionScreen: performWithFade wrapper finished.\n";
+    };
+    Log::info << "TransitionScreen: pushing screen with fadeDuration=" << fadeDuration << "\n";
+    UIManager::get().pushScreen(std::make_unique<TransitionScreen>(wrapper, fadeDuration));
+}
+
+/* ui\options_menu.cpp */
+#include <ui/options_menu.hpp>
+#include <ui/ui_manager.hpp>
+#include <debug/logs.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
+#include <algorithm>
+#include <cmath>
+
+// -----------------------------------------------------------------------------
+// Layout constants
+namespace {
+    const float LABEL_WIDTH     = 150.f;
+    const float VALUE_WIDTH     = 120.f;
+    const float SLIDER_PADDING  = 10.f;
+    const float SLIDER_HEIGHT   = 8.f;
+    const float HANDLE_RADIUS   = 10.f;
+    const float CONTROL_HEIGHT  = 50.f;
+    const float CONTROL_SPACING = 20.f;
+    const float TOGGLE_WIDTH    = 80.f;
+    const float TOGGLE_HEIGHT   = 36.f;
+    const float BUTTON_WIDTH    = 160.f;
+    const float BUTTON_HEIGHT   = 44.f;
+    const float EXTRA_SPACING   = 30.f;
+}
+
+// -----------------------------------------------------------------------------
+// Helper: convert slider value to FPS string
+static std::string fpsDisplayString(float value) {
+    const int steps[] = {30, 60, 120, 240, 0};
+    const int numSteps = sizeof(steps) / sizeof(steps[0]);
+    int idx = static_cast<int>(std::round(value * (numSteps - 1)));
+    idx = std::clamp(idx, 0, numSteps - 1);
+    return (steps[idx] == 0) ? "Unlimited" : std::to_string(steps[idx]);
+}
+
+// -----------------------------------------------------------------------------
+OptionsMenu::OptionsMenu() : m_titleText(m_font) {
+    m_font = UIManager::get().getFont();
+
+    m_titleText.setFont(m_font);
+    m_titleText.setString("Options");
+    m_titleText.setCharacterSize(48);
+    m_titleText.setStyle(sf::Text::Bold);
+    m_titleText.setFillColor(sf::Color::White);
+
+    m_background.setFillColor(sf::Color(0, 0, 0, 220));
+
+    // ---- Build controls (using enum IDs) ----
+    Control vol;
+    vol.id = ControlID::Volume;
+    vol.value = m_volume;
+    vol.minVal = 0.f;
+    vol.maxVal = 1.f;
+    vol.step = 0.01f;
+    m_controls.push_back(vol);
+
+    Control fps;
+    fps.id = ControlID::MaxFps;
+    // map current maxFps to 0..1 (5 steps)
+    int steps[] = {30, 60, 120, 240, 0};
+    int idx = 0;
+    for (int i = 0; i < 5; ++i) {
+        if (steps[i] == m_maxFps) { idx = i; break; }
+    }
+    fps.value = idx / 4.0f;
+    fps.minVal = 0.f;
+    fps.maxVal = 1.f;
+    fps.step = 1.f / 4.f;
+    m_controls.push_back(fps);
+
+    Control music;
+    music.id = ControlID::Music;
+    music.value = m_musicOn ? 1.f : 0.f;
+    music.minVal = 0.f;
+    music.maxVal = 1.f;
+    music.step = 1.f;
+    m_controls.push_back(music);
+
+    Control sfx;
+    sfx.id = ControlID::Sfx;
+    sfx.value = m_sfxOn ? 1.f : 0.f;
+    sfx.minVal = 0.f;
+    sfx.maxVal = 1.f;
+    sfx.step = 1.f;
+    m_controls.push_back(sfx);
+
+    Control back;
+    back.id = ControlID::Back;
+    back.value = 0.f;
+    m_controls.push_back(back);
+
+    m_selectedIndex = 0;
+}
+
+// -----------------------------------------------------------------------------
+void OptionsMenu::onEnter() {
+    Log::info << "OptionsMenu entered.\n";
+    m_needLayoutUpdate = true;
+}
+
+void OptionsMenu::onExit() {
+    Log::info << "OptionsMenu exited.\n";
+    applySettings();
+}
+
+// -----------------------------------------------------------------------------
+void OptionsMenu::update(float dt) {}
+
+// -----------------------------------------------------------------------------
+void OptionsMenu::updateLayout(const sf::RenderWindow& window) {
+    sf::Vector2f winSize = sf::Vector2f(window.getSize());
+    m_uiView = UIManager::getUIView(window);
+    m_background.setSize(winSize);
+    m_background.setPosition({0.f, 0.f});
+
+    // ---- Title: match main menu position and size ----
+    // Main menu title block starts at winSize.y * 0.20f
+    m_titleText.setCharacterSize(36);      // same as main menu
+    m_titleText.setStyle(sf::Text::Bold);
+    m_titleText.setFillColor(sf::Color::White);
+    sf::FloatRect titleBounds = m_titleText.getLocalBounds();
+    m_titleText.setPosition({
+        (winSize.x - titleBounds.size.x) / 2.f,
+        winSize.y * 0.20f   // exactly the same Y as main menu's first line
+    });
+
+    // Layout: all controls except the last (Back) get normal spacing;
+    // Back gets extra spacing above.
+    const size_t numNormal = m_controls.size() - 1;
+    float totalNormalHeight = numNormal * (CONTROL_HEIGHT + CONTROL_SPACING) - CONTROL_SPACING;
+    float totalHeight = totalNormalHeight + EXTRA_SPACING + CONTROL_HEIGHT;
+    float startY = (winSize.y - totalHeight) / 2.f + 80.f;
+
+    const float CONTROL_WIDTH = LABEL_WIDTH + VALUE_WIDTH + 2 * SLIDER_PADDING + 200.f;
+
+    for (size_t i = 0; i < m_controls.size(); ++i) {
+        Control& ctrl = m_controls[i];
+        float x = (winSize.x - CONTROL_WIDTH) / 2.f;
+        float y = startY + i * (CONTROL_HEIGHT + CONTROL_SPACING);
+        if (i == m_controls.size() - 1) { // Back button
+            y = startY + (i * (CONTROL_HEIGHT + CONTROL_SPACING)) + EXTRA_SPACING;
+        }
+        ctrl.bounds = sf::FloatRect(sf::Vector2f(x, y), sf::Vector2f(CONTROL_WIDTH, CONTROL_HEIGHT));
+    }
+
+    m_needLayoutUpdate = false;
+}
+
+// -----------------------------------------------------------------------------
+std::string OptionsMenu::getDisplayString(const Control& ctrl) const {
+    switch (ctrl.id) {
+        case ControlID::Volume:
+            return std::to_string(static_cast<int>(std::round(ctrl.value * 100))) + "%";
+        case ControlID::MaxFps:
+            return fpsDisplayString(ctrl.value);
+        case ControlID::Music:
+        case ControlID::Sfx:
+            return (ctrl.value > 0.5f) ? "On" : "Off";
+        case ControlID::Back:
+            return "Back";
+        default:
+            return "";
+    }
+}
+
+// -----------------------------------------------------------------------------
+void OptionsMenu::drawControl(const Control& ctrl, sf::RenderWindow& window) {
+    const sf::FloatRect& rect = ctrl.bounds;
+    sf::Vector2f pos = rect.position;
+    sf::Vector2f size = rect.size;
+
+    // Background
+    if ( ctrl.id != ControlID::Back ) {
+        sf::RectangleShape bg(size);
+        bg.setPosition(pos);
+        bg.setFillColor(ctrl.isHovered ? sf::Color(60, 60, 60) : sf::Color(50, 50, 50));
+        bg.setOutlineColor(sf::Color(100, 100, 100));
+        bg.setOutlineThickness(1.f);
+        window.draw(bg);
+    }
+
+    // Label
+    std::string label;
+    switch (ctrl.id) {
+        case ControlID::Volume:   label = "Volume:"; break;
+        case ControlID::MaxFps:   label = "Max FPS:"; break;
+        case ControlID::Music:    label = "Music:"; break;
+        case ControlID::Sfx:      label = "SFX:"; break;
+        case ControlID::Back:     label = ""; break; // no label for Back button
+        default: break;
+    }
+    if (!label.empty()) {
+        sf::Text labelText(m_font, label, 20);
+        labelText.setFillColor(sf::Color::White);
+        labelText.setPosition(pos + sf::Vector2f(10.f, 10.f));
+        window.draw(labelText);
+    }
+
+    // Value display (except for Back)
+    if (ctrl.id != ControlID::Back) {
+        sf::Text valueText(m_font, getDisplayString(ctrl), 20);
+        valueText.setFillColor(sf::Color::Yellow);
+        sf::FloatRect valBounds = valueText.getLocalBounds();
+        float valueX = pos.x + size.x - 10.f;
+        valueText.setPosition({
+            valueX - valBounds.size.x,
+            pos.y + (size.y - valBounds.size.y) / 2.f - 2.f
+        });
+        window.draw(valueText);
+    }
+
+    // Draw the actual control
+    if (ctrl.id == ControlID::Volume || ctrl.id == ControlID::MaxFps) {
+        // Slider
+        float sliderX = pos.x + LABEL_WIDTH + SLIDER_PADDING;
+        float sliderW = size.x - LABEL_WIDTH - VALUE_WIDTH - 2 * SLIDER_PADDING;
+        float sliderY = pos.y + size.y / 2.f - SLIDER_HEIGHT / 2.f;
+
+        sf::RectangleShape track(sf::Vector2f(sliderW, SLIDER_HEIGHT));
+        track.setPosition({sliderX, sliderY});
+        track.setFillColor(sf::Color(40, 40, 40));
+        track.setOutlineColor(sf::Color(120, 120, 120));
+        track.setOutlineThickness(1.f);
+        window.draw(track);
+
+        float fillW = ctrl.value * sliderW;
+        sf::RectangleShape fill(sf::Vector2f(fillW, SLIDER_HEIGHT));
+        fill.setPosition({sliderX, sliderY});
+        fill.setFillColor(sf::Color(70, 130, 200));
+        window.draw(fill);
+
+        sf::CircleShape handle(HANDLE_RADIUS);
+        handle.setFillColor(ctrl.isActive ? sf::Color::Yellow : sf::Color::White);
+        handle.setOutlineColor(sf::Color::Black);
+        handle.setOutlineThickness(1.f);
+        float handleX = sliderX + ctrl.value * sliderW;
+        handle.setPosition({
+            handleX - HANDLE_RADIUS,
+            sliderY + SLIDER_HEIGHT / 2.f - HANDLE_RADIUS
+        });
+        window.draw(handle);
+    }
+    else if (ctrl.id == ControlID::Music || ctrl.id == ControlID::Sfx) {
+        // Toggle button
+        sf::RectangleShape toggleBtn(sf::Vector2f(TOGGLE_WIDTH, TOGGLE_HEIGHT));
+        float toggleX = pos.x + size.x - TOGGLE_WIDTH - 10.f;
+        float toggleY = pos.y + (size.y - TOGGLE_HEIGHT) / 2.f;
+        toggleBtn.setPosition({toggleX, toggleY});
+        bool isOn = (ctrl.value > 0.5f);
+        toggleBtn.setFillColor(isOn ? sf::Color(70, 130, 200) : sf::Color(80, 80, 80));
+        toggleBtn.setOutlineColor(sf::Color::White);
+        toggleBtn.setOutlineThickness(1.f);
+        window.draw(toggleBtn);
+
+        sf::Text toggleText(m_font, isOn ? "On" : "Off", 18);
+        toggleText.setFillColor(sf::Color::White);
+        sf::FloatRect tBounds = toggleText.getLocalBounds();
+        toggleText.setPosition({
+            toggleX + (TOGGLE_WIDTH - tBounds.size.x) / 2.f,
+            toggleY + (TOGGLE_HEIGHT - tBounds.size.y) / 2.f - 2.f
+        });
+        window.draw(toggleText);
+    }
+    else if (ctrl.id == ControlID::Back) {
+        // Centered button
+        sf::RectangleShape btn(sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT));
+        float btnX = pos.x + (size.x - BUTTON_WIDTH) / 2.f;
+        float btnY = pos.y + (size.y - BUTTON_HEIGHT) / 2.f;
+        btn.setPosition({btnX, btnY});
+        bool isSelected = (&ctrl == &m_controls[m_selectedIndex]);
+        btn.setFillColor(isSelected ? sf::Color(70, 130, 200) : sf::Color(80, 80, 80));
+        btn.setOutlineColor(sf::Color::White);
+        btn.setOutlineThickness(1.5f);
+        window.draw(btn);
+
+        sf::Text btnText(m_font, "Back", 22);
+        btnText.setFillColor(sf::Color::White);
+        sf::FloatRect bBounds = btnText.getLocalBounds();
+        btnText.setPosition({
+            btnX + (BUTTON_WIDTH - bBounds.size.x) / 2.f,
+            btnY + (BUTTON_HEIGHT - bBounds.size.y) / 2.f - 2.f
+        });
+        window.draw(btnText);
+    }
+}
+
+// -----------------------------------------------------------------------------
+void OptionsMenu::draw(sf::RenderWindow& window) {
+    if (m_needLayoutUpdate) updateLayout(window);
+    window.setView(m_uiView);
+    window.draw(m_background);
+    window.draw(m_titleText);
+    for (const auto& ctrl : m_controls) {
+        drawControl(ctrl, window);
+    }
+}
+
+// -----------------------------------------------------------------------------
+void OptionsMenu::onControlChanged(Control& ctrl) {
+    switch (ctrl.id) {
+        case ControlID::Volume:   m_volume = ctrl.value; break;
+        case ControlID::MaxFps: {
+            const int steps[] = {30, 60, 120, 240, 0};
+            int idx = static_cast<int>(std::round(ctrl.value * 4));
+            idx = std::clamp(idx, 0, 4);
+            m_maxFps = steps[idx];
+            break;
+        }
+        case ControlID::Music:    m_musicOn = (ctrl.value > 0.5f); break;
+        case ControlID::Sfx:      m_sfxOn = (ctrl.value > 0.5f); break;
+        case ControlID::Back:     break;
+    }
+    applySettings();
+}
+
+void OptionsMenu::applySettings() {
+    Log::info << "Options applied: Volume=" << (int)(m_volume*100)
+              << "%, FPS=" << (m_maxFps==0?"Unlimited":std::to_string(m_maxFps))
+              << ", Music=" << (m_musicOn?"On":"Off")
+              << ", SFX=" << (m_sfxOn?"On":"Off") << "\n";
+}
+
+// -----------------------------------------------------------------------------
+// Mouse & keyboard handlers (identical to previous version, but using enum)
+bool OptionsMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
+    if (m_needLayoutUpdate) updateLayout(window);
+
+    if (const auto* btn = event.getIf<sf::Event::MouseButtonPressed>()) {
+        if (btn->button == sf::Mouse::Button::Left) {
+            sf::Vector2f mousePos = window.mapPixelToCoords(
+                sf::Vector2i(btn->position.x, btn->position.y), m_uiView);
+            if (handleMousePress(mousePos)) return true;
+        }
+    }
+    else if (const auto* move = event.getIf<sf::Event::MouseMoved>()) {
+        sf::Vector2f mousePos = window.mapPixelToCoords(
+            sf::Vector2i(move->position.x, move->position.y), m_uiView);
+        if (handleMouseMove(mousePos)) return true;
+    }
+    else if (const auto* rel = event.getIf<sf::Event::MouseButtonReleased>()) {
+        if (rel->button == sf::Mouse::Button::Left) {
+            sf::Vector2f mousePos = window.mapPixelToCoords(
+                sf::Vector2i(rel->position.x, rel->position.y), m_uiView);
+            if (handleMouseRelease(mousePos)) return true;
+        }
+    }
+
+    if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
+        if (handleKeyPress(*key)) return true;
+    }
+
+    return false;
+}
+
+bool OptionsMenu::handleMousePress(const sf::Vector2f& mousePos) {
+    for (size_t i = 0; i < m_controls.size(); ++i) {
+        Control& ctrl = m_controls[i];
+        if (!ctrl.bounds.contains(mousePos)) continue;
+        m_selectedIndex = i;
+
+        if (ctrl.id == ControlID::Volume || ctrl.id == ControlID::MaxFps) {
+            ctrl.isActive = true;
+            float sliderX = ctrl.bounds.position.x + LABEL_WIDTH + SLIDER_PADDING;
+            float sliderW = ctrl.bounds.size.x - LABEL_WIDTH - VALUE_WIDTH - 2 * SLIDER_PADDING;
+            float relX = (mousePos.x - sliderX) / sliderW;
+            relX = std::clamp(relX, 0.f, 1.f);
+            if (ctrl.step > 0.f) {
+                float steps = 1.f / ctrl.step;
+                relX = std::round(relX * steps) / steps;
+            }
+            ctrl.value = relX;
+            onControlChanged(ctrl);
+            return true;
+        }
+        else if (ctrl.id == ControlID::Music || ctrl.id == ControlID::Sfx) {
+            toggleCurrent();
+            return true;
+        }
+        else if (ctrl.id == ControlID::Back) {
+            activateCurrent();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool OptionsMenu::handleMouseMove(const sf::Vector2f& mousePos) {
+    for (size_t i = 0; i < m_controls.size(); ++i) {
+        Control& ctrl = m_controls[i];
+        bool wasHovered = ctrl.isHovered;
+        ctrl.isHovered = ctrl.bounds.contains(mousePos);
+        if (ctrl.isHovered && !wasHovered) {
+            m_selectedIndex = i;
+        }
+    }
+
+    for (Control& ctrl : m_controls) {
+        if ((ctrl.id == ControlID::Volume || ctrl.id == ControlID::MaxFps) && ctrl.isActive) {
+            float sliderX = ctrl.bounds.position.x + LABEL_WIDTH + SLIDER_PADDING;
+            float sliderW = ctrl.bounds.size.x - LABEL_WIDTH - VALUE_WIDTH - 2 * SLIDER_PADDING;
+            float relX = (mousePos.x - sliderX) / sliderW;
+            relX = std::clamp(relX, 0.f, 1.f);
+            if (ctrl.step > 0.f) {
+                float steps = 1.f / ctrl.step;
+                relX = std::round(relX * steps) / steps;
+            }
+            ctrl.value = relX;
+            onControlChanged(ctrl);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool OptionsMenu::handleMouseRelease(const sf::Vector2f& mousePos) {
+    for (Control& ctrl : m_controls) {
+        if ((ctrl.id == ControlID::Volume || ctrl.id == ControlID::MaxFps) && ctrl.isActive) {
+            ctrl.isActive = false;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool OptionsMenu::handleKeyPress(const sf::Event::KeyPressed& key) {
+    switch (key.code) {
+        case sf::Keyboard::Key::Escape:
+            // Find Back button and activate it
+            for (size_t i = 0; i < m_controls.size(); ++i) {
+                if (m_controls[i].id == ControlID::Back) {
+                    m_selectedIndex = i;
+                    activateCurrent();
+                    return true;
+                }
+            }
+            UIManager::get().popScreen();
+            return true;
+        case sf::Keyboard::Key::Up:   selectPrevious(); return true;
+        case sf::Keyboard::Key::Down: selectNext(); return true;
+        case sf::Keyboard::Key::Left:
+        case sf::Keyboard::Key::Right:
+            adjustSlider((key.code == sf::Keyboard::Key::Right) ? 1.f : -1.f);
+            return true;
+        case sf::Keyboard::Key::Enter:
+        case sf::Keyboard::Key::Space:
+            if (m_controls[m_selectedIndex].id == ControlID::Music ||
+                m_controls[m_selectedIndex].id == ControlID::Sfx) {
+                toggleCurrent();
+            } else if (m_controls[m_selectedIndex].id == ControlID::Back) {
+                activateCurrent();
+            }
+            return true;
+        default: break;
+    }
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+void OptionsMenu::selectPrevious() {
+    if (m_controls.empty()) return;
+    int newIdx = m_selectedIndex - 1;
+    if (newIdx < 0) newIdx = m_controls.size() - 1;
+    m_selectedIndex = newIdx;
+}
+
+void OptionsMenu::selectNext() {
+    if (m_controls.empty()) return;
+    int newIdx = m_selectedIndex + 1;
+    if (newIdx >= (int)m_controls.size()) newIdx = 0;
+    m_selectedIndex = newIdx;
+}
+
+void OptionsMenu::adjustSlider(float delta) {
+    Control& ctrl = m_controls[m_selectedIndex];
+    if (ctrl.id != ControlID::Volume && ctrl.id != ControlID::MaxFps) return;
+    float step = ctrl.step > 0.f ? ctrl.step : 0.01f;
+    float newVal = ctrl.value + delta * step;
+    newVal = std::clamp(newVal, 0.f, 1.f);
+    if (ctrl.step > 0.f) {
+        float steps = 1.f / ctrl.step;
+        newVal = std::round(newVal * steps) / steps;
+    }
+    ctrl.value = newVal;
+    onControlChanged(ctrl);
+}
+
+void OptionsMenu::toggleCurrent() {
+    Control& ctrl = m_controls[m_selectedIndex];
+    if (ctrl.id != ControlID::Music && ctrl.id != ControlID::Sfx) return;
+    ctrl.value = (ctrl.value > 0.5f) ? 0.f : 1.f;
+    onControlChanged(ctrl);
+}
+
+void OptionsMenu::activateCurrent() {
+    Control& ctrl = m_controls[m_selectedIndex];
+    if (ctrl.id == ControlID::Back) {
+        UIManager::get().popScreen();
+    }
+}
+
+/* ui\options_menu.hpp */
+#pragma once
+#include <ui/ui_screen.hpp>
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <functional>
+
+class OptionsMenu : public UIScreen {
+public:
+    OptionsMenu();
+
+    void onEnter() override;
+    void onExit() override;
+    bool handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
+    void update(float dt) override;
+    void draw(sf::RenderWindow& window) override;
+
+    bool blocksGameUpdate() const override { return true; }
+    bool blocksInput() const override { return true; }
+    bool displayBelow() const override { return false; } // Don't display screens below
+
+private:
+    enum class ControlID {
+        Volume,
+        MaxFps,
+        Music,
+        Sfx,
+        Back
+    };
+
+    struct Control {
+        ControlID id;
+        sf::FloatRect bounds;
+        float value;            // 0..1 for sliders, 0/1 for toggles
+        float minVal;
+        float maxVal;
+        float step;
+        bool isHovered = false;
+        bool isActive = false;  // for slider dragging
+    };
+
+    // Settings (dummy – replace with your actual settings manager)
+    float   m_volume = 1.0f;
+    int     m_maxFps = 60;
+    bool    m_musicOn = true;
+    bool    m_sfxOn = true;
+
+    std::vector<Control> m_controls;
+    int m_selectedIndex = 0;
+    bool m_needLayoutUpdate = true;
+
+    sf::Font m_font;
+    sf::View m_uiView;
+    sf::RectangleShape m_background;
+    sf::Text m_titleText;
+
+    // Helper functions
+    void updateLayout(const sf::RenderWindow& window);
+    void drawControl(const Control& ctrl, sf::RenderWindow& window);
+    void applySettings();  // dummy – logs the values
+    void onControlChanged(Control& ctrl);
+
+    // Mouse/Keyboard handling
+    bool handleMousePress(const sf::Vector2f& mousePos);
+    bool handleMouseMove(const sf::Vector2f& mousePos);
+    bool handleMouseRelease(const sf::Vector2f& mousePos);
+    bool handleKeyPress(const sf::Event::KeyPressed& key);
+
+    void selectPrevious();
+    void selectNext();
+    void adjustSlider(float delta);
+    void toggleCurrent();
+    void activateCurrent();
+
+    // Helper to get display string for a control
+    std::string getDisplayString(const Control& ctrl) const;
+};
 
 /* story\story_manager.hpp */
 #pragma once
@@ -6216,23 +6439,120 @@ namespace StoryHelpers {
     }
 }
 
+/* story\script_registry.cpp */
+#include <story/script_registry.hpp>
+
+namespace ScriptRegistry {
+    std::unordered_map<std::string, Script> scripts;
+  }
+  
+void ScriptRegistry::init() {
+  scripts["detective_intro"] = {
+    {ActionType::MoveTo, 0, {10.f, 5.f}},   // approach player
+    {ActionType::LockPlayer},
+    {ActionType::PlayAnimation, 0, {}, "talk"},
+    {ActionType::ShowDialogue, 0, {}, "detective_intro"},
+    {ActionType::Wait, 1.0f},               // pause after dialogue
+    {ActionType::UnlockPlayer},
+    {ActionType::EndSequence}
+  };
+
+  scripts["guard_cutscene"] = {
+    {ActionType::LockPlayer},                       // freeze player input
+    {ActionType::FacePlayer},
+    {ActionType::Wait, 0.5f},
+    {ActionType::MoveRelative, 0.5f, {-80.f, 0.0f}}, // move slightly to the left
+    {ActionType::ShowDialogue, 0, {}, "guard_shoot_intro"}, // show dialogue (ID not used here)
+    {ActionType::CallFunction, 0.f, {}, "", "", "guardShoot"},
+    {ActionType::Wait, 0.5f},                       // brief pause after shooting
+    {ActionType::UnlockPlayer},                     // restore player control
+    {ActionType::EndSequence}
+  };
+}
+
+namespace FunctionRegistry {
+    std::unordered_map<std::string, Function> functions;
+    void registerFunction(const std::string& name, Function func) {
+        functions[name] = func;
+    }
+}
+
+/* story\script_registry.hpp */
+// ScriptRegistry.hpp
+#pragma once
+
+#include <vector>
+#include <unordered_map>
+#pragma once
+#include <vector>
+#include <unordered_map>
+#include <string>
+#include <SFML/System/Vector2.hpp>
+#include <functional>
+#include <unordered_map>
+
+class NPC; // forward
+
+enum class ActionType {
+    MoveTo,
+    MoveRelative,
+    Wait,
+    LockPlayer,
+    UnlockPlayer,
+    PlayAnimation,
+    ShowDialogue,
+    SwapPlayer,
+    FacePlayer,
+    JustToReload,
+    CallFunction,
+    EndSequence
+};
+
+struct Action {
+    ActionType type;
+    float duration = 0.f;
+    sf::Vector2f targetPos;
+    std::string animKey;
+    std::string dialogueId;
+    std::string functionName;
+    NPC* npc = nullptr;   // for SwapPlayer
+};
+
+using Script = std::vector<Action>;
+
+namespace ScriptRegistry {
+  extern std::unordered_map<std::string, Script> scripts;
+  void init();
+}
+
+namespace FunctionRegistry {
+    using Function = std::function<void(NPC*)>;
+    extern std::unordered_map<std::string, Function> functions;
+    void registerFunction(const std::string& name, Function func);
+}
+
 /* game\game.hpp */
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <optional>
+#include <map/map_manager.hpp>
 
 // Forward declarations
 class Background;
 class Overlay;
 class LevelEditor;
 class FpsDisplay;
+// struct Transition;
 
 namespace Game {
     class Game {
     public:
-        Game(const std::string& title, unsigned int width, unsigned int height);
+        Game(const std::string& title, unsigned int width, unsigned int height, const std::string& initialMap);
         void run();
         ~Game();
+        void snapCameraToPlayer();
+        void quit();
 
     private:
         // Window & loop
@@ -6258,12 +6578,18 @@ namespace Game {
         float m_topDeadZone;
         float m_bottomDeadZone;
 
+        // map transition near detection
+        std::optional<Transition> m_nearTransition;
+        std::string m_initialMap;
+
         // Private methods
         void updateScale();
         void updateCamera(float dt);
         void update(float dt);
         void handleEvents();
         void initResources();   // load textures, spawns, etc.
+        bool m_gameStarted = false;
+        void startGame();
 
         // Disable copying
         Game(const Game&) = delete;
@@ -6276,7 +6602,7 @@ namespace Game {
 #include <game/fps_display.hpp>
 #include <game/infobox.hpp>
 #include <debug/logs.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <entities/characters.hpp>
 #include <entities/player.hpp>
 #include <entities/npc_manager.hpp>
@@ -6289,14 +6615,16 @@ namespace Game {
 #include <ui/main_menu.hpp>
 #include <core/scale.hpp>
 #include <core/constants.hpp>
-
+#include <story/script_registry.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <map/map_manager.hpp>
+#include <optional>
 
 namespace Game {
 
-Game::Game(const std::string& title, unsigned int width, unsigned int height)
-    : m_width(width), m_height(height), m_title(title) {
+Game::Game(const std::string& title, unsigned int width, unsigned int height, const std::string& initialMap = "default")
+    : m_width(width), m_height(height), m_title(title), m_initialMap(initialMap) {
     // Create window
     m_window.create(sf::VideoMode({width, height}), title);
     m_window.setVerticalSyncEnabled(false);
@@ -6334,24 +6662,66 @@ Game::~Game() {
 }
 
 void Game::initResources() {
+    updateScale();
     Tiles::load();
     Objects::load();
     Background::load(m_window);
     Overlay::load(m_window);
-    Terrain::loadSpawnsFromFile("assets/spawns.txt");
-    Terrain::loadFromFile("assets/map.txt");
-    Terrain::loadObjectsFromFile("assets/objects.txt");
-    Terrain::loadSolidFromFile("assets/solid_tiles.txt");
+    
+    MapManager::get().setGame(this);
+    MapManager::get().loadMap(m_initialMap);
+    // Terrain::loadSpawnsFromFile("assets/spawns.txt");
+    // Terrain::loadFromFile("assets/map.txt");
+    // Terrain::loadObjectsFromFile("assets/objects.txt");
+    // Terrain::loadSolidFromFile("assets/solid_tiles.txt");
+
     Characters::load();
     Player::get().init();
     UIManager::get().init();
-    UIManager::get().pushScreen(std::make_unique<MainMenu>());
-    NPCManager::get().loadDefinitions();
-    NPCManager::spawnAllNPCs();
+    NPCManager::get().loadDefinitions();   // register NPC types
+    ScriptRegistry::init();                // register scripts
     m_editor->init();
-    updateScale();
     Player::get().setCharacter(Characters::Fighter_Detective);
     NPCManager::get().setPlayer(Player::get().getPlayer());
+    // Push the main menu – spawning will happen after it's closed
+    UIManager::get().pushScreen(std::make_unique<MainMenu>(this));
+    MapManager::get().setPlayer(Player::get().getPlayer());
+}
+
+void Game::snapCameraToPlayer() {
+    Character* player = Player::get().getPlayer();
+    if (!player) return;
+
+    sf::Vector2f pos = player->getPosition();
+    float halfWidth = m_width / 2.f;
+    float viewX = std::max(pos.x, halfWidth);
+
+    sf::FloatRect bounds = player->getBounds();
+    float charCentreY = bounds.position.y + bounds.size.y * 0.5f;
+
+    // Clamp to world bounds
+    float minY = m_height / 2.f;
+    float maxY = Constants::WORLD_HEIGHT_PIXELS * Scale::get() - m_height / 2.f;
+    float targetY = std::clamp(charCentreY, minY, maxY);
+
+    m_viewY = targetY;
+    m_targetY = targetY;
+    m_view.setCenter(sf::Vector2f(viewX, m_viewY));
+}
+
+void Game::startGame() {
+  if (m_gameStarted) return;
+  m_gameStarted = true;
+  // Spawn NPCs and run their scripts (now that the menu is gone)
+  // NPCManager::spawnAllNPCs();
+  // Spawn NPCs NOW – after player is ready
+    MapManager::get().spawnNPCs();
+  Player::get().getPlayer()->snapToGround();
+  for (NPC* npc : NPCManager::get().getAllNPCs()) {
+    npc->snapToGround();
+  }
+  snapCameraToPlayer();
+  Log::info << "Game started, NPCs spawned.\n";
 }
 
 void Game::updateScale() {
@@ -6400,6 +6770,10 @@ void Game::update(float dt) {
     const float MAX_DT = 1.f / 30.f;
     if (dt > MAX_DT) dt = MAX_DT;
 
+    // if (MapManager::get().hasPendingSpawn() && UIManager::get().isEmpty()) {
+    //     MapManager::get().spawnPendingNPCs();
+    // }
+
     m_background->draw(m_window, dt);
     Terrain::draw(m_window, dt);
 
@@ -6410,6 +6784,11 @@ void Game::update(float dt) {
     m_overlay->draw(m_window, dt);
     NPCManager::get().draw(m_window, dt);
     player.draw(m_window, dt);
+
+    sf::Vector2f playerPos = player.getPlayer()->getPosition();
+
+    // Check for transitions using MapManager
+    m_nearTransition = MapManager::get().getTransitionAt(playerPos, 50.f);
 }
 
 void Game::handleEvents() {
@@ -6439,22 +6818,42 @@ void Game::handleEvents() {
                 m_editor->setActive(true);
             }
             if (key->code == sf::Keyboard::Key::S && ctrlHeld) {
-                Terrain::saveToFile("assets/map.txt");
-                Terrain::saveObjectsToFile("assets/objects.txt");
-                Terrain::saveSolidToFile("assets/solid_tiles.txt");
-                Terrain::saveSpawnsToFile("assets/spawns.txt");
-                Log::info << "Map and objects saved to assets/map.txt and assets/objects.txt" << std::endl;
-                showInfoBox("Saved!, assets/(map.txt, objects.txt, solid_tiles.txt)");
+              MapManager::get().saveCurrentMap();
+              showInfoBox("Saved map: " + MapManager::get().getCurrentMap());
             }
-            if (key->code == sf::Keyboard::Key::E) {
-                if (!m_editor->isActive()) {
+            bool tooltip = false;
+            if (m_nearTransition.has_value()) {   // ← fixed condition
+                Player::get().setTooltip(m_nearTransition->label);
+                tooltip = true;
+            }
+            sf::Vector2f playerPos = Player::get().getPlayer()->getPosition();
+            NPC* nearest = NPCManager::get().getNearestInteractable(playerPos);
+            if (nearest) {
+                Player::get().setTooltip("Talk");
+                tooltip = true;
+            }
+            
+            if ( tooltip == false ) {
+                Player::get().clearTooltip();
+            }
+            if (key->code == sf::Keyboard::Key::E && !m_editor->isActive()) {
+                if ( nearest ) {
                     NPCManager::get().interact();
+                }
+                else if (m_nearTransition.has_value()) {   // ← fixed condition
+                    const Transition& tr = *m_nearTransition;
+                    MapManager::get().switchToMap(tr.targetMap, tr.spawnPosition);
+                    m_nearTransition.reset();
                 }
             }
         }
 
         if (m_editor->isActive()) {
             m_editor->handleEvent(*event, m_window);
+        }
+
+        if (!m_gameStarted && UIManager::get().isEmpty()) {
+          startGame();
         }
     }
 }
@@ -6502,12 +6901,17 @@ void Game::run() {
                 Player::get().draw(m_window, dt);
                 m_overlay->draw(m_window, dt);
             }
+            m_window.setView(UIManager::get().getUIView(m_window));
             UIManager::get().draw(m_window);
         }
 
         m_fpsDisplay->update(dt, m_window);
         m_window.display();
     }
+}
+
+void Game::quit() {
+    m_window.close();
 }
 
 } // namespace Game
@@ -6569,5 +6973,1010 @@ void showInfoBox(const std::string& message) {
         box.draw(text);
         box.display();
     }
+}
+
+/* map\terrain.cpp */
+#include <debug/logs.hpp>
+#include <core/scale.hpp>
+#include <map/terrain.hpp>
+#include <graphics/tiles.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <fstream>
+#include <sstream>
+#include <core/constants.hpp>
+#include <algorithm> // for std::find
+#include <core/tile_encoding.hpp>
+#include <entities/characters.hpp>
+
+namespace
+{
+    // Tile map
+    TileMap terrain = {
+        {{0, 1}, {1}},
+        {{1, 1}, {1}},
+        {{2, 1}, {1}},
+        {{3, 1}, {1}},
+        {{4, 1}, {10}},
+        {{5, 1}, {10}},
+        {{6, 1}, {10}},
+        {{4, 2}, {1}},
+        {{5, 2}, {1}},
+        {{6, 2}, {1}},
+    };
+
+    // Object storage (unordered for O(1) lookup)
+    ObjectMap objectMap;
+
+    // Solid tile storage
+    SolidMap solidMap;
+
+    // Insertion order (used for drawing and save/load order)
+    std::vector<std::pair<float, float>> objectOrder;
+
+    sf::Vector2f playerSpawnPosition = {2.f, 2.f}; // Default spawn position for the player
+    SpawnMap spawnMap;                             // Map for NPC spawns
+}
+
+namespace Terrain
+{
+
+    const SolidMap &getSolidMap() { return solidMap; }
+
+    void setSolidTile(int x, int y, int type)
+    {
+        if (type <= 0)
+            solidMap.erase({x, y});
+        else
+            solidMap[{x, y}] = type;
+    }
+
+    void eraseSolidTile(int x, int y)
+    {
+        solidMap.erase({x, y});
+    }
+
+    int getSolidTile(int x, int y)
+    {
+        auto it = solidMap.find({x, y});
+        return (it != solidMap.end()) ? it->second : 0;
+    }
+
+    const SpawnMap &getSpawnMap() { return spawnMap; }
+
+    void setSpawn(float x, float y, const SpawnProps &props)
+    {
+        auto key = std::make_pair(x, y);
+        spawnMap[key] = props;
+    }
+
+    void eraseSpawn(float x, float y)
+    {
+        spawnMap.erase({x, y});
+    }
+
+    SpawnProps getSpawn(float x, float y)
+    {
+        auto it = spawnMap.find({x, y});
+        return (it != spawnMap.end()) ? it->second : SpawnProps{};
+    }
+
+    sf::Vector2f getPlayerSpawnPosition() { return playerSpawnPosition; }
+
+    void clearSpawns() { spawnMap.clear(); }
+
+    // ---- Unified file I/O ----
+    // ------------------ Spawn I/O (extended) ------------------
+    void loadSpawnsFromFile(const std::string &filename)
+    {
+        std::ifstream file(filename);
+        if (!file.is_open())
+        {
+            Log::error << "Failed to open spawn file for reading: " << filename << std::endl;
+            return;
+        }
+
+        spawnMap.clear();
+        playerSpawnPosition = {0.f, 0.f}; // reset
+
+        std::string line;
+        int lineNum = 0;
+        while (std::getline(file, line))
+        {
+            lineNum++;
+            if (line.empty() || line[0] == '#')
+                continue;
+
+            // Remove trailing CR if any
+            if (!line.empty() && line.back() == '\r')
+                line.pop_back();
+
+            std::istringstream iss(line);
+            std::vector<std::string> tokens;
+            std::string token;
+            while (iss >> token)
+                tokens.push_back(token);
+
+            // We expect exactly 11 tokens (x, y, key, scale, rot, flipX, flipY, npcTypeId, uniqueID, scriptName, waypoints)
+            if (tokens.size() != 11)
+            {
+                Log::warn << "Spawn load: skipping line " << lineNum << " (expected 11 tokens, got " << tokens.size() << ")" << std::endl;
+                continue;
+            }
+
+            try
+            {
+                float x = std::stof(tokens[0]);
+                float y = std::stof(tokens[1]);
+                std::string characterKey = tokens[2];
+                float scale = std::stof(tokens[3]);
+                float rotation = std::stof(tokens[4]);
+                bool flipX = (std::stoi(tokens[5]) != 0);
+                bool flipY = (std::stoi(tokens[6]) != 0);
+                std::string npcTypeId = tokens[7];
+                // Replace placeholders with empty strings
+                std::string uniqueID = (tokens[8] == "_") ? "" : tokens[8];
+                std::string scriptName = (tokens[9] == "_") ? "" : tokens[9];
+                std::string waypointStr = tokens[10];
+
+                SpawnProps props;
+                props.characterKey = characterKey;
+                props.scale = scale;
+                props.rotation = rotation;
+                props.flipX = flipX;
+                props.flipY = flipY;
+                props.npcTypeId = npcTypeId;
+                props.uniqueID = uniqueID;
+                props.scriptName = scriptName;
+
+                // Parse waypoints from waypointStr
+                if (!waypointStr.empty() && waypointStr != "_")
+                {
+                    std::stringstream wss(waypointStr);
+                    std::string pair;
+                    while (std::getline(wss, pair, ';'))
+                    {
+                        if (pair.empty())
+                            continue;
+                        float wx, wy;
+                        char comma;
+                        std::stringstream ps(pair);
+                        if (ps >> wx >> comma >> wy && comma == ',')
+                        {
+                            props.waypoints.push_back(sf::Vector2f(wx, wy));
+                        }
+                    }
+                }
+
+                if (props.npcTypeId == "player")
+                {
+                    Log::info << "Loaded player spawn position from file: (" << x << ", " << y << ")" << std::endl;
+                    playerSpawnPosition = sf::Vector2f(x, y);
+                }
+
+                spawnMap[{x, y}] = props;
+            }
+            catch (const std::exception &e)
+            {
+                Log::error << "Spawn load: error parsing line " << lineNum << ": " << e.what() << std::endl;
+            }
+        }
+
+        file.close();
+        Log::info << "Loaded " << spawnMap.size() << " spawns from " << filename << std::endl;
+    }
+
+    void saveSpawnsToFile(const std::string &filename)
+    {
+        std::ofstream file(filename);
+        if (!file.is_open())
+        {
+            Log::error << "Failed to open spawn file for writing: " << filename << std::endl;
+            return;
+        }
+
+        file << "# Spawns: x y characterKey scale rotation flipX flipY npcTypeId uniqueID scriptName waypoints\n";
+        file << "# waypoints format: x1,y1;x2,y2;... (semicolon separated, no spaces)\n";
+        file << "# Empty uniqueID or scriptName are stored as '_'\n";
+
+        for (const auto &[pos, props] : spawnMap)
+        {
+            // Build waypoint string (no spaces)
+            std::string waypointStr;
+            for (size_t i = 0; i < props.waypoints.size(); ++i)
+            {
+                if (i > 0)
+                    waypointStr += ";";
+                waypointStr += std::to_string(props.waypoints[i].x) + "," + std::to_string(props.waypoints[i].y);
+            }
+            if (waypointStr.empty())
+                waypointStr = "_"; // placeholder for empty waypoints
+
+            // Use '_' for empty strings
+            std::string uid = props.uniqueID.empty() ? "_" : props.uniqueID;
+            std::string scr = props.scriptName.empty() ? "_" : props.scriptName;
+
+            file << pos.first << ' ' << pos.second << ' '
+                 << props.characterKey << ' '
+                 << props.scale << ' '
+                 << props.rotation << ' '
+                 << (props.flipX ? 1 : 0) << ' '
+                 << (props.flipY ? 1 : 0) << ' '
+                 << props.npcTypeId << ' '
+                 << uid << ' '
+                 << scr << ' '
+                 << waypointStr << '\n';
+        }
+
+        file.close();
+        Log::info << "Spawns saved to " << filename << std::endl;
+    }
+
+    void setPlayerSpawnPosition(const sf::Vector2f &pos)
+    {
+        playerSpawnPosition = pos;
+    }
+
+    void loadSolidFromFile(const std::string &filename)
+    {
+        std::ifstream file(filename);
+        if (!file.is_open())
+            return;
+        solidMap.clear();
+        std::string line;
+        while (std::getline(file, line))
+        {
+            if (line.empty())
+                continue;
+            std::istringstream iss(line);
+            int x, y, type;
+            char comma1, comma2;
+            if (iss >> x >> comma1 >> y >> comma2 >> type)
+            {
+                if (comma1 == ',' && comma2 == ',')
+                {
+                    solidMap[{x, y}] = type;
+                }
+            }
+        }
+    }
+
+    void saveSolidToFile(const std::string &filename)
+    {
+        std::ofstream file(filename);
+        if (!file.is_open())
+            return;
+        for (const auto &[pos, type] : solidMap)
+        {
+            file << pos.first << "," << pos.second << "," << type << "\n";
+        }
+    }
+
+    bool isSolidTile(int x, int y)
+    {
+        if (getSolidTile(x, y) > 0)
+            return true;
+        return false;
+    }
+
+    std::vector<int> getTile(int x, int y)
+    {
+        auto it = terrain.find({x, y});
+        if (it != terrain.end())
+        {
+            return it->second;
+        }
+        return {};
+    }
+
+    void setTile(int x, int y, int encodedTile)
+    {
+        if (encodedTile < 0 || getTileIndex(encodedTile) < 0)
+        {
+            terrain.erase({x, y});
+        }
+        else
+        {
+            terrain[{x, y}] = {encodedTile};
+        }
+    }
+
+    void addTile(int x, int y, int encodedTile)
+    {
+        auto &vec = terrain[{x, y}];
+        if (encodedTile < 0 || getTileIndex(encodedTile) < 0)
+        {
+            vec.erase(std::remove(vec.begin(), vec.end(), encodedTile), vec.end());
+        }
+        else
+        {
+            vec.push_back(encodedTile);
+        }
+    }
+
+    void setTileVector(int x, int y, const std::vector<int> &encodedTiles)
+    {
+        if (encodedTiles.empty())
+        {
+            terrain.erase({x, y});
+        }
+        else
+        {
+            terrain[{x, y}] = encodedTiles;
+        }
+    }
+
+    // ------------------ Tile functions (unchanged) ------------------
+    void draw(sf::RenderWindow &win, float dt)
+    {
+        for (const auto &[pos, tile_ids] : terrain)
+        {
+            for (int encoded : tile_ids)
+            {
+                int idx = getTileIndex(encoded);
+                int rot = getTileRotation(encoded);
+                int flip = getTileFlip(encoded);
+                sf::Sprite s = Tiles::getTileSprite(idx);
+                auto [x, y] = pos;
+                sf::FloatRect bounds = s.getLocalBounds();
+                s.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
+                sf::Vector2f tilePos = Tiles::getTilePosition(x, y);
+                s.setPosition(tilePos + sf::Vector2f(bounds.size.x / 2.f * Scale::get(),
+                                                     bounds.size.y / 2.f * Scale::get()));
+                s.setScale(Scale::getVec());
+                s.setRotation(sf::Angle(sf::degrees(rot * 90.f)));
+                if (flip & 1)
+                    s.scale({-1.f, 1.f});
+                if (flip & 2)
+                    s.scale({1.f, -1.f});
+                win.draw(s);
+            }
+        }
+
+        // Draw objects in insertion order (oldest first, newest last = on top)
+        for (const auto &key : objectOrder)
+        {
+            auto it = objectMap.find(key);
+            if (it == objectMap.end())
+                continue; // safety
+            const auto &props = it->second;
+            sf::Sprite s = Objects::getObjectSprite(props.index);
+            sf::FloatRect bounds = s.getLocalBounds();
+            sf::Vector2f worldPos(key.first * Scale::get(), key.second * Scale::get());
+            s.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
+            s.setPosition(worldPos);
+            s.setScale(Scale::getVec() * props.scale);
+            s.setRotation(sf::Angle(sf::degrees(props.rotation)));
+            if (props.flipX)
+                s.scale({-1.f, 1.f});
+            if (props.flipY)
+                s.scale({1.f, -1.f});
+            win.draw(s);
+        }
+    }
+
+    void setMap(const TileMap &new_map)
+    {
+        terrain = new_map;
+    }
+
+    const TileMap &getMap()
+    {
+        return terrain;
+    }
+
+    void update(float dt)
+    {
+        // Not used
+    }
+
+    // ------------------ Tile file I/O ------------------
+    void loadFromFile(const std::string &filename)
+    {
+        std::ifstream file(filename);
+        if (!file.is_open())
+            return;
+        terrain.clear();
+        std::string line;
+        while (std::getline(file, line))
+        {
+            if (line.empty())
+                continue;
+            std::istringstream iss(line);
+            int x, y, id;
+            char comma1, comma2;
+            if (iss >> x >> comma1 >> y >> comma2 >> id)
+            {
+                if (comma1 == ',' && comma2 == ',')
+                {
+                    terrain[{x, y}].push_back(id);
+                }
+            }
+        }
+    }
+
+    void saveToFile(const std::string &filename)
+    {
+        std::ofstream file(filename);
+        if (!file.is_open())
+            return;
+        for (const auto &[pos, ids] : terrain)
+        {
+            for (const auto &id : ids)
+            {
+                file << pos.first << "," << pos.second << "," << id << "\n";
+            }
+        }
+    }
+
+    void eraseTile(int x, int y)
+    {
+        terrain.erase({x, y});
+    }
+
+    // ------------------ Object management (with order) ------------------
+    const ObjectMap &getObjectMap()
+    {
+        return objectMap;
+    }
+
+    const std::vector<std::pair<float, float>> &getObjectOrder()
+    {
+        return objectOrder;
+    }
+
+    void setObject(float x, float y, const ObjectProps &props)
+    {
+        std::pair<float, float> key = {x, y};
+        auto it = objectMap.find(key);
+        if (it == objectMap.end())
+        {
+            // New key – add to order vector
+            objectOrder.push_back(key);
+        }
+        objectMap[key] = props;
+    }
+
+    void eraseObject(float x, float y)
+    {
+        std::pair<float, float> key = {x, y};
+        objectMap.erase(key);
+        // Remove from order vector
+        auto it = std::find(objectOrder.begin(), objectOrder.end(), key);
+        if (it != objectOrder.end())
+        {
+            objectOrder.erase(it);
+        }
+    }
+
+    ObjectProps getObject(float x, float y)
+    {
+        auto it = objectMap.find({x, y});
+        if (it != objectMap.end())
+        {
+            return it->second;
+        }
+        return {0.f, -1};
+    }
+
+    // ------------------ Object file I/O (preserving order) ------------------
+    void loadObjectsFromFile(const std::string &filename)
+    {
+        std::ifstream file(filename);
+        if (!file.is_open())
+        {
+            Log::error << "Failed to open objects file: " << filename << std::endl;
+            return;
+        }
+        objectMap.clear();
+        objectOrder.clear();
+        std::string line;
+        while (std::getline(file, line))
+        {
+            if (line.empty())
+                continue;
+            if (!line.empty() && line.back() == '\r')
+                line.pop_back();
+
+            // Split by comma
+            std::vector<std::string> tokens;
+            std::stringstream ss(line);
+            std::string token;
+            while (std::getline(ss, token, ','))
+            {
+                tokens.push_back(token);
+            }
+
+            if (tokens.size() != 4 && tokens.size() != 7)
+            {
+                Log::warn << "Invalid object line (expected 4 or 7 tokens): " << line << std::endl;
+                continue;
+            }
+
+            try
+            {
+                float x = std::stof(tokens[0]);
+                float y = std::stof(tokens[1]);
+                int index = std::stoi(tokens[2]);
+                float scale = std::stof(tokens[3]);
+
+                ObjectProps props;
+                props.scale = scale;
+                props.index = index;
+
+                if (tokens.size() == 7)
+                {
+                    // New format: rotation, flipX, flipY
+                    props.rotation = std::stof(tokens[4]);
+                    props.flipX = (std::stoi(tokens[5]) != 0);
+                    props.flipY = (std::stoi(tokens[6]) != 0);
+                }
+                else
+                {
+                    // Old format: default rotation=0, no flips
+                    props.rotation = 0.f;
+                    props.flipX = false;
+                    props.flipY = false;
+                }
+
+                std::pair<float, float> key = {x, y};
+                objectMap[key] = props;
+                objectOrder.push_back(key);
+            }
+            catch (const std::exception &e)
+            {
+                Log::warn << "Failed to parse object line: " << line << " - " << e.what() << std::endl;
+            }
+        }
+        Log::info << "Loaded " << objectMap.size() << " objects from " << filename << std::endl;
+    }
+
+    void saveObjectsToFile(const std::string &filename)
+    {
+        std::ofstream file(filename);
+        if (!file.is_open())
+            return;
+        for (const auto &key : objectOrder)
+        {
+            auto it = objectMap.find(key);
+            if (it == objectMap.end())
+                continue;
+            const auto &props = it->second;
+            file << key.first << ","
+                 << key.second << ","
+                 << props.index << ","
+                 << props.scale << ","
+                 << props.rotation << ","
+                 << (props.flipX ? 1 : 0) << ","
+                 << (props.flipY ? 1 : 0) << "\n";
+        }
+    }
+}
+
+void Terrain::clearObjects() {
+    objectMap.clear();
+    objectOrder.clear();
+}
+
+void Terrain::clearSolidMap() {
+    solidMap.clear();
+}
+
+/* map\terrain.hpp */
+#pragma once
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <unordered_map>
+#include <vector>
+#include <utility>
+#include <functional>
+#include <graphics/tiles.hpp>
+#include <map/objects.hpp>
+
+using SolidMap = std::map<std::pair<int, int>, int>;
+struct NpcSpawn {
+    sf::Vector2f position;
+    std::string characterKey;   // matches Characters::... constants
+};
+
+struct SpawnProps {
+    std::string characterKey;
+    float scale = 1.f;
+    float rotation = 0.f;
+    bool flipX = false;
+    bool flipY = false;
+    std::string npcTypeId;
+    std::string uniqueID;
+    std::string scriptName;   // NEW: if not empty, this NPC will run this script on spawn/trigger
+    std::vector<sf::Vector2f> waypoints;
+};
+
+using SpawnMap = std::map<std::pair<float, float>, SpawnProps>;
+
+namespace Terrain {
+    void draw(sf::RenderWindow& win, float dt);
+    void setMap(const TileMap& new_map);
+    const TileMap& getMap();
+    void update(float dt);
+    void loadFromFile(const std::string& filename);
+    void saveToFile(const std::string& filename);
+    // New overloads – keep existing ones for backward compatibility if needed
+    void setTile(int x, int y, int encodedTile);              // replaces old setTile
+    void addTile(int x, int y, int encodedTile);              // replaces old addTile
+    void setTileVector(int x, int y, const std::vector<int>& encodedTiles);
+    std::vector<int> getTile(int x, int y);                   // returns encoded ints
+    void eraseTile(int x, int y);
+
+    const SolidMap& getSolidMap();
+    void setSolidTile(int x, int y, int type);   // type > 0 = solid
+    void eraseSolidTile(int x, int y);
+    int getSolidTile(int x, int y);              // returns 0 if none
+    void loadSolidFromFile(const std::string& filename);
+    void saveSolidToFile(const std::string& filename);
+
+    // Update isSolidTile to check both normal tiles and solid layer
+    bool isSolidTile(int x, int y);  // already declared; we'll modify its implementation
+
+    // Object functions
+    const ObjectMap& getObjectMap();                         // for lookups (may be unordered)
+    const std::vector<std::pair<float,float>>& getObjectOrder();  // insertion order
+    void setObject(float x, float y, const ObjectProps& props);
+    void eraseObject(float x, float y);
+    void loadObjectsFromFile(const std::string& filename);
+    void saveObjectsToFile(const std::string& filename);
+    ObjectProps getObject(float x, float y);
+
+    const SpawnMap& getSpawnMap();
+    void setSpawn(float x, float y, const SpawnProps& props);
+    void eraseSpawn(float x, float y);
+    SpawnProps getSpawn(float x, float y);  // returns empty key if not found
+    void clearSpawns();
+
+    void loadSpawnsFromFile(const std::string& filename);
+    void saveSpawnsToFile(const std::string& filename);
+
+    // Unified load/save for all spawns (replaces the old single-spawn functions)
+    void loadSpawnsFromFile(const std::string& filename);
+    void saveSpawnsToFile(const std::string& filename);
+
+    sf::Vector2f getPlayerSpawnPosition();  // returns default if none set
+    void setPlayerSpawnPosition(const sf::Vector2f& pos);
+
+    void clearObjects();   // clears objectMap and objectOrder
+    void clearSolidMap();  // clears solidMap
+
+
+}
+
+/* map\objects.cpp */
+#include <map/objects.hpp>
+#include <graphics/textures.hpp>
+#include <SFML/Graphics.hpp>
+
+namespace Objects
+{
+  namespace {
+    static int totalObjects = 0;
+
+    std::string getObjectKey(int index) {
+      return "object_" + std::to_string(index + 1);
+    }
+  }
+
+  void load() {
+    static const std::vector<std::pair<std::string, int>> objectKeys = {
+      // powerstation
+        {"power_station/objects/decoration", 27},
+        {"power_station/objects/tube", 11},
+
+      // industrial
+        {"industrial_zone/objects/barrel", 4},
+        {"industrial_zone/objects/bench", 1},
+        {"industrial_zone/objects/board", 3},
+        {"industrial_zone/objects/box", 8},
+        {"industrial_zone/objects/bucket", 1},
+        {"industrial_zone/objects/fence", 1},
+        {"industrial_zone/objects/fire-extinguisher", 3},
+        {"industrial_zone/objects/flag", 1},
+        {"industrial_zone/objects/ladder", 3},
+        {"industrial_zone/objects/locker", 4},
+        {"industrial_zone/objects/mop", 1},
+        {"industrial_zone/objects/pointer", 2},
+        {"industrial_zone/objects/numbers", 10},
+
+      // exclusion zone
+        {"exclusion_zone/objects/grass", 24},
+        {"exclusion_zone/objects/stones", 6},
+        {"exclusion_zone/objects/trees", 18},
+        {"exclusion_zone/objects/other/box", 4},
+        {"exclusion_zone/objects/other/pointer", 3},
+
+      // factory
+        {"factory/objects/barrel", 4},
+        {"factory/objects/boxes", 6},
+        {"factory/objects/icons", 12},
+        {"factory/objects/ladders", 8},
+        {"factory/objects/monitors", 9},
+
+      // billboards
+        {"billboards/billboards", 8},
+        {"billboards/ads/22x40", 15},
+        {"billboards/ads/64x64", 15},
+        {"billboards/ads/128x64", 15},
+    };
+    
+    for ( const auto& [path, count] : objectKeys) {
+      for (int i = 0; i < count; ++i) {
+        std::string key = getObjectKey(totalObjects);
+        std::string fullPath = path + "/" + std::to_string(i + 1) + ".png";
+        Textures::load(key, fullPath);
+        totalObjects++;
+      }
+    }
+  }
+
+  sf::Sprite getObjectSprite(int index) {
+    std::string key = getObjectKey(index);
+    return sf::Sprite(Textures::get(key));
+  }
+
+  int getCount() {
+    return totalObjects;
+  }
+}
+
+/* map\objects.hpp */
+#pragma once
+
+#include <graphics/textures.hpp>
+#include <SFML/Graphics.hpp>
+#include <map>
+
+struct ObjectProps {
+  float scale;
+  int index;
+  float rotation = 0.f;   // degrees
+  bool flipX = false;
+  bool flipY = false;
+};
+
+#include <unordered_map>
+#include <utility>
+#include <functional>
+
+namespace std {
+  // to fix unordered_map with std::pair<float, float> as key
+    template<>
+    struct hash<std::pair<float, float>> {
+        std::size_t operator()(const std::pair<float, float>& p) const {
+            // Combine the hash of both floats
+            auto h1 = std::hash<float>{}(p.first);
+            auto h2 = std::hash<float>{}(p.second);
+            // Simple combine (XOR with shift)
+            return h1 ^ (h2 << 1);
+        }
+    };
+}
+
+using ObjectMap = std::unordered_map<std::pair<float, float>, ObjectProps>;
+
+namespace Objects {
+  void load();
+  sf::Sprite getObjectSprite(int index);
+  int getCount();   // new
+}
+
+/* map\map_manager.hpp */
+#pragma once
+#include <string>
+#include <filesystem>
+#include <SFML/System/Vector2.hpp>
+#include <vector>
+#include <optional>
+// #include <game/game.hpp>
+
+namespace Game {
+    class Game;
+};
+class Character;
+
+// map/map_manager.hpp
+struct Transition {
+    sf::Vector2f triggerPos;
+    std::string targetMap;
+    std::optional<sf::Vector2f> spawnPosition;
+    std::string label;   // mandatory label, e.g. "Door", "Elevator"
+};
+
+class MapManager {
+public:
+    static MapManager& get();
+
+    void setBaseDir(const std::string& dir) { baseDir = dir; }
+    std::filesystem::path getPath(const std::string& filename) const;
+
+    void loadMap(const std::string& mapName);
+    void saveCurrentMap() const;
+    void switchToMap(const std::string& mapName, std::optional<sf::Vector2f> spawnPos = std::nullopt);
+
+    // Returns the transition info if player is near a transition, otherwise std::nullopt
+    std::optional<Transition> getTransitionAt(const sf::Vector2f& position, float threshold = 50.f) const;
+
+    std::string getCurrentMap() const { return currentMap; }
+    const std::vector<Transition>& getTransitions() const { return transitions; }
+
+    void setPlayer(Character* player) { m_player = player; }
+    void spawnNPCs();
+    void setGame(Game::Game* game) { m_game = game; }
+
+private:
+    MapManager() = default;
+    Game::Game* m_game = nullptr;
+    std::string currentMap = "default";
+    std::string baseDir = "assets/maps/";
+    std::vector<Transition> transitions;
+    Character* m_player = nullptr;
+
+    void clearCurrentMapData();
+};
+
+/* map\map_manager.cpp */
+#include "map_manager.hpp"
+#include <map/terrain.hpp>
+#include <entities/npc_manager.hpp>
+#include <entities/player.hpp>
+#include <core/constants.hpp>
+#include <debug/logs.hpp>
+#include <fstream>
+#include <sstream>
+#include <cmath>
+#include <ui/transition_screen.hpp>
+#include <ui/ui_manager.hpp>
+#include <game/game.hpp>
+
+MapManager& MapManager::get() {
+    static MapManager instance;
+    return instance;
+}
+
+std::filesystem::path MapManager::getPath(const std::string& filename) const {
+    return std::filesystem::path(baseDir) / currentMap / filename;
+}
+
+void MapManager::clearCurrentMapData() {
+    Terrain::setMap(TileMap{});
+    Terrain::clearObjects();
+    Terrain::clearSolidMap();
+    Terrain::clearSpawns();
+    transitions.clear();
+    NPCManager::get().clearAll();
+}
+
+// map/map_manager.cpp - loadMap()
+void MapManager::loadMap(const std::string& mapName) {
+    currentMap = mapName;
+    Log::info << "Loading map: " << currentMap << "\n";
+
+    // Load terrain layers
+    Terrain::loadFromFile(getPath("map.txt").string());
+    Terrain::loadObjectsFromFile(getPath("objects.txt").string());
+    Terrain::loadSolidFromFile(getPath("solid_tiles.txt").string());
+    Terrain::loadSpawnsFromFile(getPath("spawns.txt").string());
+
+    // Load transitions
+    transitions.clear();
+    std::ifstream file(getPath("transitions.txt").string());
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            if (line.empty() || line[0] == '#') continue;
+            std::istringstream iss(line);
+            float x, y, x2, y2;
+            std::string target, label;
+            if (iss >> x >> y >> target >> label) {
+                Transition tr;
+                tr.triggerPos = sf::Vector2f(x, y);
+                tr.targetMap = target;
+                tr.label = label;
+                if (iss >> x2 >> y2) {
+                    tr.spawnPosition = sf::Vector2f(x2, y2);
+                }
+                transitions.push_back(tr);
+            } else {
+                Log::warn << "Invalid transition line: " << line << "\n";
+            }
+        }
+        file.close();
+        Log::info << "Loaded " << transitions.size() << " transitions.\n";
+    } else {
+        Log::info << "No transitions file found.\n";
+    }
+}
+
+// ---------- Fixed saveCurrentMap ----------
+void MapManager::saveCurrentMap() const {
+    Log::info << "Saving map: " << currentMap << "\n";
+
+    Terrain::saveToFile(getPath("map.txt").string());
+    Terrain::saveObjectsToFile(getPath("objects.txt").string());
+    Terrain::saveSolidToFile(getPath("solid_tiles.txt").string());
+    Terrain::saveSpawnsToFile(getPath("spawns.txt").string());
+
+    std::ofstream file(getPath("transitions.txt").string());
+    if (file.is_open()) {
+        for (const auto& tr : transitions) {
+            file << tr.triggerPos.x << " " << tr.triggerPos.y << " "
+                 << tr.targetMap << " " << tr.label;
+            if (tr.spawnPosition.has_value()) {
+                file << " " << tr.spawnPosition->x << " " << tr.spawnPosition->y;
+            }
+            file << "\n";
+        }
+        file.close();
+    } else {
+        Log::error << "Failed to save transitions.txt\n";
+    }
+}
+
+std::optional<Transition> MapManager::getTransitionAt(const sf::Vector2f& position, float threshold) const {
+    for (auto& tr : transitions) {
+        sf::Vector2f triggerPos = tr.triggerPos * Scale::get(); // Scale trigger position to world coordinates
+        sf::Vector2f diff = triggerPos - position;
+        Log::info << "Checking transition at " << triggerPos.x << ", " << triggerPos.y 
+                  << " for player at " << position.x << ", " << position.y 
+                  << ". Distance=" << std::hypot(diff.x, diff.y) << "\n";
+        if (std::hypot(diff.x, diff.y) <= threshold) {
+            return tr;
+        }
+    }
+    return std::nullopt;
+}
+
+void MapManager::spawnNPCs() {
+    Log::Scope scope("MapManager::spawnNPCs");
+    scope.info << "Spawning NPCs for map: " << currentMap << "\n";
+    NPCManager::spawnAllNPCs();
+    for (NPC* npc : NPCManager::get().getAllNPCs()) {
+        npc->snapToGround();
+    }
+}
+
+void MapManager::switchToMap(const std::string& mapName, std::optional<sf::Vector2f> spawnPos) {
+    if (mapName == currentMap) {
+        Log::warn << "Already on map " << mapName << ", ignoring transition.\n";
+        return;
+    }
+
+    Log::info << "Switching from " << currentMap << " to " << mapName << "\n";
+
+    auto action = [this, mapName, spawnPos](TransitionScreen& screen) {
+        Log::info << "TransitionScreen: action called for map switch to " << mapName << "\n";
+        // 1. Clear old data
+        clearCurrentMapData();
+
+        // 2. Load new map (without spawning NPCs)
+        loadMap(mapName);
+
+        spawnNPCs();
+        // 3. Reposition player
+        if (m_player) {
+            if (spawnPos.has_value()) {
+                m_player->resetToPosition(*spawnPos);
+                Log::info << "Player placed at custom spawn (" << spawnPos->x << ", " << spawnPos->y << ")\n";
+            } else {
+                m_player->resetToSpawn();
+                m_player->snapToGround();
+                Log::info << "Player reset to map default spawn.\n";
+            }
+        } else {
+            Log::warn << "No player pointer in MapManager; cannot reposition player.\n";
+        }
+        if (m_game) {
+            m_game->snapCameraToPlayer();
+        }
+
+        Log::info << "continueTransition() called after map switch.\n";
+        screen.continueTransition();
+    };
+
+    UIManager::get().pushScreen(std::make_unique<TransitionScreen>(action, 1.f));
 }
 

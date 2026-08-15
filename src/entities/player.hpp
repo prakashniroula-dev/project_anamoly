@@ -37,9 +37,15 @@ public:
     void swapTo(Character* newChar);    // take control of an NPC (or any Character)
     void swapBack();                    // revert to the previous character
     bool canSwapBack() const { return m_characterStack.size() > 1; }
+
+    
+    void setTooltip(const std::string& text);
+    void clearTooltip();
+    void drawTooltip(sf::RenderWindow& win) const;
     
     private:
     Player() = default;  // private constructor
     Character* player = nullptr;
      std::vector<Character*> m_characterStack;
+     std::string m_tooltipText;
 };

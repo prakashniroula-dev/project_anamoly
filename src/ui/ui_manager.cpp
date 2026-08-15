@@ -27,17 +27,27 @@ bool UIManager::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
 }
 
 void UIManager::update(float dt, bool& gameShouldUpdate) {
-    gameShouldUpdate = true;
+    if (m_screens.empty())
+        return;
+    
     for (auto it = m_screens.rbegin(); it != m_screens.rend(); ++it) {
+        bool blocks = (*it)->blocksGameUpdate();   // store flag before update
+        gameShouldUpdate = !blocks;
         (*it)->update(dt);
-        if ((*it)->blocksGameUpdate()) {
-            gameShouldUpdate = false;
-            break;
+        if ( gameShouldUpdate ) {
+            break; // screens below are blocked
         }
     }
 }
 
 void UIManager::draw(sf::RenderWindow& window) const {
-    for (auto& screen : m_screens)
-        screen->draw(window);
+    auto start = m_screens.begin();
+    for (auto it = m_screens.begin(); it != m_screens.end(); ++it) {
+        if (!(*it)->displayBelow()) {
+            start = it;
+        }
+    }
+    for (auto it = start; it != m_screens.end(); ++it) {
+        (*it)->draw(window);
+    }
 }

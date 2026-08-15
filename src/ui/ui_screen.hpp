@@ -23,6 +23,7 @@ public:
 
     // Whether this screen blocks input to screens below
     virtual bool blocksInput() const { return true; }
+    virtual bool displayBelow() const { return true; } // Whether to display screens below this one
 
     // Whether the game should update while this screen is on top
     virtual bool blocksGameUpdate() const { return true; }

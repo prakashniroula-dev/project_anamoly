@@ -1,19 +1,24 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <optional>
+#include <map/map_manager.hpp>
 
 // Forward declarations
 class Background;
 class Overlay;
 class LevelEditor;
 class FpsDisplay;
+// struct Transition;
 
 namespace Game {
     class Game {
     public:
-        Game(const std::string& title, unsigned int width, unsigned int height);
+        Game(const std::string& title, unsigned int width, unsigned int height, const std::string& initialMap);
         void run();
         ~Game();
+        void snapCameraToPlayer();
+        void quit();
 
     private:
         // Window & loop
@@ -39,12 +44,18 @@ namespace Game {
         float m_topDeadZone;
         float m_bottomDeadZone;
 
+        // map transition near detection
+        std::optional<Transition> m_nearTransition;
+        std::string m_initialMap;
+
         // Private methods
         void updateScale();
         void updateCamera(float dt);
         void update(float dt);
         void handleEvents();
         void initResources();   // load textures, spawns, etc.
+        bool m_gameStarted = false;
+        void startGame();
 
         // Disable copying
         Game(const Game&) = delete;

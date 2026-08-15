@@ -1,4 +1,4 @@
-#include <entities/objects.hpp>
+#include <map/objects.hpp>
 #include <graphics/textures.hpp>
 #include <SFML/Graphics.hpp>
 

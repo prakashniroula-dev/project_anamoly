@@ -1,6 +1,6 @@
 #include <debug/logs.hpp>
 #include <core/scale.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <graphics/tiles.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <fstream>
@@ -572,4 +572,13 @@ namespace Terrain
                  << (props.flipY ? 1 : 0) << "\n";
         }
     }
+}
+
+void Terrain::clearObjects() {
+    objectMap.clear();
+    objectOrder.clear();
+}
+
+void Terrain::clearSolidMap() {
+    solidMap.clear();
 }

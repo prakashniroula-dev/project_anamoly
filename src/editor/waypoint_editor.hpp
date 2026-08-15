@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <entities/npc_manager.hpp>
 #include <editor/undo_stack.hpp>
 #include <editor/spawn_editor.hpp>

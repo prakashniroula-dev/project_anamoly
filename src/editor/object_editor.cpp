@@ -1,6 +1,6 @@
 #include "object_editor.hpp"
-#include <entities/terrain.hpp>
-#include <entities/objects.hpp>
+#include <map/terrain.hpp>
+#include <map/objects.hpp>
 #include <core/scale.hpp>
 #include <core/constants.hpp>
 #include <algorithm>

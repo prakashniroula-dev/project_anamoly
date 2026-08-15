@@ -1,5 +1,5 @@
 #include "solid_editor.hpp"
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <core/constants.hpp>
 #include <core/scale.hpp>
 #include <graphics/tiles.hpp>

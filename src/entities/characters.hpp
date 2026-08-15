@@ -10,7 +10,7 @@
 #include <core/constants.hpp>
 #include <core/scale.hpp>
 #include <graphics/tiles.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 
 // Animation key constants (declared as extern)
 namespace Anim {
@@ -89,11 +89,15 @@ class Character : public GameObject {
     // ---------- DEBUG ----------
     void drawDebugBounds(sf::RenderWindow& win);
 
+    
 public:
     void init();
     sf::FloatRect getBounds();
     sf::FloatRect getFeetBounds();
     Character(std::string c = Characters::Fighter_Boss, bool playerControls = true);
+    void snapToGround();
+    void resetToSpawn() { pos = SPAWN_POS(); snapToGround(); vel = sf::Vector2f(0.f, 0.f); state = CharacterState::None; moving = CharacterMoving::Idle; timer = 0.f; }
+    void resetToPosition(sf::Vector2f newPos) { pos = newPos; snapToGround(); vel = sf::Vector2f(0.f, 0.f); state = CharacterState::None; moving = CharacterMoving::Idle; timer = 0.f; }
     
     inline sf::Vector2f getPosition() const { return pos * Scale::get(); }
     inline sf::Vector2f getSize() const { return sf::Vector2f(128.f, 128.f); } // Placeholder size

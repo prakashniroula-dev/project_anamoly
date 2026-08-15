@@ -20,7 +20,7 @@ struct NPCType {
     std::vector<DialogueLine> dialogue;
     std::string scriptName;          // optional, for special logic (e.g., "detective")
     std::vector<sf::Vector2f> waypoints;
-    float talkRadius = 100.f;
+    float talkRadius = 150.f;
     bool autoStartDialogue = false;
     float autoStartDelay = 0.f;
 };

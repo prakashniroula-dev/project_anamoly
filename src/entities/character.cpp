@@ -8,7 +8,7 @@
 #include <debug/logs.hpp>
 #include <core/scale.hpp>
 #include <core/collision.hpp>    // Fixed spelling!
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <cmath>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/Keyboard.hpp>
@@ -210,9 +210,29 @@ void Character::resolveCollision() {
     }
 }
 
+void Character::snapToGround() {
+    // Move down until we are on the ground, but limit iterations to avoid infinite loops.
+    const int MAX_ITER = 100;
+    for (int i = 0; i < MAX_ITER; ++i) {
+        if (onGround())
+            break;
+        pos.y += 0.5f;   // move down by half a pixel (unscaled)
+    }
+    // If we still aren't on the ground, try moving up a bit (shouldn't happen).
+    if (!onGround()) {
+        for (int i = 0; i < MAX_ITER; ++i) {
+            pos.y -= 0.5f;
+            if (onGround()) break;
+        }
+    }
+}
+
 // ---------- ANIMATION ----------
 void Character::animate(sf::RenderWindow& win, float dt) {
     std::string animKey = Anim::Idle;
+    // if (!m_playerControls) {
+    //     Log::info << "animate() using key: " << character << animKey << "\n";
+    // }
     if (moving == CharacterMoving::Walking) animKey = Anim::Walk;
     else if (moving == CharacterMoving::Running) animKey = Anim::Run;
 
@@ -292,6 +312,10 @@ void Character::run() {
 }
 
 void Character::shoot() {
+    if ( !m_playerControls ) {
+        Log::info << "NPC shooting at position: (" << pos.x << ", " << pos.y << ")\n";
+        Log::info << "State: " << static_cast<int>(state) << ", Moving: " << static_cast<int>(moving) << "\n";
+    }
     if ( state != CharacterState::None) return;
     if (state != CharacterState::Shooting) timer = 0;
     state = CharacterState::Shooting;
@@ -319,7 +343,7 @@ void Character::jump() {
 
 void Character::draw(sf::RenderWindow& win, float dt) {
     animate(win, dt);
-    drawDebugBounds(win);
+    // drawDebugBounds(win);
 }
 
 void Character::update(sf::RenderWindow& win, float dt) {

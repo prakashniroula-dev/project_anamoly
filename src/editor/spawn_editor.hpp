@@ -3,7 +3,7 @@
 #include "undo_stack.hpp"
 #include "palette.hpp"
 #include <entities/npc_manager.hpp>
-#include <entities/terrain.hpp>
+#include <map/terrain.hpp>
 #include <string>
 #include <vector>
 

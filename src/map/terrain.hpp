@@ -5,7 +5,7 @@
 #include <utility>
 #include <functional>
 #include <graphics/tiles.hpp>
-#include <entities/objects.hpp>
+#include <map/objects.hpp>
 
 using SolidMap = std::map<std::pair<int, int>, int>;
 struct NpcSpawn {
@@ -75,6 +75,9 @@ namespace Terrain {
 
     sf::Vector2f getPlayerSpawnPosition();  // returns default if none set
     void setPlayerSpawnPosition(const sf::Vector2f& pos);
+
+    void clearObjects();   // clears objectMap and objectOrder
+    void clearSolidMap();  // clears solidMap
 
 
 }

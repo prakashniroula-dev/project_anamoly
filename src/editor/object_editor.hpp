@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "undo_stack.hpp"
 #include "palette.hpp"
-#include <entities/objects.hpp>
+#include <map/objects.hpp>
 
 struct ObjectChange {
     float x, y;

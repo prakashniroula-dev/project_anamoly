@@ -5,6 +5,7 @@
 #include "solid_editor.hpp"
 #include "spawn_editor.hpp"
 #include "waypoint_editor.hpp"
+#include <sstream>
 
 class LevelEditor {
 public:
@@ -14,7 +15,7 @@ public:
     void setActive(bool active);
     bool isActive() const;
 
-    void init(); // calls tileEditor.init() and objectEditor.init()
+    void init();
 
 private:
     enum class Mode { Tile, Object, Solid, Spawn, Waypoint };
@@ -27,6 +28,13 @@ private:
     SolidEditor solidEditor;
     SpawnEditor spawnEditor;
     WaypointEditor waypointEditor;
+
+    // ---- UI elements for world coordinates ----
+    sf::Text m_positionText;
+    sf::RectangleShape m_positionBg;
+
+    // ---- Store last mouse world position for clipboard copy ----
+    sf::Vector2f m_lastMouseWorld;
 
     void switchMode(Mode mode);
 };

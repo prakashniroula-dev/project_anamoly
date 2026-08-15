@@ -2,6 +2,5 @@
 # waypoints format: x1,y1;x2,y2;... (semicolon separated, no spaces)
 # Empty uniqueID or scriptName are stored as '_'
 21.1191 489.871 fighter_detective 1 0 0 0 detective_explainer _ _ _
-128.092 64.8977 fighter_detective 1 0 0 0 player _ _ _
-290.158 62.439 fighter_boss 1 0 0 0 generic_guard _ guardshoot _
-554.654 480.689 fighter_boss 1 0 0 0 generic_guard _ _ 84.870796,576.183594;482.001343,578.479187;294.225189,577.560974;614.225159,573.428955
+379.432 480.689 fighter_detective 1 0 0 0 player _ _ _
+580.846 479.783 fighter_boss 1 0 0 0 guard_cutscene _ guard_cutscene _
