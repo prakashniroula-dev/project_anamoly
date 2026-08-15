@@ -1,0 +1,13 @@
+map=detective_office
+playerX=474.796
+playerY=72
+playerChar=fighter_detective
+#flags
+guardCutsceneDone=1
+met_guard=1
+#items
+#choices
+choice1
+#npcs
+generic_guard_0 0 0
+#end

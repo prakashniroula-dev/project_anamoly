@@ -39,6 +39,7 @@ public:
     void setPlayer(Character* player) { m_player = player; }
     void spawnNPCs();
     void setGame(Game::Game* game) { m_game = game; }
+    void clearCurrentMapData();
 
 private:
     MapManager() = default;
@@ -48,5 +49,4 @@ private:
     std::vector<Transition> transitions;
     Character* m_player = nullptr;
 
-    void clearCurrentMapData();
 };

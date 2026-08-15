@@ -11,6 +11,10 @@ public:
 
     void pushScreen(std::unique_ptr<UIScreen> screen);
     void popScreen();
+    inline void gotoScreen(std::unique_ptr<UIScreen> screen) {
+        clearScreens();
+        pushScreen(std::move(screen));
+    }
     void clearScreens();
     bool handleEvent(const sf::Event& event, sf::RenderWindow& window);
     void update(float dt, bool& gameShouldUpdate);

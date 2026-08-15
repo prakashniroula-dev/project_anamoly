@@ -5,7 +5,7 @@
 #include <string>
 #include <game/game.hpp>
 
-class MainMenu : public UIScreen {
+class PauseMenu : public UIScreen {
 public:
 
 void onEnter() override;
@@ -14,14 +14,14 @@ bool handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
 void update(float dt) override;
 void draw(sf::RenderWindow& window) override;
 
-MainMenu(Game::Game* gameInstance);
+PauseMenu(Game::Game* gameInstance);
 bool blocksGameUpdate() const override { return true; }   // pause game
 
 private:
     enum Option {
-        NewGame,
-        Continue,
-        SaveLoad,
+        Resume,
+        Save,
+        GotoMainMenu,
         Options,
         Quit
     };

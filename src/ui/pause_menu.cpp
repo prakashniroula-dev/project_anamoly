@@ -1,30 +1,28 @@
-#include <ui/main_menu.hpp>
+#include <ui/pause_menu.hpp>
 #include <ui/ui_manager.hpp>
 #include <debug/logs.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <ui/options_menu.hpp>
 #include <ui/save_load_screen.hpp>
-#include <ui/transition_screen.hpp>
-#include <ui/message_screen.hpp>
-#include <story/story_manager.hpp>
+#include <ui/main_menu.hpp>
 
-MainMenu::MainMenu(Game::Game* gameInstance) : game(gameInstance), titleLine1(UIManager::get().getFont()), titleLine2(UIManager::get().getFont()) {
-    labels = {"New Game", "Continue", "Save/Load", "Options", "Quit"};
+PauseMenu::PauseMenu(Game::Game* gameInstance) : game(gameInstance), titleLine1(UIManager::get().getFont()), titleLine2(UIManager::get().getFont()) {
+    labels = {"Continue", "Save", "Main Menu", "Options", "Quit"};
     font = UIManager::get().getFont();
 
     // ---- Title: two lines ----
     titleLine1.setFont(font);
-    titleLine1.setString("Project");
+    titleLine1.setString("PAUSED");
     titleLine1.setCharacterSize(36);
     titleLine1.setStyle(sf::Text::Bold);
     titleLine1.setFillColor(sf::Color::White);
 
-    titleLine2.setFont(font);
-    titleLine2.setString("A.N.A.M.O.L.Y");
-    titleLine2.setCharacterSize(36);
-    titleLine2.setStyle(sf::Text::Bold);
-    titleLine2.setFillColor(sf::Color(200, 200, 255)); // subtle tint
+    // titleLine2.setFont(font);
+    // titleLine2.setString("A.N.A.M.O.L.Y");
+    // titleLine2.setCharacterSize(36);
+    // titleLine2.setStyle(sf::Text::Bold);
+    // titleLine2.setFillColor(sf::Color(200, 200, 255)); // subtle tint
 
     // ---- Options ----
     for (const auto& label : labels) {
@@ -38,13 +36,13 @@ MainMenu::MainMenu(Game::Game* gameInstance) : game(gameInstance), titleLine1(UI
     background.setOutlineThickness(0.f);
 }
 
-void MainMenu::onEnter() {
+void PauseMenu::onEnter() {
     selectedIndex = 0;
 }
 
-void MainMenu::onExit() {}
+void PauseMenu::onExit() {}
 
-void MainMenu::updateLayout(sf::RenderWindow& window) {
+void PauseMenu::updateLayout(sf::RenderWindow& window) {
     sf::Vector2f winSize = sf::Vector2f(window.getSize());
 
     // ---- 1. Full‑screen background ----
@@ -53,12 +51,12 @@ void MainMenu::updateLayout(sf::RenderWindow& window) {
 
     // ---- 2. Title block (two lines, centered as a unit) ----
     sf::FloatRect bounds1 = titleLine1.getLocalBounds();
-    sf::FloatRect bounds2 = titleLine2.getLocalBounds();
+    // sf::FloatRect bounds2 = titleLine2.getLocalBounds();
 
     // Total block height = line1 height + gap + line2 height
     const float LINE_GAP = 16.f;
-    float blockWidth = std::max(bounds1.size.x, bounds2.size.x);
-    float blockHeight = bounds1.size.y + LINE_GAP + bounds2.size.y;
+    float blockWidth = bounds1.size.x;
+    float blockHeight = bounds1.size.y + LINE_GAP; // + bounds2.size.y;
 
     // Top‑left of the block
     float blockX = (winSize.x - blockWidth) / 2.f;
@@ -70,7 +68,7 @@ void MainMenu::updateLayout(sf::RenderWindow& window) {
     titleLine1.setPosition({line1X, line1Y});
 
     // Place line2
-    float line2X = blockX + (blockWidth - bounds2.size.x) / 2.f;
+    float line2X = blockX + (blockWidth ) / 2.f;
     float line2Y = blockY + bounds1.size.y + LINE_GAP;
     titleLine2.setPosition({line2X, line2Y});
 
@@ -98,9 +96,9 @@ void MainMenu::updateLayout(sf::RenderWindow& window) {
     }
 }
 
-void MainMenu::update(float dt) {}
+void PauseMenu::update(float dt) {}
 
-bool MainMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
+bool PauseMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
     if (const auto* resized = event.getIf<sf::Event::Resized>()) {
         updateLayout(window);
     }
@@ -157,44 +155,32 @@ bool MainMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
     return false;
 }
 
-void MainMenu::executeSelected() {
+void PauseMenu::executeSelected() {
     Option opt = static_cast<Option>(selectedIndex);
     switch (opt) {
-        case NewGame: {
-            if (game->hasAutosave()) {
-                MessageScreen::show("Are you sure to start a new game?", "This will overwrite your current progress.", {"Yes", "No"}, [this](int result) {
-                    if (result == 0) { // Yes
-                        // remove autosave and reset game state
-                        game->deleteAutosave();
-                        game->reset();
-                        StoryManager::get().clearAll();
-                        UIManager::get().popScreen();
-                    }
-                });
-            }
+        case Resume:
+            Log::info << "PauseMenu: Starting new game.\n";
+            UIManager::get().popScreen();
             break;
-        }
-        case Continue:
-            TransitionScreen::endWithFade([this]() {
-                game->startGame();
-            }, 2.f); // fade duration (0.5 seconds)
+        case Save:
+            Log::info << "PauseMenu: Save selected (not implemented).\n";
+            UIManager::get().popScreen();
             break;
         case Options:
             UIManager::get().pushScreen(std::make_unique<OptionsMenu>());
             break;
         case Quit:
-            Log::info << "MainMenu: Quit selected.\n";
+            Log::info << "PauseMenu: Quit selected.\n";
             game->quit();
             break;
-        case SaveLoad:
-            UIManager::get().pushScreen(std::make_unique<SaveLoadScreen>(SaveLoadScreen::Mode::Load, [this](const std::string& slot) {
-                // Handle the selected save slot
-            }));
+        case GotoMainMenu:
+            game->reset();
+            UIManager::get().gotoScreen(std::make_unique<MainMenu>(game));
             break;
     }
 }
 
-void MainMenu::draw(sf::RenderWindow& window) {
+void PauseMenu::draw(sf::RenderWindow& window) {
     updateLayout(window);
 
     window.draw(background);

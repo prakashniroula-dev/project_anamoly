@@ -20,6 +20,10 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <map/map_manager.hpp>
 #include <optional>
+#include <game/save_game.hpp>
+#include <story/story_manager.hpp>
+#include <ui/pause_menu.hpp>
+#include <ui/message_screen.hpp>
 
 namespace Game
 {
@@ -87,9 +91,9 @@ namespace Game
         m_editor->init();
         Player::get().setCharacter(Characters::Fighter_Detective);
         NPCManager::get().setPlayer(Player::get().getPlayer());
-        // Push the main menu – spawning will happen after it's closed
-        UIManager::get().pushScreen(std::make_unique<MainMenu>(this));
         MapManager::get().setPlayer(Player::get().getPlayer());
+        Game::reset();
+        UIManager::get().pushScreen(std::make_unique<MainMenu>(this));
     }
 
     void Game::snapCameraToPlayer()
@@ -118,12 +122,13 @@ namespace Game
     void Game::startGame()
     {
         if (m_gameStarted)
-            return;
+        return;
         m_gameStarted = true;
         // Spawn NPCs and run their scripts (now that the menu is gone)
         // NPCManager::spawnAllNPCs();
         // Spawn NPCs NOW – after player is ready
         MapManager::get().spawnNPCs();
+        Game::loadAutosave(); // load autosave if it exists
         Player::get().getPlayer()->snapToGround();
         for (NPC *npc : NPCManager::get().getAllNPCs())
         {
@@ -131,6 +136,23 @@ namespace Game
         }
         snapCameraToPlayer();
         Log::info << "Game started, NPCs spawned.\n";
+    }
+
+    void Game::reset()
+    {
+        Log::info << "Resetting game state.\n";
+        m_gameStarted = false;
+        NPCManager::get().clearAll();
+        MapManager::get().clearCurrentMapData();
+        MapManager::get().loadMap(m_initialMap);
+        Player::get().setCharacter(Characters::Fighter_Detective);
+        UIManager::get().clearScreens();
+        Player::get().getPlayer()->resetToSpawn();
+        m_view.setCenter(sf::Vector2f(m_width / 2.f, m_height / 2.f));
+        m_view.setViewport(sf::FloatRect(sf::Vector2f(0.f, 0.f), sf::Vector2f(1.f, 1.f)));
+        m_window.setView(m_view);
+        m_gameStarted = false;
+        // UIManager::get().pushScreen(std::make_unique<MainMenu>(this));
     }
 
     void Game::updateScale()
@@ -199,7 +221,6 @@ namespace Game
         Terrain::draw(m_window, dt);
 
         player.update(m_window, dt);
-        NPCManager::get().update(m_window, dt);
         updateCamera(dt);
 
         m_overlay->draw(m_window, dt);
@@ -208,6 +229,7 @@ namespace Game
 
         sf::Vector2f playerPos = player.getPlayer()->getPosition();
 
+        NPCManager::get().update(m_window, dt);
         // Check for transitions using MapManager
         m_nearTransition = MapManager::get().getTransitionAt(playerPos, 100.f);
         if (!m_editor->isActive())
@@ -238,10 +260,14 @@ namespace Game
     {
         while (const std::optional event = m_window.pollEvent())
         {
-            bool uiConsumed = UIManager::get().handleEvent(*event, m_window);
+            sf::View oldView = m_window.getView();                  // Save the current view
+            m_window.setView(UIManager::get().getUIView(m_window)); // Set the view to UI view for event handling
+            bool eventConsumed = UIManager::get().handleEvent(*event, m_window);
+            m_window.setView(oldView); // Restore the original view
+            if (eventConsumed) continue;
             if (event->is<sf::Event::Closed>())
             {
-                m_window.close();
+                quit();
             }
             else if (const auto *resized = event->getIf<sf::Event::Resized>())
             {
@@ -265,11 +291,13 @@ namespace Game
                     key->code == sf::Keyboard::Key::Num4)
                 {
                     m_editor->setActive(true);
+                    UIManager::get().clearScreens();
                 }
                 if (key->code == sf::Keyboard::Key::S && ctrlHeld)
                 {
                     MapManager::get().saveCurrentMap();
-                    showInfoBox("Saved map: " + MapManager::get().getCurrentMap());
+                    MessageScreen::show("Map saved !", "Saved map: " + MapManager::get().getCurrentMap(), {"OK"});
+                    // showInfoBox("Saved map: " + MapManager::get().getCurrentMap());
                 }
 
                 if (key->code == sf::Keyboard::Key::E && !m_editor->isActive())
@@ -286,6 +314,11 @@ namespace Game
                         MapManager::get().switchToMap(tr.targetMap, tr.spawnPosition);
                         m_nearTransition.reset();
                     }
+                }
+
+                if (key->code == sf::Keyboard::Key::Escape && !m_editor->isActive())
+                {
+                    UIManager::get().pushScreen(std::make_unique<PauseMenu>(this));
                 }
             }
 
@@ -336,10 +369,10 @@ namespace Game
                     m_editor->setActive(false);
                 }
             }
-            else
+            bool gameShouldUpdate = true;
+            UIManager::get().update(dt, gameShouldUpdate);
+            if (!m_editor->isActive())
             {
-                bool gameShouldUpdate = true;
-                UIManager::get().update(dt, gameShouldUpdate);
                 if (gameShouldUpdate)
                 {
                     update(dt);
@@ -354,10 +387,9 @@ namespace Game
                     Player::get().draw(m_window, dt);
                     m_overlay->draw(m_window, dt);
                 }
-                m_window.setView(UIManager::get().getUIView(m_window));
-                UIManager::get().draw(m_window);
             }
-
+            m_window.setView(UIManager::get().getUIView(m_window));
+            UIManager::get().draw(m_window);
             m_fpsDisplay->update(dt, m_window);
             m_window.display();
         }
@@ -365,7 +397,136 @@ namespace Game
 
     void Game::quit()
     {
-        m_window.close();
+        MessageScreen::show("Are you sure you want to quit?", "", {"Yes", "No"}, [this](int result) {
+            if (result == 0) { // Yes
+                Log::info << "Game: Quitting game (confirmed).\n";
+                autoSave();
+                m_window.close();
+            }
+        });
+    }
+
+    void Game::saveCurrentState(const std::string &filepath) const
+    {
+        SaveGame save;
+        save.mapName = MapManager::get().getCurrentMap();
+        Character *player = Player::get().getPlayer();
+        if (player)
+        {
+            save.playerPos = player->getPosition() / Scale::get(); // unscaled
+            // We need a way to get the character key; you can store it in Player or Character.
+            // For now, we assume Player stores a string, but it doesn't. We'll add a method later.
+            // For brevity, we'll just save the current character's type if you add a getter.
+            // I'll add a simple workaround: Characters::Player holds the current key.
+            save.playerCharacter = Characters::Player; // defined in characters.hpp
+        }
+        else
+        {
+            save.playerCharacter = Characters::Fighter_Detective;
+        }
+
+        // Copy story state
+        auto &story = StoryManager::get();
+        save.flags = story.getFlags();
+        save.items = story.getItems();
+        save.choicesMade = story.getChoices();
+        auto& npcManager = NPCManager::get();
+        for (NPC* npc : npcManager.getAllNPCs()) {
+            const std::string& id = npc->getUniqueID();
+            if (!id.empty()) {
+                NPCState state;
+                state.autoTalked = npc->hasAutoTalked();
+                state.talked = npc->hasTalked();
+                save.npcStates[id] = state;
+            }
+        }
+
+        if (!save.save(filepath))
+        {
+            Log::error << "Failed to save game to " << filepath << "\n";
+        }
+        else
+        {
+            Log::info << "Game saved to " << filepath << "\n";
+        }
+    }
+
+    void Game::autoSave() const
+    {
+        // Create saves directory if it doesn't exist
+        std::filesystem::create_directories(m_saveDir);
+        saveCurrentState(m_saveDir + "autosave.dat");
+    }
+
+    bool Game::hasAutosave() const
+    {
+        return std::filesystem::exists(m_saveDir + "autosave.dat");
+    }
+
+    void Game::loadAutosave()
+    {
+        if (hasAutosave())
+        {
+            loadSaveFromFile(m_saveDir + "autosave.dat");
+        }
+        else
+        {
+            Log::info << "No autosave found.\n";
+        }
+    }
+
+    void Game::loadSaveFromFile(const std::string &filepath)
+    {
+        SaveGame save;
+        if (!save.load(filepath))
+        {
+            Log::error << "Failed to load save from " << filepath << "\n";
+            return;
+        }
+        loadSave(save);
+    }
+
+    void Game::loadSave(const SaveGame &save)
+    {
+        // 1. Clear current world
+        MapManager::get().clearCurrentMapData();
+
+        // 2. Restore story state
+        auto &story = StoryManager::get();
+        story.setFlags(save.flags);
+        story.setItems(save.items);
+        story.setChoices(save.choicesMade);
+
+        // 3. Load the map
+        MapManager::get().loadMap(save.mapName);
+
+        // 4. Spawn NPCs (they will use the restored story flags)
+        MapManager::get().spawnNPCs();
+
+        // 5. Set player character and position
+        Character *player = Player::get().getPlayer();
+        if (player)
+        {
+            player->setCharacter(save.playerCharacter);
+            player->resetToPosition(save.playerPos);
+            player->snapToGround();
+            // Update the global player key
+            Characters::Player = save.playerCharacter;
+        }
+
+        auto& npcManager = NPCManager::get();
+        for (const auto& [id, state] : save.npcStates) {
+            NPC* npc = npcManager.getNPC(id);
+            if (npc) {
+                npc->setAutoTalked(state.autoTalked);
+                npc->setTalked(state.talked);
+            }
+        }
+
+        // 6. Snap camera
+        snapCameraToPlayer();
+
+        Log::info << "Game loaded from save.\n";
     }
 
 } // namespace Game

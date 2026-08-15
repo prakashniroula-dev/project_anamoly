@@ -118,9 +118,31 @@ void MapManager::spawnNPCs() {
 }
 
 void MapManager::switchToMap(const std::string& mapName, std::optional<sf::Vector2f> spawnPos) {
+    if (m_game) {
+        m_game->autoSave();
+    }
     if (mapName == currentMap) {
-        Log::warn << "Already on map " << mapName << ", ignoring transition.\n";
-        return;
+        // if same then just reposition player but with transition
+        auto action = [this, spawnPos](TransitionScreen& screen) {
+            Log::info << "TransitionScreen: action called for repositioning player in same map " << currentMap << "\n";
+            if (m_player) {
+                if (spawnPos.has_value()) {
+                    m_player->resetToPosition(*spawnPos);
+                    Log::info << "Player placed at custom spawn (" << spawnPos->x << ", " << spawnPos->y << ")\n";
+                } else {
+                    m_player->resetToSpawn();
+                    m_player->snapToGround();
+                    Log::info << "Player reset to map default spawn.\n";
+                }
+            } else {
+                Log::warn << "No player pointer in MapManager; cannot reposition player.\n";
+            }
+            if (m_game) {
+                m_game->snapCameraToPlayer();
+                m_game->autoSave();
+            }
+            screen.continueTransition();
+        };
     }
 
     Log::info << "Switching from " << currentMap << " to " << mapName << "\n";
@@ -149,6 +171,7 @@ void MapManager::switchToMap(const std::string& mapName, std::optional<sf::Vecto
         }
         if (m_game) {
             m_game->snapCameraToPlayer();
+            m_game->autoSave();
         }
 
         Log::info << "continueTransition() called after map switch.\n";

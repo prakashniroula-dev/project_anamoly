@@ -11,6 +11,18 @@ public:
         return instance;
     }
 
+    void clearAll();   // reset for New Game
+    void saveToStream(std::ostream& out) const;
+    void loadFromStream(std::istream& in);
+
+    // Expose internal data for SaveGame copying (or make SaveGame a friend)
+    const auto& getFlags() const { return flags; }
+    const auto& getItems() const { return items; }
+    const auto& getChoices() const { return choicesMade; }
+    void setFlags(const std::unordered_map<std::string, bool>& f) { flags = f; }
+    void setItems(const std::unordered_map<std::string, bool>& i) { items = i; }
+    void setChoices(const std::vector<std::string>& c) { choicesMade = c; }
+
     // Flags
     void setFlag(const std::string& key, bool value = true) { flags[key] = value; }
     bool hasFlag(const std::string& key) const { return flags.find(key) != flags.end() && flags.at(key); }

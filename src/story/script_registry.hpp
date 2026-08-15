@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <unordered_map>
-#pragma once
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -25,21 +24,47 @@ enum class ActionType {
     FacePlayer,
     JustToReload,
     CallFunction,
+    CheckFlag,
+    CheckFlagModeOR,
+    CheckFlagModeAND,
+    SetFlag,
     EndSequence
 };
 
-struct Action {
-    ActionType type;
-    float duration = 0.f;
-    sf::Vector2f targetPos;
-    std::string animKey;
-    std::string dialogueId;
-    std::string functionName;
-    NPC* npc = nullptr;   // for SwapPlayer
-};
+namespace Action {
+    struct Action {
+        ActionType type;
+        float duration = 0.f;
+        sf::Vector2f targetPos;
+        std::string animKey;
+        std::string labelId;
+        std::string extName;
+        NPC* npc = nullptr;   // for SwapPlayer
+    };
 
-using Script = std::vector<Action>;
+    Action MoveTo(float x, float y);
+    Action MoveRelative(float dx, float dy);
+    Action Wait(float seconds);
+    Action LockPlayer();
+    Action UnlockPlayer();
+    Action PlayAnimation(const std::string& animKey);
+    Action ShowDialogue(const std::string& dialogueId);
+    Action SwapPlayer(NPC* npc);
+    Action FacePlayer();
+    Action CallFunction(const std::string& functionName);
+    Action CheckFlag(const std::string& flagName, bool expected);
+    Action SetFlag(const std::string& flagName, bool value);
+    Action EndSequence();
+    inline Action CheckFlagModeOR() {
+        return {ActionType::CheckFlagModeOR, 0.f, {}, "", "", "", nullptr};
+    }
+    inline Action CheckFlagModeAND() {
+        return {ActionType::CheckFlagModeAND, 0.f, {}, "", "", "", nullptr};
+    }
+}
 
+
+using Script = std::vector<Action::Action>;
 namespace ScriptRegistry {
   extern std::unordered_map<std::string, Script> scripts;
   void init();

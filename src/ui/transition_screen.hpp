@@ -21,6 +21,7 @@ public:
 
     // Static helper: push a transition screen that runs the given action
     static void performWithFade(std::function<void()> action, float fadeDuration = 0.5f);
+    static void endWithFade(std::function<void()> action, float fadeDuration = 0.5f);
 
 private:
     enum class State { FadingOut, Waiting, FadingIn, Done };

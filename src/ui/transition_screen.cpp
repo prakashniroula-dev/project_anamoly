@@ -92,3 +92,14 @@ void TransitionScreen::performWithFade(std::function<void()> action, float fadeD
     Log::info << "TransitionScreen: pushing screen with fadeDuration=" << fadeDuration << "\n";
     UIManager::get().pushScreen(std::make_unique<TransitionScreen>(wrapper, fadeDuration));
 }
+
+void TransitionScreen::endWithFade(std::function<void()> action, float fadeDuration) {
+    auto wrapper = [action = std::move(action)](TransitionScreen& screen) {
+      Log::info << "TransitionScreen: endWithFade wrapper called.\n";
+        if (action) action();
+        screen.continueTransition();
+        Log::info << "TransitionScreen: endWithFade wrapper finished.\n";
+    };
+    Log::info << "TransitionScreen: pushing screen with fadeDuration=" << fadeDuration << "\n";
+    UIManager::get().gotoScreen(std::make_unique<TransitionScreen>(wrapper, fadeDuration));
+}

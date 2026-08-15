@@ -316,7 +316,9 @@ void Character::shoot() {
         Log::info << "NPC shooting at position: (" << pos.x << ", " << pos.y << ")\n";
         Log::info << "State: " << static_cast<int>(state) << ", Moving: " << static_cast<int>(moving) << "\n";
     }
-    if ( state != CharacterState::None) return;
+    if (m_playerControls) {
+        if ( state != CharacterState::None) return;
+    }
     if (state != CharacterState::Shooting) timer = 0;
     state = CharacterState::Shooting;
 }

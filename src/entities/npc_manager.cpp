@@ -77,6 +77,7 @@ void NPCManager::loadDefinitions() {
 
     
     detective.dialogue = {
+      {"detective_mission", "Detective", "Let's catch the anamoly.", "hasFlag(detective_intro)", "", -1, {}},
       {"detective_intro", "Detective", "Ready for the first mission?", "!hasFlag(detective_intro)", "", 1, {
         {"choice1", "Player", "Yes, I'm ready, Let's do this.", "", "setFlag(detective_intro); setFlag(mission_start)", 3, {}},
         {"choice2", "Player", "What mission?", "", "setFlag(mission_info)", 4, {}},
@@ -205,7 +206,8 @@ NPC* NPCManager::getNearestInteractable(const sf::Vector2f& playerPos) const {
     for (NPC* npc : npcList) {
         sf::Vector2f npcPos = npc->getPosition();
         float dist = std::hypot(playerPos.x - npcPos.x, playerPos.y - npcPos.y);
-        if (dist <= npc->getType().talkRadius) {
+        bool isAutoTalk = npc->getType().autoStartDialogue && !npc->hasAutoTalked();
+        if (dist <= npc->getType().talkRadius && !isAutoTalk) {
             return npc;   // return the first one found (you could also pick the closest)
         }
     }

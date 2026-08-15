@@ -43,7 +43,7 @@ public:
     const std::vector<sf::Vector2f> &getWaypoints() const { return m_waypoints.empty() ? type.waypoints : m_waypoints; }
 
     // Run a script (sequence)
-    void runSequence(const std::vector<Action> &actions);
+    void runSequence(const std::vector<Action::Action> &actions);
     void dialogueEnded(); 
 
 private:
@@ -57,7 +57,7 @@ private:
     bool talked = false;
     bool autoTalked = false; // new flag
 
-    std::vector<Action> m_script; // current script
+    std::vector<Action::Action> m_script; // current script
     size_t m_currentActionIndex = 0;
     float m_actionTimer = 0.f;
     bool m_scriptRunning = false;
@@ -69,6 +69,9 @@ private:
     bool  m_waiting = false;        // true while waiting
     float m_waitTimer = 0.f;        // current remaining wait time
     int   m_nextWaypointAfterWait = 0;
+
+    bool checkFlagModeAND = true;
+    bool flag_conditions = true;
 
     // ---- Helper for script execution ----
     void executeCurrentAction();

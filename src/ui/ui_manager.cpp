@@ -51,3 +51,9 @@ void UIManager::draw(sf::RenderWindow& window) const {
         (*it)->draw(window);
     }
 }
+
+void UIManager::clearScreens() {
+    while (!m_screens.empty()) {
+        popScreen();
+    }
+}

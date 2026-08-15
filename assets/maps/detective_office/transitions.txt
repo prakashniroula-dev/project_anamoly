@@ -1,1 +1,5 @@
 581 480 default Door
+116.8 477.9 detective_office Ladder 147.2 256.8
+565.3 255.7 detective_office Ladder 532.7 64
+147.2 256.8 detective_office Ladder 116.8 477.9
+532.7 64 detective_office Ladder 565.3 255.7

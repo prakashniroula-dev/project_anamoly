@@ -1209,7 +1209,9 @@ void Character::shoot() {
         Log::info << "NPC shooting at position: (" << pos.x << ", " << pos.y << ")\n";
         Log::info << "State: " << static_cast<int>(state) << ", Moving: " << static_cast<int>(moving) << "\n";
     }
-    if ( state != CharacterState::None) return;
+    if (m_playerControls) {
+        if ( state != CharacterState::None) return;
+    }
     if (state != CharacterState::Shooting) timer = 0;
     state = CharacterState::Shooting;
 }
@@ -1318,6 +1320,8 @@ public:
     bool hasAutoTalked() const { return autoTalked; }
     void setAutoTalked(bool val) { autoTalked = val; }
     void pauseAI(bool paused) { m_aiPaused = paused; }
+    void setAutoTalked(bool val) { autoTalked = val; }
+    void setTalked(bool val) { talked = val; }
 
     // Override waypoints for this NPC instance
     void setWaypoints(const std::vector<sf::Vector2f> &wps)
@@ -1334,7 +1338,7 @@ public:
     const std::vector<sf::Vector2f> &getWaypoints() const { return m_waypoints.empty() ? type.waypoints : m_waypoints; }
 
     // Run a script (sequence)
-    void runSequence(const std::vector<Action> &actions);
+    void runSequence(const std::vector<Action::Action> &actions);
     void dialogueEnded(); 
 
 private:
@@ -1348,7 +1352,7 @@ private:
     bool talked = false;
     bool autoTalked = false; // new flag
 
-    std::vector<Action> m_script; // current script
+    std::vector<Action::Action> m_script; // current script
     size_t m_currentActionIndex = 0;
     float m_actionTimer = 0.f;
     bool m_scriptRunning = false;
@@ -1360,6 +1364,9 @@ private:
     bool  m_waiting = false;        // true while waiting
     float m_waitTimer = 0.f;        // current remaining wait time
     int   m_nextWaypointAfterWait = 0;
+
+    bool checkFlagModeAND = true;
+    bool flag_conditions = true;
 
     // ---- Helper for script execution ----
     void executeCurrentAction();
@@ -1403,6 +1410,7 @@ private:
 #include <cmath>
 #include <ui/ui_screen.hpp>
 #include <entities/player.hpp>
+#include <story/story_manager.hpp>
 
 NPC::NPC(const NPCType& type, const sf::Vector2f& spawnPos, const std::string& uniqueID)
     : Character(type.characterKey, false), type(type), uniqueID(uniqueID) {
@@ -1427,6 +1435,13 @@ void NPC::update(sf::RenderWindow& win, float dt) {
     // Log::info << "NPC update: state=" << static_cast<int>(state) << ", scriptRunning=" << m_scriptRunning << "\n";
     Character::update(win, dt); // base physics & animation
     if (m_scriptRunning) {
+        if (m_actionTimer > 0.f) {
+            m_actionTimer -= dt;
+            if (m_actionTimer <= 0.f) {
+                advanceScript();
+            }
+            return; // wait for timer to finish
+        }
         if (m_waitingForDialogue) {
             return;   // wait for dialogue to end
         }
@@ -1452,13 +1467,6 @@ void NPC::update(sf::RenderWindow& win, float dt) {
                 // Optional: add vertical movement if needed (e.g., jump)
             }
         }
-        // Handle Wait timer
-        if (m_actionTimer > 0.f) {
-            m_actionTimer -= dt;
-            if (m_actionTimer <= 0.f) {
-                advanceScript();
-            }
-        }
     } else {
         if (!m_aiPaused) {
             updateBehavior(dt);
@@ -1467,7 +1475,7 @@ void NPC::update(sf::RenderWindow& win, float dt) {
     }
 }
 
-void NPC::runSequence(const std::vector<Action>& actions) {
+void NPC::runSequence(const std::vector<Action::Action>& actions) {
     m_script = actions;
     m_waiting = false;
     for (auto& action : m_script) {
@@ -1487,14 +1495,73 @@ void NPC::runSequence(const std::vector<Action>& actions) {
 void NPC::executeCurrentAction() {
     if (m_currentActionIndex >= m_script.size()) {
         Log::info << "NPC script finished." << std::endl;
-        // script finished
         m_scriptRunning = false;
         pauseAI(false);
         return;
     }
+
     Log::info << "Try to execute action " << m_currentActionIndex << " of " << m_script.size() << std::endl;
-    const Action& action = m_script[m_currentActionIndex];
+    const Action::Action& action = m_script[m_currentActionIndex];
     Log::info << "Executing action " << m_currentActionIndex << ": type=" << static_cast<int>(action.type) << std::endl;
+
+    // ---- Handle flag-related actions unconditionally ----
+    if (action.type == ActionType::CheckFlag ||
+        action.type == ActionType::CheckFlagModeOR ||
+        action.type == ActionType::CheckFlagModeAND ||
+        action.type == ActionType::SetFlag) {
+
+        switch (action.type) {
+            case ActionType::CheckFlag: {
+                if (!checkFlagModeAND && flag_conditions) {
+                    // OR mode: if any previous condition was true, skip this check
+                    advanceScript();
+                    break;
+                }
+                if (checkFlagModeAND && !flag_conditions) {
+                    // AND mode: if any previous condition was false, skip this check
+                    advanceScript();
+                    break;
+                }
+                bool expected = (action.duration == 0.f);
+                bool current  = StoryManager::get().getFlag(action.labelId);
+                flag_conditions = (current == expected);
+                Log::info << "CheckFlag: " << action.labelId << " = " << current
+                          << ", expected = " << expected << ", result = " << flag_conditions << std::endl;
+                advanceScript();
+                break;
+            }
+            case ActionType::CheckFlagModeOR:
+                checkFlagModeAND = false;
+                flag_conditions = false;   // reset for OR mode
+                advanceScript();
+                break;
+            case ActionType::CheckFlagModeAND:
+                checkFlagModeAND = true;
+                flag_conditions = true;    // reset for AND mode
+                advanceScript();
+                break;
+            case ActionType::SetFlag:
+                Log::info << "SetFlag: " << action.labelId << " = " << (action.duration == 0.f) << std::endl;
+                StoryManager::get().setFlag(action.labelId, action.duration == 0.f);
+                advanceScript();
+                break;
+            default:
+                // Should never happen
+                advanceScript();
+                break;
+        }
+        return;  // flag actions are done
+    }
+
+    // ---- Handle regular actions only if flag conditions allow ----
+    if (!flag_conditions) {
+        Log::warn << "Action skipped due to failed flag conditions: type="
+                  << static_cast<int>(action.type) << std::endl;
+        advanceScript();
+        return;
+    }
+
+    // Now flag_conditions is true; execute the action
     switch (action.type) {
         case ActionType::FacePlayer: {
             Character* player = Player::get().getPlayer();
@@ -1513,36 +1580,27 @@ void NPC::executeCurrentAction() {
             behaviorState.targetPos = action.targetPos;
             m_actionTimer = -1.f;   // no wait timer
             break;
-
         case ActionType::MoveRelative:
             behaviorState.type = BehaviorState::Type::Scripted;
             behaviorState.targetPos = getPosition() / Scale::get() + action.targetPos;
-            m_actionTimer = -1.f;   // no wait timer
+            m_actionTimer = -1.f;
             break;
-
         case ActionType::Wait:
             m_actionTimer = action.duration;
             Log::info << "Waiting for " << m_actionTimer << " seconds.\n";
             break;
-
         case ActionType::LockPlayer:
             Player::get().lockControls();
             advanceScript();
             break;
-
         case ActionType::UnlockPlayer:
             Player::get().unlockControls();
             advanceScript();
             break;
-
         case ActionType::PlayAnimation:
-            // Set a scripted animation (we'll need a new state)
-            // For simplicity, we can override the moving/state enums.
-            // We'll add a new member m_scriptedAnim and use it in animate().
             m_scriptedAnim = action.animKey;
             advanceScript();
             break;
-
         case ActionType::ShowDialogue:
             if (action.npc) {
                 UIManager::get().pushScreen(std::make_unique<DialogScreen>(action.npc));
@@ -1551,38 +1609,37 @@ void NPC::executeCurrentAction() {
             }
             m_waitingForDialogue = true;   // block script until dialogue closes
             break;
-
         case ActionType::SwapPlayer:
             if (action.npc) {
                 Player::get().swapTo(action.npc);
             } else {
-                // If no NPC specified, swap back?
                 Player::get().swapBack();
             }
             advanceScript();
             break;
-
         case ActionType::CallFunction: {
-            Log::info << "Calling function: " << action.functionName << std::endl;
-            auto it = FunctionRegistry::functions.find(action.functionName);
+            Log::info << "Calling function: " << action.extName << std::endl;
+            auto it = FunctionRegistry::functions.find(action.extName);
             if (it != FunctionRegistry::functions.end()) {
                 it->second(this);
             } else {
-                Log::warn << "Unknown function: " << action.functionName << std::endl;
+                Log::warn << "Unknown function: " << action.extName << std::endl;
             }
             advanceScript();
             break;
         }
-
         case ActionType::EndSequence:
             m_scriptRunning = false;
             pauseAI(false);
-            // Optionally switch back to patrol/idle
             behaviorState.type = BehaviorState::Type::Idle;
+            // No advanceScript – script ends here
+            break;
+        default:
+            Log::warn << "Unknown action type: " << static_cast<int>(action.type) << std::endl;
+            advanceScript();
             break;
     }
 }
-
 void NPC::advanceScript() {
     ++m_currentActionIndex;
     executeCurrentAction();
@@ -1752,7 +1809,7 @@ struct NPCType {
     std::vector<DialogueLine> dialogue;
     std::string scriptName;          // optional, for special logic (e.g., "detective")
     std::vector<sf::Vector2f> waypoints;
-    float talkRadius = 100.f;
+    float talkRadius = 150.f;
     bool autoStartDialogue = false;
     float autoStartDelay = 0.f;
 };
@@ -1892,6 +1949,7 @@ void NPCManager::loadDefinitions() {
 
     
     detective.dialogue = {
+      {"detective_mission", "Detective", "Let's catch the anamoly.", "hasFlag(detective_intro)", "", -1, {}},
       {"detective_intro", "Detective", "Ready for the first mission?", "!hasFlag(detective_intro)", "", 1, {
         {"choice1", "Player", "Yes, I'm ready, Let's do this.", "", "setFlag(detective_intro); setFlag(mission_start)", 3, {}},
         {"choice2", "Player", "What mission?", "", "setFlag(mission_info)", 4, {}},
@@ -2020,7 +2078,8 @@ NPC* NPCManager::getNearestInteractable(const sf::Vector2f& playerPos) const {
     for (NPC* npc : npcList) {
         sf::Vector2f npcPos = npc->getPosition();
         float dist = std::hypot(playerPos.x - npcPos.x, playerPos.y - npcPos.y);
-        if (dist <= npc->getType().talkRadius) {
+        bool isAutoTalk = npc->getType().autoStartDialogue && !npc->hasAutoTalked();
+        if (dist <= npc->getType().talkRadius && !isAutoTalk) {
             return npc;   // return the first one found (you could also pick the closest)
         }
     }
@@ -2231,53 +2290,47 @@ void Player::drawTooltip(sf::RenderWindow& win) const {
     // 1. Player head world position -> screen coordinates
     sf::FloatRect bounds = player->getBounds();
     sf::Vector2f headWorld = bounds.position + sf::Vector2f(bounds.size.x / 2.f, 0.f);
-    headWorld.y -= 20.f;   // offset above head
-    sf::Vector2f headScreen = win.mapCoordsToPixel(headWorld);
+    sf::Vector2f headScreen = sf::Vector2f(win.mapCoordsToPixel(headWorld));
+    headScreen.y -= 20.f;   // offset above head
 
     sf::Font& font = UIManager::get().getFont();
 
     // 2. UI constants (pixel sizes, no scaling)
-    const float circleRadius  = 22.f;
-    const float fontSizeKey   = 20.f;
+    const float fontSizeKey   = 28.f;     // larger "E"
     const float fontSizeLabel = 18.f;
-    const float padding       = 14.f;
-    const float gap           = 12.f;      // between circle and label
-    const float pointerSize   = 12.f;      // triangle height
+    const float padding       = 12.f;     // horizontal padding
+    const float verticalPad   = 14.f;     // slightly more vertical padding (was 12)
+    const float gap           = 10.f;     // space between "E" and label
+    const float pointerSize   = 10.f;     // triangle height
     const float borderThick   = 2.f;
-    const float cornerRadius  = 8.f;       // for rounded corners (we'll approximate)
 
-    // 3. Build label text
+    // 3. Build "E" text (white, bold)
+    sf::Text keyText(font, "E", fontSizeKey);
+    keyText.setFillColor(sf::Color(180, 200, 255));
+    keyText.setStyle(sf::Text::Bold);
+    sf::FloatRect keyBounds = keyText.getLocalBounds();
+
+    // 4. Build label text (white)
     sf::Text labelText(font, m_tooltipText, fontSizeLabel);
     labelText.setFillColor(sf::Color::White);
     sf::FloatRect labelBounds = labelText.getLocalBounds();
 
-    // 4. Build "E" circle
-    sf::CircleShape circle(circleRadius);
-    circle.setFillColor(sf::Color(20, 20, 30, 230));   // dark with slight blue tint
-    circle.setOutlineColor(sf::Color(180, 200, 255));  // light blue border
-    circle.setOutlineThickness(borderThick);
-
-    sf::Text keyText(font, "E", fontSizeKey);
-    keyText.setFillColor(sf::Color(180, 200, 255));    // light blue to match border
-    sf::FloatRect keyBounds = keyText.getLocalBounds();
-
-    // 5. Layout dimensions
-    float totalWidth  = circleRadius * 2 + gap + labelBounds.size.x + padding * 2;
-    float totalHeight = std::max(circleRadius * 2, labelBounds.size.y) + padding * 2;
-    float totalHeightWithPointer = totalHeight + pointerSize;
+    // 5. Layout: rectangle with extra vertical padding for a bit more height
+    float totalWidth  = keyBounds.size.x + gap + labelBounds.size.x + padding * 2;
+    float totalHeight = std::max(keyBounds.size.y, labelBounds.size.y) + verticalPad * 2;
 
     // 6. Position the bubble so its bottom‑center aligns with headScreen
     float bubbleX = headScreen.x - totalWidth / 2.f;
-    float bubbleY = headScreen.y - totalHeightWithPointer - 5.f; // 5px extra gap
+    float bubbleY = headScreen.y - totalHeight - pointerSize - 5.f; // gap above pointer
 
-    // 7. Background rectangle (rounded corners approximated using a sprite – we'll keep it simple)
+    // 7. Background rectangle (dark with light blue border)
     sf::RectangleShape background({totalWidth, totalHeight});
     background.setPosition({bubbleX, bubbleY});
-    background.setFillColor(sf::Color(15, 15, 25, 220));   // dark blue‑black
+    background.setFillColor(sf::Color(15, 15, 25, 220));
     background.setOutlineColor(sf::Color(180, 200, 255));
     background.setOutlineThickness(borderThick);
 
-    // 8. Pointer triangle (points down to player's head)
+    // 8. Pointer triangle (points down)
     sf::ConvexShape pointer;
     pointer.setPointCount(3);
     float pointerX = headScreen.x;
@@ -2289,30 +2342,23 @@ void Player::drawTooltip(sf::RenderWindow& win) const {
     pointer.setOutlineColor(sf::Color(180, 200, 255));
     pointer.setOutlineThickness(borderThick);
 
-    // 9. Position elements inside the bubble
-    // Circle (centered vertically, left‑aligned with padding)
-    float circleX = bubbleX + padding;
-    float circleY = bubbleY + (totalHeight - circleRadius * 2) / 2.f;
-    circle.setPosition({circleX, circleY});
-
-    // Key text (centered inside circle)
-    float keyX = circleX + circleRadius - keyBounds.size.x / 2.f;
-    float keyY = circleY + circleRadius - keyBounds.size.y / 2.f - 2.f;
+    // 9. Position texts – both vertically centered inside the box
+    // "E" on the left
+    float keyX = bubbleX + padding;
+    float keyY = bubbleY + (totalHeight - keyBounds.size.y) / 2.f - 4.f;
     keyText.setPosition({keyX, keyY});
 
-    // Label text (to the right of circle, vertically centered)
-    float labelX = circleX + circleRadius * 2 + gap;
+    // Label to the right, also vertically centered
+    float labelX = keyX + keyBounds.size.x + gap;
     float labelY = bubbleY + (totalHeight - labelBounds.size.y) / 2.f - 2.f;
     labelText.setPosition({labelX, labelY});
 
-    // 10. Draw in UI view (default view)
+    // 10. Draw in UI view
     sf::View originalView = win.getView();
-    win.setView(win.getDefaultView());
+    win.setView(UIManager::get().getUIView(win)); // switch to UI view
 
-    // Draw background and pointer first (so they are behind text)
     win.draw(background);
     win.draw(pointer);
-    win.draw(circle);
     win.draw(keyText);
     win.draw(labelText);
 
@@ -4846,6 +4892,10 @@ public:
 
     void pushScreen(std::unique_ptr<UIScreen> screen);
     void popScreen();
+    inline void gotoScreen(std::unique_ptr<UIScreen> screen) {
+        clearScreens();
+        pushScreen(std::move(screen));
+    }
     void clearScreens();
     bool handleEvent(const sf::Event& event, sf::RenderWindow& window);
     void update(float dt, bool& gameShouldUpdate);
@@ -4924,6 +4974,12 @@ void UIManager::draw(sf::RenderWindow& window) const {
     }
     for (auto it = start; it != m_screens.end(); ++it) {
         (*it)->draw(window);
+    }
+}
+
+void UIManager::clearScreens() {
+    while (!m_screens.empty()) {
+        popScreen();
     }
 }
 
@@ -5370,6 +5426,7 @@ private:
     enum Option {
         NewGame,
         Continue,
+        SaveLoad,
         Options,
         Quit
     };
@@ -5396,9 +5453,12 @@ private:
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <ui/options_menu.hpp>
+#include <ui/save_load_screen.hpp>
+#include <ui/transition_screen.hpp>
+#include <ui/message_screen.hpp>
 
 MainMenu::MainMenu(Game::Game* gameInstance) : game(gameInstance), titleLine1(UIManager::get().getFont()), titleLine2(UIManager::get().getFont()) {
-    labels = {"New Game", "Continue", "Options", "Quit"};
+    labels = {"New Game", "Continue", "Save/Load", "Options", "Quit"};
     font = UIManager::get().getFont();
 
     // ---- Title: two lines ----
@@ -5548,13 +5608,21 @@ bool MainMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
 void MainMenu::executeSelected() {
     Option opt = static_cast<Option>(selectedIndex);
     switch (opt) {
-        case NewGame:
-            Log::info << "MainMenu: Starting new game.\n";
-            UIManager::get().popScreen();
+        case NewGame: {
+            if (game->hasAutosave()) {
+                MessageScreen::show("Are you sure to start a new game?", "This will overwrite your current progress.", {"Yes", "No"}, [this](int result) {
+                    if (result == 0) { // Yes
+                        Log::info << "MainMenu: Starting new game (confirmed).\n";
+                        UIManager::get().popScreen();
+                    }
+                });
+            }
             break;
+        }
         case Continue:
-            Log::info << "MainMenu: Continue selected (not implemented).\n";
-            UIManager::get().popScreen();
+            TransitionScreen::endWithFade([this]() {
+                game->startGame();
+            }, 2.f); // fade duration (0.5 seconds)
             break;
         case Options:
             UIManager::get().pushScreen(std::make_unique<OptionsMenu>());
@@ -5562,6 +5630,11 @@ void MainMenu::executeSelected() {
         case Quit:
             Log::info << "MainMenu: Quit selected.\n";
             game->quit();
+            break;
+        case SaveLoad:
+            UIManager::get().pushScreen(std::make_unique<SaveLoadScreen>(SaveLoadScreen::Mode::Load, [this](const std::string& slot) {
+                // Handle the selected save slot
+            }));
             break;
     }
 }
@@ -5623,6 +5696,7 @@ public:
 
     // Static helper: push a transition screen that runs the given action
     static void performWithFade(std::function<void()> action, float fadeDuration = 0.5f);
+    static void endWithFade(std::function<void()> action, float fadeDuration = 0.5f);
 
 private:
     enum class State { FadingOut, Waiting, FadingIn, Done };
@@ -5728,6 +5802,17 @@ void TransitionScreen::performWithFade(std::function<void()> action, float fadeD
     };
     Log::info << "TransitionScreen: pushing screen with fadeDuration=" << fadeDuration << "\n";
     UIManager::get().pushScreen(std::make_unique<TransitionScreen>(wrapper, fadeDuration));
+}
+
+void TransitionScreen::endWithFade(std::function<void()> action, float fadeDuration) {
+    auto wrapper = [action = std::move(action)](TransitionScreen& screen) {
+      Log::info << "TransitionScreen: endWithFade wrapper called.\n";
+        if (action) action();
+        screen.continueTransition();
+        Log::info << "TransitionScreen: endWithFade wrapper finished.\n";
+    };
+    Log::info << "TransitionScreen: pushing screen with fadeDuration=" << fadeDuration << "\n";
+    UIManager::get().gotoScreen(std::make_unique<TransitionScreen>(wrapper, fadeDuration));
 }
 
 /* ui\options_menu.cpp */
@@ -6309,6 +6394,757 @@ private:
     std::string getDisplayString(const Control& ctrl) const;
 };
 
+/* ui\save_load_screen.hpp */
+#pragma once
+#include "ui_screen.hpp"
+#include <vector>
+#include <string>
+#include <functional>
+
+class SaveLoadScreen : public UIScreen {
+public:
+    enum class Mode { Save, Load };
+
+    SaveLoadScreen(Mode mode, std::function<void(const std::string&)> onSelect);
+    void onEnter() override;
+    bool handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
+    void draw(sf::RenderWindow& window) override;
+    bool blocksGameUpdate() const override { return true; }
+    bool blocksInput() const override { return true; }
+
+private:
+    Mode mode;
+    std::function<void(const std::string&)> onSelect;
+    std::vector<std::string> slotFiles;
+    int selectedIndex = 0;
+
+    sf::Font font;
+    sf::Text title;
+    std::vector<sf::Text> slotLabels;
+    sf::RectangleShape background;
+
+    void updateLayout(sf::RenderWindow& window);
+    void scanSlots();
+    void executeSelection();
+};
+
+/* ui\save_load_screen.cpp */
+#include "save_load_screen.hpp"
+#include "ui_manager.hpp"
+#include <debug/logs.hpp>
+#include <filesystem>
+#include <fstream>
+#include <algorithm>
+
+SaveLoadScreen::SaveLoadScreen(Mode m, std::function<void(const std::string&)> cb)
+    : mode(m), onSelect(std::move(cb)), title(font) {
+    font = UIManager::get().getFont();
+    title.setFont(font);
+    title.setString(mode == Mode::Save ? "Save Game" : "Load Game");
+    title.setCharacterSize(32);
+    title.setFillColor(sf::Color::White);
+    background.setFillColor(sf::Color(0, 0, 0, 220));
+}
+
+void SaveLoadScreen::scanSlots() {
+    slotFiles.clear();
+    std::string dir = "saves/";
+    if (!std::filesystem::exists(dir)) {
+        std::filesystem::create_directories(dir);
+    }
+    for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+        if (entry.is_regular_file() && entry.path().extension() == ".dat") {
+            slotFiles.push_back(entry.path().filename().string());
+        }
+    }
+    // Sort by name
+    std::sort(slotFiles.begin(), slotFiles.end());
+    if (mode == Mode::Save) {
+        // Always allow saving to a new slot: add an empty slot placeholder
+        slotFiles.push_back("new_slot.dat");
+    }
+    selectedIndex = 0;
+}
+
+void SaveLoadScreen::onEnter() {
+    scanSlots();
+}
+
+void SaveLoadScreen::updateLayout(sf::RenderWindow& window) {
+    sf::Vector2f winSize = sf::Vector2f(window.getSize());
+    background.setSize(winSize);
+    background.setPosition({0.f, 0.f});
+
+    // Title
+    sf::FloatRect titleBounds = title.getLocalBounds();
+    title.setPosition({(winSize.x - titleBounds.size.x) / 2.f, 50.f});
+
+    // Slot labels
+    slotLabels.clear();
+    for (size_t i = 0; i < slotFiles.size(); ++i) {
+        sf::Text txt(font);
+        std::string label = slotFiles[i];
+        if (label == "new_slot.dat") label = "[New Save]";
+        else {
+            // Optionally read first line of save to display metadata (e.g., map name)
+            std::ifstream in("saves/" + slotFiles[i]);
+            std::string line;
+            if (std::getline(in, line)) {
+                size_t eq = line.find('=');
+                if (eq != std::string::npos) {
+                    std::string key = line.substr(0, eq);
+                    if (key == "map") label += " (" + line.substr(eq+1) + ")";
+                }
+            }
+        }
+        txt.setString(label);
+        txt.setCharacterSize(24);
+        txt.setFillColor(sf::Color::White);
+        slotLabels.push_back(txt);
+    }
+
+    // Position slots
+    float y = 120.f;
+    float spacing = 50.f;
+    for (auto& txt : slotLabels) {
+        sf::FloatRect b = txt.getLocalBounds();
+        txt.setPosition({(winSize.x - b.size.x) / 2.f, y});
+        y += spacing;
+    }
+}
+
+void SaveLoadScreen::draw(sf::RenderWindow& window) {
+    updateLayout(window);
+    window.draw(background);
+    window.draw(title);
+    for (size_t i = 0; i < slotLabels.size(); ++i) {
+        // Highlight selected
+        if (i == selectedIndex) {
+            slotLabels[i].setFillColor(sf::Color::Yellow);
+        } else {
+            slotLabels[i].setFillColor(sf::Color::White);
+        }
+        window.draw(slotLabels[i]);
+    }
+}
+
+bool SaveLoadScreen::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
+    if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
+        if (key->code == sf::Keyboard::Key::Escape) {
+            UIManager::get().popScreen();
+            return true;
+        }
+        if (key->code == sf::Keyboard::Key::Up) {
+            selectedIndex = (selectedIndex - 1 + slotLabels.size()) % slotLabels.size();
+            return true;
+        }
+        if (key->code == sf::Keyboard::Key::Down) {
+            selectedIndex = (selectedIndex + 1) % slotLabels.size();
+            return true;
+        }
+        if (key->code == sf::Keyboard::Key::Enter || key->code == sf::Keyboard::Key::Space) {
+            executeSelection();
+            return true;
+        }
+    }
+
+    // Mouse click handling (simplified – use rects if needed)
+    if (const auto* btn = event.getIf<sf::Event::MouseButtonPressed>()) {
+        if (btn->button == sf::Mouse::Button::Left) {
+            sf::Vector2f pos = window.mapPixelToCoords(sf::Vector2i(btn->position.x, btn->position.y));
+            float y = 120.f;
+            float spacing = 50.f;
+            for (size_t i = 0; i < slotLabels.size(); ++i) {
+                sf::FloatRect b = slotLabels[i].getGlobalBounds();
+                if (b.contains(pos)) {
+                    selectedIndex = i;
+                    executeSelection();
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void SaveLoadScreen::executeSelection() {
+    if (selectedIndex >= slotFiles.size()) return;
+    std::string filename = slotFiles[selectedIndex];
+    if (mode == Mode::Save && filename == "new_slot.dat") {
+        // Generate a new slot name based on current time or next number
+        int num = 1;
+        while (std::filesystem::exists("saves/slot" + std::to_string(num) + ".dat")) ++num;
+        filename = "slot" + std::to_string(num) + ".dat";
+    }
+    if (onSelect) onSelect(filename);
+    UIManager::get().popScreen();
+}
+
+/* ui\pause_menu.hpp */
+#pragma once
+#include <ui/ui_screen.hpp>
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <string>
+#include <game/game.hpp>
+
+class PauseMenu : public UIScreen {
+public:
+
+void onEnter() override;
+void onExit() override;
+bool handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
+void update(float dt) override;
+void draw(sf::RenderWindow& window) override;
+
+PauseMenu(Game::Game* gameInstance);
+bool blocksGameUpdate() const override { return true; }   // pause game
+
+private:
+    enum Option {
+        Resume,
+        Save,
+        GotoMainMenu,
+        Options,
+        Quit
+    };
+
+    std::vector<std::string> labels;
+    int selectedIndex = 0;
+
+    sf::Font font;
+    sf::Text titleLine1;   // "Project"
+    sf::Text titleLine2;   // "A.N.A.M.O.L.Y"
+    std::vector<sf::Text> optionTexts;
+    std::vector<sf::FloatRect> optionRects;   // for mouse hit‑testing
+    sf::RectangleShape background;
+
+    void updateLayout(sf::RenderWindow& window);
+    void executeSelected();
+    Game::Game* game = nullptr; // Pointer to the game instance for starting a new game
+};
+
+/* ui\pause_menu.cpp */
+#include <ui/pause_menu.hpp>
+#include <ui/ui_manager.hpp>
+#include <debug/logs.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
+#include <ui/options_menu.hpp>
+#include <ui/save_load_screen.hpp>
+#include <ui/main_menu.hpp>
+
+PauseMenu::PauseMenu(Game::Game* gameInstance) : game(gameInstance), titleLine1(UIManager::get().getFont()), titleLine2(UIManager::get().getFont()) {
+    labels = {"Continue", "Save", "Main Menu", "Options", "Quit"};
+    font = UIManager::get().getFont();
+
+    // ---- Title: two lines ----
+    titleLine1.setFont(font);
+    titleLine1.setString("PAUSED");
+    titleLine1.setCharacterSize(36);
+    titleLine1.setStyle(sf::Text::Bold);
+    titleLine1.setFillColor(sf::Color::White);
+
+    // titleLine2.setFont(font);
+    // titleLine2.setString("A.N.A.M.O.L.Y");
+    // titleLine2.setCharacterSize(36);
+    // titleLine2.setStyle(sf::Text::Bold);
+    // titleLine2.setFillColor(sf::Color(200, 200, 255)); // subtle tint
+
+    // ---- Options ----
+    for (const auto& label : labels) {
+        sf::Text txt(font, label, 24);
+        txt.setFillColor(sf::Color::White);
+        optionTexts.push_back(txt);
+    }
+
+    // Full‑screen overlay
+    background.setFillColor(sf::Color(0, 0, 0, 210));
+    background.setOutlineThickness(0.f);
+}
+
+void PauseMenu::onEnter() {
+    selectedIndex = 0;
+}
+
+void PauseMenu::onExit() {}
+
+void PauseMenu::updateLayout(sf::RenderWindow& window) {
+    sf::Vector2f winSize = sf::Vector2f(window.getSize());
+
+    // ---- 1. Full‑screen background ----
+    background.setSize(winSize);
+    background.setPosition({0.f, 0.f});
+
+    // ---- 2. Title block (two lines, centered as a unit) ----
+    sf::FloatRect bounds1 = titleLine1.getLocalBounds();
+    // sf::FloatRect bounds2 = titleLine2.getLocalBounds();
+
+    // Total block height = line1 height + gap + line2 height
+    const float LINE_GAP = 16.f;
+    float blockWidth = bounds1.size.x;
+    float blockHeight = bounds1.size.y + LINE_GAP; // + bounds2.size.y;
+
+    // Top‑left of the block
+    float blockX = (winSize.x - blockWidth) / 2.f;
+    float blockY = winSize.y * 0.20f; // 20% from top
+
+    // Place line1
+    float line1X = blockX + (blockWidth - bounds1.size.x) / 2.f;
+    float line1Y = blockY;
+    titleLine1.setPosition({line1X, line1Y});
+
+    // Place line2
+    float line2X = blockX + (blockWidth ) / 2.f;
+    float line2Y = blockY + bounds1.size.y + LINE_GAP;
+    titleLine2.setPosition({line2X, line2Y});
+
+    // ---- 3. Buttons: centered below the title block ----
+    const float OPTION_WIDTH = 360.f;
+    const float OPTION_HEIGHT = 50.f;
+    const float OPTION_SPACING = OPTION_HEIGHT + 20.f;
+
+    float optionStartY = blockY + blockHeight + 60.f; // gap after title
+
+    optionRects.clear();
+    for (size_t i = 0; i < optionTexts.size(); ++i) {
+        sf::Text& txt = optionTexts[i];
+
+        float rectX = (winSize.x - OPTION_WIDTH) / 2.f;
+        float rectY = optionStartY + i * OPTION_SPACING;
+        sf::FloatRect rect(sf::Vector2f(rectX, rectY), sf::Vector2f(OPTION_WIDTH, OPTION_HEIGHT));
+        optionRects.push_back(rect);
+
+        // Center text inside button
+        sf::FloatRect textBounds = txt.getLocalBounds();
+        float textX = rect.position.x + (rect.size.x - textBounds.size.x) / 2.f - textBounds.position.x;
+        float textY = rect.position.y + (rect.size.y - textBounds.size.y) / 2.f - textBounds.position.y;
+        txt.setPosition({textX, textY});
+    }
+}
+
+void PauseMenu::update(float dt) {}
+
+bool PauseMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
+    if (const auto* resized = event.getIf<sf::Event::Resized>()) {
+        updateLayout(window);
+    }
+
+    // ---- Keyboard ----
+    if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
+        if (key->code == sf::Keyboard::Key::Escape) {
+            UIManager::get().popScreen();
+            return true;
+        }
+        if (key->code == sf::Keyboard::Key::Up) {
+            selectedIndex = (selectedIndex - 1 + optionTexts.size()) % optionTexts.size();
+            return true;
+        }
+        if (key->code == sf::Keyboard::Key::Down) {
+            selectedIndex = (selectedIndex + 1) % optionTexts.size();
+            return true;
+        }
+        if (key->code == sf::Keyboard::Key::Enter || key->code == sf::Keyboard::Key::Space) {
+            executeSelected();
+            return true;
+        }
+    }
+
+    // ---- Mouse clicks ----
+    if (const auto* btn = event.getIf<sf::Event::MouseButtonPressed>()) {
+        if (btn->button == sf::Mouse::Button::Left) {
+            sf::Vector2f mousePos = window.mapPixelToCoords(
+                sf::Vector2i(btn->position.x, btn->position.y)
+            );
+            for (size_t i = 0; i < optionRects.size(); ++i) {
+                if (optionRects[i].contains(mousePos)) {
+                    selectedIndex = i;
+                    executeSelected();
+                    return true;
+                }
+            }
+        }
+    }
+
+    // ---- Mouse hover ----
+    if (const auto* move = event.getIf<sf::Event::MouseMoved>()) {
+        sf::Vector2f mousePos = window.mapPixelToCoords(
+            sf::Vector2i(move->position.x, move->position.y)
+        );
+        for (size_t i = 0; i < optionRects.size(); ++i) {
+            if (optionRects[i].contains(mousePos)) {
+                selectedIndex = i;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+void PauseMenu::executeSelected() {
+    Option opt = static_cast<Option>(selectedIndex);
+    switch (opt) {
+        case Resume:
+            Log::info << "PauseMenu: Starting new game.\n";
+            UIManager::get().popScreen();
+            break;
+        case Save:
+            Log::info << "PauseMenu: Save selected (not implemented).\n";
+            UIManager::get().popScreen();
+            break;
+        case Options:
+            UIManager::get().pushScreen(std::make_unique<OptionsMenu>());
+            break;
+        case Quit:
+            Log::info << "PauseMenu: Quit selected.\n";
+            game->quit();
+            break;
+        case GotoMainMenu:
+            game->reset();
+            // UIManager::get().gotoScreen(std::make_unique<MainMenu>(game));
+            break;
+    }
+}
+
+void PauseMenu::draw(sf::RenderWindow& window) {
+    updateLayout(window);
+
+    window.draw(background);
+
+    // Draw title lines
+    window.draw(titleLine1);
+    window.draw(titleLine2);
+
+    // Draw buttons
+    for (size_t i = 0; i < optionTexts.size(); ++i) {
+        sf::Text& txt = optionTexts[i];
+        const sf::FloatRect& rect = optionRects[i];
+
+        sf::RectangleShape btn(rect.size);
+        btn.setPosition(rect.position);
+
+        if (i == selectedIndex) {
+            btn.setFillColor(sf::Color(70, 130, 200));
+            btn.setOutlineColor(sf::Color::White);
+            btn.setOutlineThickness(2.f);
+            txt.setFillColor(sf::Color::White);
+        } else {
+            btn.setFillColor(sf::Color(60, 60, 60, 230));
+            btn.setOutlineColor(sf::Color(180, 180, 180));
+            btn.setOutlineThickness(1.5f);
+            txt.setFillColor(sf::Color::White);
+        }
+        window.draw(btn);
+        window.draw(txt);
+    }
+}
+
+/* ui\message_screen.hpp */
+#pragma once
+#include "ui_screen.hpp"
+#include <SFML/Graphics.hpp>
+#include <functional>
+#include <string>
+#include <vector>
+
+//
+//  * A modal screen that displays a message with optional description
+//  * and a configurable set of buttons. Each button has a custom label.
+//  *
+//  * Usage:
+//  *   MessageScreen::show("Are you sure?", "This action cannot be undone.", {"Yes", "No"},
+//  *       [](int choice) { if (choice == 0) /* Yes */; });
+//  *
+//  *   MessageScreen::show("Saved successfully!", "", {"OK"});
+// 
+
+
+class MessageScreen : public UIScreen {
+public:
+    /**
+     * @param message      Main text (large, bold)
+     * @param description  Extra smaller text below the message (optional)
+     * @param buttonLabels List of button labels (e.g., {"OK"}, {"Yes", "No"}, {"Retry", "Cancel"})
+     * @param onResult     Callback when a button is clicked. Receives the index of the selected button.
+     *                     If the screen is closed via Escape without selection, callback is not called.
+     */
+    MessageScreen(const std::string& message,
+                  const std::string& description = "",
+                  const std::vector<std::string>& buttonLabels = {"OK"},
+                  std::function<void(int)> onResult = nullptr);
+
+    // UIScreen interface
+    void onEnter() override;
+    void onExit() override;
+    bool handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
+    void update(float dt) override;
+    void draw(sf::RenderWindow& window) override;
+
+    bool blocksGameUpdate() const override { return true; }
+    bool blocksInput() const override { return true; }
+    bool displayBelow() const override { return false; }
+
+    // Static convenience: create and push the screen onto UIManager
+    static void show(const std::string& message,
+                     const std::string& description = "",
+                     const std::vector<std::string>& buttonLabels = {"OK"},
+                     std::function<void(int)> onResult = nullptr);
+
+private:
+    std::function<void(int)> m_onResult;
+    std::string m_message;
+    std::string m_description;
+    std::vector<std::string> m_buttonLabels;
+
+    int m_selectedIndex = 0;
+
+    sf::Font m_font;
+    sf::Text m_messageText;
+    sf::Text m_descriptionText;
+    std::vector<sf::Text> m_buttonTexts;
+    std::vector<sf::FloatRect> m_buttonRects;  // for hit-testing
+    sf::RectangleShape m_background;
+
+    void updateLayout(sf::RenderWindow& window);
+    void executeSelection();  // calls m_onResult with the selected index and pops the screen
+};
+
+/* ui\message_screen.cpp */
+#include "message_screen.hpp"
+#include "ui_manager.hpp"
+#include <debug/logs.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
+
+MessageScreen::MessageScreen(const std::string& message,
+                             const std::string& description,
+                             const std::vector<std::string>& buttonLabels,
+                             std::function<void(int)> onResult)
+    : m_message(message)
+    , m_description(description)
+    , m_buttonLabels(buttonLabels)
+    , m_onResult(std::move(onResult))
+    , m_messageText(m_font)
+    , m_descriptionText(m_font)
+{
+    m_font = UIManager::get().getFont();
+
+    m_messageText.setFont(m_font);
+    m_messageText.setString(m_message);
+    m_messageText.setCharacterSize(32);
+    m_messageText.setStyle(sf::Text::Bold);
+    m_messageText.setFillColor(sf::Color::White);
+
+    m_descriptionText.setFont(m_font);
+    m_descriptionText.setString(m_description);
+    m_descriptionText.setCharacterSize(20);
+    m_descriptionText.setFillColor(sf::Color(200, 200, 200));
+
+    // Create button texts from labels
+    for (const auto& label : m_buttonLabels) {
+        sf::Text txt(m_font, label, 24);
+        txt.setFillColor(sf::Color::White);
+        m_buttonTexts.push_back(txt);
+    }
+
+    // Full‑screen overlay
+    m_background.setFillColor(sf::Color(0, 0, 0, 210));
+    m_background.setOutlineThickness(0.f);
+}
+
+void MessageScreen::onEnter() {
+    m_selectedIndex = 0;
+}
+
+void MessageScreen::onExit() {
+    // If the screen is popped without a selection (e.g., via Escape),
+    // we do not call the callback, leaving it to the caller to handle.
+}
+
+void MessageScreen::updateLayout(sf::RenderWindow& window) {
+    sf::Vector2f winSize = sf::Vector2f(window.getSize());
+
+    // Background
+    m_background.setSize(winSize);
+    m_background.setPosition({0.f, 0.f});
+
+    // ---- Message ----
+    sf::FloatRect msgBounds = m_messageText.getLocalBounds();
+    m_messageText.setPosition({
+        (winSize.x - msgBounds.size.x) / 2.f,
+        winSize.y * 0.25f
+    });
+
+    // ---- Description (if not empty) ----
+    if (!m_description.empty()) {
+        sf::FloatRect descBounds = m_descriptionText.getLocalBounds();
+        m_descriptionText.setPosition({
+            (winSize.x - descBounds.size.x) / 2.f,
+            m_messageText.getPosition().y + msgBounds.size.y + 20.f
+        });
+    }
+
+    // ---- Buttons ----
+    if (m_buttonLabels.empty()) {
+        // Fallback: add a dummy "OK" button if none provided
+        m_buttonLabels = {"OK"};
+        m_buttonTexts.clear();
+        sf::Text txt(m_font, "OK", 24);
+        txt.setFillColor(sf::Color::White);
+        m_buttonTexts.push_back(txt);
+    }
+
+    const float BUTTON_WIDTH = 160.f;
+    const float BUTTON_HEIGHT = 50.f;
+    const float BUTTON_SPACING = 20.f;
+
+    // Compute total width needed
+    float totalWidth = m_buttonLabels.size() * BUTTON_WIDTH + (m_buttonLabels.size() - 1) * BUTTON_SPACING;
+
+    // Y position: below description or message
+    float descBottom = m_description.empty()
+                         ? m_messageText.getPosition().y + msgBounds.size.y
+                         : m_descriptionText.getPosition().y + m_descriptionText.getLocalBounds().size.y;
+    float startY = descBottom + 60.f;
+
+    // Center the row of buttons horizontally
+    float startX = (winSize.x - totalWidth) / 2.f;
+
+    m_buttonRects.clear();
+    for (size_t i = 0; i < m_buttonTexts.size(); ++i) {
+        float x = startX + i * (BUTTON_WIDTH + BUTTON_SPACING);
+        float y = startY;
+        sf::FloatRect rect(sf::Vector2f(x, y), sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT));
+        m_buttonRects.push_back(rect);
+
+        // Center text inside button
+        sf::Text& txt = m_buttonTexts[i];
+        sf::FloatRect textBounds = txt.getLocalBounds();
+        float textX = rect.position.x + (rect.size.x - textBounds.size.x) / 2.f - textBounds.position.x;
+        float textY = rect.position.y + (rect.size.y - textBounds.size.y) / 2.f - textBounds.position.y;
+        txt.setPosition({textX, textY});
+    }
+}
+
+void MessageScreen::update(float dt) {
+    // Nothing to update
+}
+
+bool MessageScreen::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
+    if (const auto* resized = event.getIf<sf::Event::Resized>()) {
+        updateLayout(window);
+    }
+
+    // ---- Keyboard ----
+    if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
+        if (key->code == sf::Keyboard::Key::Escape) {
+            // Close without calling callback (or we could call with -1)
+            UIManager::get().popScreen();
+            return true;
+        }
+
+        // Navigate left/right (or up/down if we want vertical, but we keep horizontal)
+        if (key->code == sf::Keyboard::Key::Left) {
+            if (m_buttonTexts.size() > 1) {
+                m_selectedIndex = (m_selectedIndex - 1 + m_buttonTexts.size()) % m_buttonTexts.size();
+            }
+            return true;
+        }
+        if (key->code == sf::Keyboard::Key::Right) {
+            if (m_buttonTexts.size() > 1) {
+                m_selectedIndex = (m_selectedIndex + 1) % m_buttonTexts.size();
+            }
+            return true;
+        }
+
+        if (key->code == sf::Keyboard::Key::Enter || key->code == sf::Keyboard::Key::Space) {
+            executeSelection();
+            return true;
+        }
+    }
+
+    // ---- Mouse clicks ----
+    if (const auto* btn = event.getIf<sf::Event::MouseButtonPressed>()) {
+        if (btn->button == sf::Mouse::Button::Left) {
+            sf::Vector2f mousePos = window.mapPixelToCoords(
+                sf::Vector2i(btn->position.x, btn->position.y)
+            );
+            for (size_t i = 0; i < m_buttonRects.size(); ++i) {
+                if (m_buttonRects[i].contains(mousePos)) {
+                    m_selectedIndex = i;
+                    executeSelection();
+                    return true;
+                }
+            }
+        }
+    }
+
+    // ---- Mouse hover ----
+    if (const auto* move = event.getIf<sf::Event::MouseMoved>()) {
+        sf::Vector2f mousePos = window.mapPixelToCoords(
+            sf::Vector2i(move->position.x, move->position.y)
+        );
+        for (size_t i = 0; i < m_buttonRects.size(); ++i) {
+            if (m_buttonRects[i].contains(mousePos)) {
+                m_selectedIndex = i;
+                return true;
+            }
+        }
+    }
+
+    return true; // block all events
+}
+
+void MessageScreen::executeSelection() {
+    if (m_onResult) {
+        m_onResult(m_selectedIndex);
+    }
+    UIManager::get().popScreen();
+}
+
+void MessageScreen::draw(sf::RenderWindow& window) {
+    updateLayout(window);
+
+    window.draw(m_background);
+    window.draw(m_messageText);
+    if (!m_description.empty()) {
+        window.draw(m_descriptionText);
+    }
+
+    // Draw buttons
+    for (size_t i = 0; i < m_buttonTexts.size(); ++i) {
+        sf::Text& txt = m_buttonTexts[i];
+        const sf::FloatRect& rect = m_buttonRects[i];
+
+        sf::RectangleShape btn(rect.size);
+        btn.setPosition(rect.position);
+
+        if (i == m_selectedIndex) {
+            btn.setFillColor(sf::Color(70, 130, 200));
+            btn.setOutlineColor(sf::Color::White);
+            btn.setOutlineThickness(2.f);
+            txt.setFillColor(sf::Color::White);
+        } else {
+            btn.setFillColor(sf::Color(60, 60, 60, 230));
+            btn.setOutlineColor(sf::Color(180, 180, 180));
+            btn.setOutlineThickness(1.5f);
+            txt.setFillColor(sf::Color::White);
+        }
+        window.draw(btn);
+        window.draw(txt);
+    }
+}
+
+// ---- Static convenience ----
+void MessageScreen::show(const std::string& message,
+                         const std::string& description,
+                         const std::vector<std::string>& buttonLabels,
+                         std::function<void(int)> onResult) {
+    auto screen = std::make_unique<MessageScreen>(message, description, buttonLabels, std::move(onResult));
+    UIManager::get().pushScreen(std::move(screen));
+}
+
 /* story\story_manager.hpp */
 #pragma once
 #include <string>
@@ -6322,6 +7158,18 @@ public:
         static StoryManager instance;
         return instance;
     }
+
+    void clearAll();   // reset for New Game
+    void saveToStream(std::ostream& out) const;
+    void loadFromStream(std::istream& in);
+
+    // Expose internal data for SaveGame copying (or make SaveGame a friend)
+    const auto& getFlags() const { return flags; }
+    const auto& getItems() const { return items; }
+    const auto& getChoices() const { return choicesMade; }
+    void setFlags(const std::unordered_map<std::string, bool>& f) { flags = f; }
+    void setItems(const std::unordered_map<std::string, bool>& i) { items = i; }
+    void setChoices(const std::vector<std::string>& c) { choicesMade = c; }
 
     // Flags
     void setFlag(const std::string& key, bool value = true) { flags[key] = value; }
@@ -6458,15 +7306,17 @@ void ScriptRegistry::init() {
   };
 
   scripts["guard_cutscene"] = {
-    {ActionType::LockPlayer},                       // freeze player input
-    {ActionType::FacePlayer},
-    {ActionType::Wait, 0.5f},
-    {ActionType::MoveRelative, 0.5f, {-80.f, 0.0f}}, // move slightly to the left
-    {ActionType::ShowDialogue, 0, {}, "guard_shoot_intro"}, // show dialogue (ID not used here)
-    {ActionType::CallFunction, 0.f, {}, "", "", "guardShoot"},
-    {ActionType::Wait, 0.5f},                       // brief pause after shooting
-    {ActionType::UnlockPlayer},                     // restore player control
-    {ActionType::EndSequence}
+    Action::CheckFlag("guardCutsceneDone", false), // ensure the cutscene can run
+    Action::LockPlayer(),                       // freeze player input
+    Action::FacePlayer(),
+    Action::Wait(0.5f),
+    Action::MoveRelative(-80.f, 0.0f), // move slightly to the left
+    Action::ShowDialogue("guard_shoot_intro"), // show dialogue (ID not used here)
+    Action::CallFunction("guardShoot"),
+    Action::Wait(0.5f),                       // brief pause after shooting
+    Action::SetFlag("guardCutsceneDone", true), // mark cutscene as done
+    Action::UnlockPlayer(),                     // restore player control
+    Action::EndSequence()
   };
 }
 
@@ -6477,13 +7327,62 @@ namespace FunctionRegistry {
     }
 }
 
+namespace Action {
+    Action MoveTo(float x, float y) {
+        return {ActionType::MoveTo, 0.f, {x, y}};
+    }
+    Action MoveRelative(float dx, float dy) {
+        return {ActionType::MoveRelative, 0.f, {dx, dy}};
+    }
+    Action Wait(float seconds) {
+        return {ActionType::Wait, seconds, {}};
+    }
+    Action LockPlayer() {
+        return {ActionType::LockPlayer, 0.f, {}};
+    }
+    Action UnlockPlayer() {
+        return {ActionType::UnlockPlayer, 0.f, {}};
+    }
+
+    Action PlayAnimation(const std::string& animKey) {
+        return {ActionType::PlayAnimation, 0.f, {}, animKey};
+    }
+    
+    Action ShowDialogue(const std::string& dialogueId) {
+        return {ActionType::ShowDialogue, 0.f, {}, dialogueId};
+    }
+    
+    Action SwapPlayer(const std::string& swapNPCId) {
+        return {ActionType::SwapPlayer, 0.f, {}, swapNPCId};
+    }
+    
+    Action FacePlayer() {
+        return {ActionType::FacePlayer, 0.f, {}};
+    }
+
+    Action CallFunction(const std::string& functionName) {
+        return {ActionType::CallFunction, 0.f, {}, "", "", functionName};
+    }
+
+    Action SetFlag(const std::string& flagName, bool value) {
+        return {ActionType::SetFlag, value == true ? 0.f: 1.f, {}, "", flagName};
+    }
+
+    Action CheckFlag(const std::string& flagName, bool value) {
+        return {ActionType::CheckFlag, value == true ? 0.f: 1.f, {}, "", flagName};
+    }
+
+    Action EndSequence() {
+        return {ActionType::EndSequence, 0.f, {}};
+    }
+}
+
 /* story\script_registry.hpp */
 // ScriptRegistry.hpp
 #pragma once
 
 #include <vector>
 #include <unordered_map>
-#pragma once
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -6505,21 +7404,47 @@ enum class ActionType {
     FacePlayer,
     JustToReload,
     CallFunction,
+    CheckFlag,
+    CheckFlagModeOR,
+    CheckFlagModeAND,
+    SetFlag,
     EndSequence
 };
 
-struct Action {
-    ActionType type;
-    float duration = 0.f;
-    sf::Vector2f targetPos;
-    std::string animKey;
-    std::string dialogueId;
-    std::string functionName;
-    NPC* npc = nullptr;   // for SwapPlayer
-};
+namespace Action {
+    struct Action {
+        ActionType type;
+        float duration = 0.f;
+        sf::Vector2f targetPos;
+        std::string animKey;
+        std::string labelId;
+        std::string extName;
+        NPC* npc = nullptr;   // for SwapPlayer
+    };
 
-using Script = std::vector<Action>;
+    Action MoveTo(float x, float y);
+    Action MoveRelative(float dx, float dy);
+    Action Wait(float seconds);
+    Action LockPlayer();
+    Action UnlockPlayer();
+    Action PlayAnimation(const std::string& animKey);
+    Action ShowDialogue(const std::string& dialogueId);
+    Action SwapPlayer(NPC* npc);
+    Action FacePlayer();
+    Action CallFunction(const std::string& functionName);
+    Action CheckFlag(const std::string& flagName, bool expected);
+    Action SetFlag(const std::string& flagName, bool value);
+    Action EndSequence();
+    inline Action CheckFlagModeOR() {
+        return {ActionType::CheckFlagModeOR, 0.f, {}, "", "", "", nullptr};
+    }
+    inline Action CheckFlagModeAND() {
+        return {ActionType::CheckFlagModeAND, 0.f, {}, "", "", "", nullptr};
+    }
+}
 
+
+using Script = std::vector<Action::Action>;
 namespace ScriptRegistry {
   extern std::unordered_map<std::string, Script> scripts;
   void init();
@@ -6529,6 +7454,62 @@ namespace FunctionRegistry {
     using Function = std::function<void(NPC*)>;
     extern std::unordered_map<std::string, Function> functions;
     void registerFunction(const std::string& name, Function func);
+}
+
+/* story\story_manager.cpp */
+#include "story_manager.hpp"
+#include <fstream>
+
+void StoryManager::clearAll() {
+    flags.clear();
+    items.clear();
+    choicesMade.clear();
+}
+
+void StoryManager::saveToStream(std::ostream& out) const {
+    out << "#flags\n";
+    for (const auto& [k, v] : flags)
+        out << k << "=" << (v ? "1" : "0") << "\n";
+    out << "#items\n";
+    for (const auto& [k, v] : items)
+        out << k << "=" << (v ? "1" : "0") << "\n";
+    out << "#choices\n";
+    for (const auto& choice : choicesMade)
+        out << choice << "\n";
+    out << "#end\n";
+}
+
+void StoryManager::loadFromStream(std::istream& in) {
+    flags.clear();
+    items.clear();
+    choicesMade.clear();
+    std::string line, section;
+    while (std::getline(in, line)) {
+        if (line.empty()) continue;
+        if (line[0] == '#') {
+            section = line.substr(1);
+            continue;
+        }
+        if (section == "flags") {
+            size_t eq = line.find('=');
+            if (eq != std::string::npos) {
+                std::string key = line.substr(0, eq);
+                bool val = (line.substr(eq+1) == "1");
+                flags[key] = val;
+            }
+        } else if (section == "items") {
+            size_t eq = line.find('=');
+            if (eq != std::string::npos) {
+                std::string key = line.substr(0, eq);
+                bool val = (line.substr(eq+1) == "1");
+                items[key] = val;
+            }
+        } else if (section == "choices") {
+            choicesMade.push_back(line);
+        } else if (section == "end") {
+            break;
+        }
+    }
 }
 
 /* game\game.hpp */
@@ -6543,6 +7524,7 @@ class Background;
 class Overlay;
 class LevelEditor;
 class FpsDisplay;
+class SaveGame;
 // struct Transition;
 
 namespace Game {
@@ -6553,7 +7535,17 @@ namespace Game {
         ~Game();
         void snapCameraToPlayer();
         void quit();
+        void loadSave(const SaveGame& save);
+        void saveCurrentState(const std::string& filepath) const;  // for manual save
+        void autoSave() const;   // saves to "autosave.dat"
 
+        // For the main menu to know if autosave exists
+        bool hasAutosave() const;
+        void loadSaveFromFile(const std::string& filepath);
+        void loadAutosave();
+        void reset();
+        void startGame();
+        
     private:
         // Window & loop
         sf::RenderWindow m_window;
@@ -6562,6 +7554,7 @@ namespace Game {
         unsigned int     m_width;
         unsigned int     m_height;
         std::string      m_title;
+        std::string m_saveDir = "saves/";
 
         // FPS display (included as a member, but definition in separate file)
         FpsDisplay*      m_fpsDisplay = nullptr; // or unique_ptr
@@ -6589,7 +7582,6 @@ namespace Game {
         void handleEvents();
         void initResources();   // load textures, spawns, etc.
         bool m_gameStarted = false;
-        void startGame();
 
         // Disable copying
         Game(const Game&) = delete;
@@ -6620,299 +7612,512 @@ namespace Game {
 #include <SFML/Window/Keyboard.hpp>
 #include <map/map_manager.hpp>
 #include <optional>
+#include <game/save_game.hpp>
+#include <story/story_manager.hpp>
+#include <ui/pause_menu.hpp>
+#include <ui/message_screen.hpp>
 
-namespace Game {
+namespace Game
+{
 
-Game::Game(const std::string& title, unsigned int width, unsigned int height, const std::string& initialMap = "default")
-    : m_width(width), m_height(height), m_title(title), m_initialMap(initialMap) {
-    // Create window
-    m_window.create(sf::VideoMode({width, height}), title);
-    m_window.setVerticalSyncEnabled(false);
-    m_window.setFramerateLimit(240);
+    Game::Game(const std::string &title, unsigned int width, unsigned int height, const std::string &initialMap = "default")
+        : m_width(width), m_height(height), m_title(title), m_initialMap(initialMap)
+    {
+        // Create window
+        m_window.create(sf::VideoMode({width, height}), title);
+        m_window.setVerticalSyncEnabled(false);
+        m_window.setFramerateLimit(240);
 
-    // Setup view
-    m_view.setSize(sf::Vector2f(width, height));
-    m_view.setViewport(sf::FloatRect(sf::Vector2f(0.f, 0.f), sf::Vector2f(1.f, 1.f)));
-    m_view.setCenter(sf::Vector2f(width / 2.f, height / 2.f));
+        // Setup view
+        m_view.setSize(sf::Vector2f(width, height));
+        m_view.setViewport(sf::FloatRect(sf::Vector2f(0.f, 0.f), sf::Vector2f(1.f, 1.f)));
+        m_view.setCenter(sf::Vector2f(width / 2.f, height / 2.f));
 
-    // Camera parameters
-    m_viewY = height / 2.f;
-    m_targetY = m_viewY;
-    m_smoothSpeed = Character::GRAVITY * 0.7f;
-    m_topDeadZone = 80.f;
-    m_bottomDeadZone = 200.f;
+        // Camera parameters
+        m_viewY = height / 2.f;
+        m_targetY = m_viewY;
+        m_smoothSpeed = Character::GRAVITY * 0.7f;
+        m_topDeadZone = 80.f;
+        m_bottomDeadZone = 200.f;
 
-    // Create FPS display
-    m_fpsDisplay = new FpsDisplay();
+        // Create FPS display
+        m_fpsDisplay = new FpsDisplay();
 
-    // Create game objects
-    m_background = new Background();
-    m_overlay = new Overlay();
-    m_editor = new LevelEditor();
+        // Create game objects
+        m_background = new Background();
+        m_overlay = new Overlay();
+        m_editor = new LevelEditor();
 
-    // Initialize resources
-    initResources();
-}
-
-Game::~Game() {
-    delete m_fpsDisplay;
-    delete m_background;
-    delete m_overlay;
-    delete m_editor;
-}
-
-void Game::initResources() {
-    updateScale();
-    Tiles::load();
-    Objects::load();
-    Background::load(m_window);
-    Overlay::load(m_window);
-    
-    MapManager::get().setGame(this);
-    MapManager::get().loadMap(m_initialMap);
-    // Terrain::loadSpawnsFromFile("assets/spawns.txt");
-    // Terrain::loadFromFile("assets/map.txt");
-    // Terrain::loadObjectsFromFile("assets/objects.txt");
-    // Terrain::loadSolidFromFile("assets/solid_tiles.txt");
-
-    Characters::load();
-    Player::get().init();
-    UIManager::get().init();
-    NPCManager::get().loadDefinitions();   // register NPC types
-    ScriptRegistry::init();                // register scripts
-    m_editor->init();
-    Player::get().setCharacter(Characters::Fighter_Detective);
-    NPCManager::get().setPlayer(Player::get().getPlayer());
-    // Push the main menu – spawning will happen after it's closed
-    UIManager::get().pushScreen(std::make_unique<MainMenu>(this));
-    MapManager::get().setPlayer(Player::get().getPlayer());
-}
-
-void Game::snapCameraToPlayer() {
-    Character* player = Player::get().getPlayer();
-    if (!player) return;
-
-    sf::Vector2f pos = player->getPosition();
-    float halfWidth = m_width / 2.f;
-    float viewX = std::max(pos.x, halfWidth);
-
-    sf::FloatRect bounds = player->getBounds();
-    float charCentreY = bounds.position.y + bounds.size.y * 0.5f;
-
-    // Clamp to world bounds
-    float minY = m_height / 2.f;
-    float maxY = Constants::WORLD_HEIGHT_PIXELS * Scale::get() - m_height / 2.f;
-    float targetY = std::clamp(charCentreY, minY, maxY);
-
-    m_viewY = targetY;
-    m_targetY = targetY;
-    m_view.setCenter(sf::Vector2f(viewX, m_viewY));
-}
-
-void Game::startGame() {
-  if (m_gameStarted) return;
-  m_gameStarted = true;
-  // Spawn NPCs and run their scripts (now that the menu is gone)
-  // NPCManager::spawnAllNPCs();
-  // Spawn NPCs NOW – after player is ready
-    MapManager::get().spawnNPCs();
-  Player::get().getPlayer()->snapToGround();
-  for (NPC* npc : NPCManager::get().getAllNPCs()) {
-    npc->snapToGround();
-  }
-  snapCameraToPlayer();
-  Log::info << "Game started, NPCs spawned.\n";
-}
-
-void Game::updateScale() {
-    float scale = static_cast<float>(m_window.getSize().y) / 320.f;
-    Scale::set(scale);
-}
-
-void Game::updateCamera(float dt) {
-    Player& player = Player::get();
-    float halfWidth = m_width / 2.f;
-    float viewX = std::max(player.getPlayer()->getPosition().x, halfWidth);
-
-    sf::FloatRect bounds = player.getPlayer()->getBounds();
-    float charCentreY = bounds.position.y + bounds.size.y * 0.5f;
-    float screenY = charCentreY - m_viewY + (m_height / 2.f);
-
-    float topBoundary = m_topDeadZone;
-    float bottomBoundary = m_height - m_bottomDeadZone;
-
-    if (screenY < topBoundary) {
-        m_targetY = charCentreY;
-    } else if (screenY > bottomBoundary) {
-        m_targetY = charCentreY;
+        // Initialize resources
+        initResources();
     }
 
-    if (m_targetY + (m_height / 2.0f) > Constants::WORLD_HEIGHT_PIXELS * Scale::get()) {
-        m_targetY = Constants::WORLD_HEIGHT_PIXELS * Scale::get() - (m_height / 2.0f);
-    }
-    if (m_targetY - (m_height / 2.0f) < 0.f) {
-        m_targetY = m_height / 2.0f;
-    }
-
-    float diff = m_targetY - m_viewY;
-    float maxStep = m_smoothSpeed * dt;
-    if (std::abs(diff) < maxStep) {
-        m_viewY = m_targetY;
-    } else {
-        m_viewY += (diff > 0 ? 1.f : -1.f) * maxStep;
+    Game::~Game()
+    {
+        delete m_fpsDisplay;
+        delete m_background;
+        delete m_overlay;
+        delete m_editor;
     }
 
-    m_view.setCenter(sf::Vector2f(viewX, m_viewY));
-}
+    void Game::initResources()
+    {
+        updateScale();
+        Tiles::load();
+        Objects::load();
+        Background::load(m_window);
+        Overlay::load(m_window);
 
-void Game::update(float dt) {
-    Player& player = Player::get();
-    const float MAX_DT = 1.f / 30.f;
-    if (dt > MAX_DT) dt = MAX_DT;
+        MapManager::get().setGame(this);
+        MapManager::get().loadMap(m_initialMap);
+        // Terrain::loadSpawnsFromFile("assets/spawns.txt");
+        // Terrain::loadFromFile("assets/map.txt");
+        // Terrain::loadObjectsFromFile("assets/objects.txt");
+        // Terrain::loadSolidFromFile("assets/solid_tiles.txt");
 
-    // if (MapManager::get().hasPendingSpawn() && UIManager::get().isEmpty()) {
-    //     MapManager::get().spawnPendingNPCs();
-    // }
+        Characters::load();
+        Player::get().init();
+        UIManager::get().init();
+        NPCManager::get().loadDefinitions(); // register NPC types
+        ScriptRegistry::init();              // register scripts
+        m_editor->init();
+        Player::get().setCharacter(Characters::Fighter_Detective);
+        NPCManager::get().setPlayer(Player::get().getPlayer());
+        MapManager::get().setPlayer(Player::get().getPlayer());
+        Game::reset();
+    }
 
-    m_background->draw(m_window, dt);
-    Terrain::draw(m_window, dt);
+    void Game::snapCameraToPlayer()
+    {
+        Character *player = Player::get().getPlayer();
+        if (!player)
+            return;
 
-    player.update(m_window, dt);
-    NPCManager::get().update(m_window, dt);
-    updateCamera(dt);
+        sf::Vector2f pos = player->getPosition();
+        float halfWidth = m_width / 2.f;
+        float viewX = std::max(pos.x, halfWidth);
 
-    m_overlay->draw(m_window, dt);
-    NPCManager::get().draw(m_window, dt);
-    player.draw(m_window, dt);
+        sf::FloatRect bounds = player->getBounds();
+        float charCentreY = bounds.position.y + bounds.size.y * 0.5f;
 
-    sf::Vector2f playerPos = player.getPlayer()->getPosition();
+        // Clamp to world bounds
+        float minY = m_height / 2.f;
+        float maxY = Constants::WORLD_HEIGHT_PIXELS * Scale::get() - m_height / 2.f;
+        float targetY = std::clamp(charCentreY, minY, maxY);
 
-    // Check for transitions using MapManager
-    m_nearTransition = MapManager::get().getTransitionAt(playerPos, 50.f);
-}
+        m_viewY = targetY;
+        m_targetY = targetY;
+        m_view.setCenter(sf::Vector2f(viewX, m_viewY));
+    }
 
-void Game::handleEvents() {
-    while (const std::optional event = m_window.pollEvent()) {
-        bool uiConsumed = UIManager::get().handleEvent(*event, m_window);
-        if (event->is<sf::Event::Closed>()) {
-            m_window.close();
+    void Game::startGame()
+    {
+        Game::loadAutosave(); // load autosave if it exists
+        if (m_gameStarted)
+            return;
+        m_gameStarted = true;
+        // Spawn NPCs and run their scripts (now that the menu is gone)
+        // NPCManager::spawnAllNPCs();
+        // Spawn NPCs NOW – after player is ready
+        MapManager::get().spawnNPCs();
+        Player::get().getPlayer()->snapToGround();
+        for (NPC *npc : NPCManager::get().getAllNPCs())
+        {
+            npc->snapToGround();
         }
-        else if (const auto* resized = event->getIf<sf::Event::Resized>()) {
-            m_width = resized->size.x;
-            m_height = resized->size.y;
-            m_view.setSize(sf::Vector2f(m_width, m_height));
-            m_view.setCenter(sf::Vector2f(m_width / 2.f, m_height / 2.f));
-            updateScale();
+        snapCameraToPlayer();
+        Log::info << "Game started, NPCs spawned.\n";
+    }
+
+    void Game::reset()
+    {
+        Log::info << "Resetting game state.\n";
+        m_gameStarted = false;
+        NPCManager::get().clearAll();
+        MapManager::get().clearCurrentMapData();
+        MapManager::get().loadMap(m_initialMap);
+        Player::get().setCharacter(Characters::Fighter_Detective);
+        UIManager::get().clearScreens();
+        Player::get().getPlayer()->resetToSpawn();
+        m_view.setCenter(sf::Vector2f(m_width / 2.f, m_height / 2.f));
+        m_view.setViewport(sf::FloatRect(sf::Vector2f(0.f, 0.f), sf::Vector2f(1.f, 1.f)));
+        m_window.setView(m_view);
+        UIManager::get().pushScreen(std::make_unique<MainMenu>(this));
+    }
+
+    void Game::updateScale()
+    {
+        float scale = static_cast<float>(m_window.getSize().y) / 320.f;
+        Scale::set(scale);
+    }
+
+    void Game::updateCamera(float dt)
+    {
+        Player &player = Player::get();
+        float halfWidth = m_width / 2.f;
+        float viewX = std::max(player.getPlayer()->getPosition().x, halfWidth);
+
+        sf::FloatRect bounds = player.getPlayer()->getBounds();
+        float charCentreY = bounds.position.y + bounds.size.y * 0.5f;
+        float screenY = charCentreY - m_viewY + (m_height / 2.f);
+
+        float topBoundary = m_topDeadZone;
+        float bottomBoundary = m_height - m_bottomDeadZone;
+
+        if (screenY < topBoundary)
+        {
+            m_targetY = charCentreY;
         }
-        else if (event->is<sf::Event::KeyPressed>()) {
-            const auto& key = event->getIf<sf::Event::KeyPressed>();
-            const bool ctrlHeld = key->control;
-            if (key->code == sf::Keyboard::Key::F1 ||
-                key->code == sf::Keyboard::Key::F2 ||
-                key->code == sf::Keyboard::Key::F3 ||
-                key->code == sf::Keyboard::Key::F4 ||
-                key->code == sf::Keyboard::Key::Num1 ||
-                key->code == sf::Keyboard::Key::Num2 ||
-                key->code == sf::Keyboard::Key::Num3 ||
-                key->code == sf::Keyboard::Key::Num4) {
-                m_editor->setActive(true);
-            }
-            if (key->code == sf::Keyboard::Key::S && ctrlHeld) {
-              MapManager::get().saveCurrentMap();
-              showInfoBox("Saved map: " + MapManager::get().getCurrentMap());
-            }
+        else if (screenY > bottomBoundary)
+        {
+            m_targetY = charCentreY;
+        }
+
+        if (m_targetY + (m_height / 2.0f) > Constants::WORLD_HEIGHT_PIXELS * Scale::get())
+        {
+            m_targetY = Constants::WORLD_HEIGHT_PIXELS * Scale::get() - (m_height / 2.0f);
+        }
+        if (m_targetY - (m_height / 2.0f) < 0.f)
+        {
+            m_targetY = m_height / 2.0f;
+        }
+
+        float diff = m_targetY - m_viewY;
+        float maxStep = m_smoothSpeed * dt;
+        if (std::abs(diff) < maxStep)
+        {
+            m_viewY = m_targetY;
+        }
+        else
+        {
+            m_viewY += (diff > 0 ? 1.f : -1.f) * maxStep;
+        }
+
+        m_view.setCenter(sf::Vector2f(viewX, m_viewY));
+    }
+
+    void Game::update(float dt)
+    {
+        Player &player = Player::get();
+        const float MAX_DT = 1.f / 30.f;
+        if (dt > MAX_DT)
+            dt = MAX_DT;
+
+        // if (MapManager::get().hasPendingSpawn() && UIManager::get().isEmpty()) {
+        //     MapManager::get().spawnPendingNPCs();
+        // }
+
+        m_background->draw(m_window, dt);
+        Terrain::draw(m_window, dt);
+
+        player.update(m_window, dt);
+        updateCamera(dt);
+
+        m_overlay->draw(m_window, dt);
+        NPCManager::get().draw(m_window, dt);
+        player.draw(m_window, dt);
+
+        sf::Vector2f playerPos = player.getPlayer()->getPosition();
+
+        NPCManager::get().update(m_window, dt);
+        // Check for transitions using MapManager
+        m_nearTransition = MapManager::get().getTransitionAt(playerPos, 100.f);
+        if (!m_editor->isActive())
+        {
+            sf::Vector2f playerPos = Player::get().getPlayer()->getPosition();
+            NPC *nearest = NPCManager::get().getNearestInteractable(playerPos);
             bool tooltip = false;
-            if (m_nearTransition.has_value()) {   // ← fixed condition
+            if (m_nearTransition.has_value())
+            { // ← fixed condition
                 Player::get().setTooltip(m_nearTransition->label);
                 tooltip = true;
             }
-            sf::Vector2f playerPos = Player::get().getPlayer()->getPosition();
-            NPC* nearest = NPCManager::get().getNearestInteractable(playerPos);
-            if (nearest) {
+
+            if (nearest)
+            {
                 Player::get().setTooltip("Talk");
                 tooltip = true;
             }
-            
-            if ( tooltip == false ) {
+
+            if (!tooltip)
+            {
                 Player::get().clearTooltip();
             }
-            if (key->code == sf::Keyboard::Key::E && !m_editor->isActive()) {
-                if ( nearest ) {
-                    NPCManager::get().interact();
-                }
-                else if (m_nearTransition.has_value()) {   // ← fixed condition
-                    const Transition& tr = *m_nearTransition;
-                    MapManager::get().switchToMap(tr.targetMap, tr.spawnPosition);
-                    m_nearTransition.reset();
-                }
-            }
-        }
-
-        if (m_editor->isActive()) {
-            m_editor->handleEvent(*event, m_window);
-        }
-
-        if (!m_gameStarted && UIManager::get().isEmpty()) {
-          startGame();
         }
     }
-}
 
-void Game::run() {
-    while (m_window.isOpen()) {
-        m_window.setView(m_view);
-        handleEvents();
-
-        m_window.clear();
-
-        float dt = m_clock.restart().asSeconds();
-
-        if (m_editor->isActive()) {
-            // Editor mode: draw world and editor overlay
-            m_background->draw(m_window, dt);
-            Terrain::draw(m_window, dt);
-            m_editor->draw(m_window);
-
-            // Editor camera movement
-            float speed = 200.f;
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) speed *= 2.f;
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-                m_view.move(sf::Vector2f(speed * dt, 0.f));
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-                m_view.move(sf::Vector2f(-speed * dt, 0.f));
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-                m_view.move(sf::Vector2f(0.f, -speed * dt));
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-                m_view.move(sf::Vector2f(0.f, speed * dt));
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
-                m_editor->setActive(false);
+    void Game::handleEvents()
+    {
+        while (const std::optional event = m_window.pollEvent())
+        {
+            sf::View oldView = m_window.getView();                  // Save the current view
+            m_window.setView(UIManager::get().getUIView(m_window)); // Set the view to UI view for event handling
+            bool eventConsumed = UIManager::get().handleEvent(*event, m_window);
+            m_window.setView(oldView); // Restore the original view
+            if (eventConsumed) continue;
+            if (event->is<sf::Event::Closed>())
+            {
+                quit();
             }
-        } else {
-            bool gameShouldUpdate = true;
-            UIManager::get().update(dt, gameShouldUpdate);
-            if (gameShouldUpdate) {
-                update(dt);
-            } else {
-                // UI blocks game update, but draw world paused
-                m_window.setView(m_view);
+            else if (const auto *resized = event->getIf<sf::Event::Resized>())
+            {
+                m_width = resized->size.x;
+                m_height = resized->size.y;
+                m_view.setSize(sf::Vector2f(m_width, m_height));
+                m_view.setCenter(sf::Vector2f(m_width / 2.f, m_height / 2.f));
+                updateScale();
+            }
+            else if (event->is<sf::Event::KeyPressed>())
+            {
+                const auto &key = event->getIf<sf::Event::KeyPressed>();
+                const bool ctrlHeld = key->control;
+                if (key->code == sf::Keyboard::Key::F1 ||
+                    key->code == sf::Keyboard::Key::F2 ||
+                    key->code == sf::Keyboard::Key::F3 ||
+                    key->code == sf::Keyboard::Key::F4 ||
+                    key->code == sf::Keyboard::Key::Num1 ||
+                    key->code == sf::Keyboard::Key::Num2 ||
+                    key->code == sf::Keyboard::Key::Num3 ||
+                    key->code == sf::Keyboard::Key::Num4)
+                {
+                    m_editor->setActive(true);
+                    UIManager::get().clearScreens();
+                }
+                if (key->code == sf::Keyboard::Key::S && ctrlHeld)
+                {
+                    MapManager::get().saveCurrentMap();
+                    MessageScreen::show("Map saved !", "Saved map: " + MapManager::get().getCurrentMap(), {"OK"});
+                    // showInfoBox("Saved map: " + MapManager::get().getCurrentMap());
+                }
+
+                if (key->code == sf::Keyboard::Key::E && !m_editor->isActive())
+                {
+                    sf::Vector2f playerPos = Player::get().getPlayer()->getPosition();
+                    NPC *nearest = NPCManager::get().getNearestInteractable(playerPos);
+                    if (nearest)
+                    {
+                        NPCManager::get().interact();
+                    }
+                    else if (m_nearTransition.has_value())
+                    { // ← fixed condition
+                        const Transition &tr = *m_nearTransition;
+                        MapManager::get().switchToMap(tr.targetMap, tr.spawnPosition);
+                        m_nearTransition.reset();
+                    }
+                }
+
+                if (key->code == sf::Keyboard::Key::Escape && !m_editor->isActive())
+                {
+                    UIManager::get().pushScreen(std::make_unique<PauseMenu>(this));
+                }
+            }
+
+            if (m_editor->isActive())
+            {
+                m_editor->handleEvent(*event, m_window);
+            }
+
+            if (!m_gameStarted && UIManager::get().isEmpty())
+            {
+                startGame();
+            }
+        }
+    }
+
+    void Game::run()
+    {
+        while (m_window.isOpen())
+        {
+            m_window.setView(m_view);
+            handleEvents();
+
+            m_window.clear();
+
+            float dt = m_clock.restart().asSeconds();
+
+            if (m_editor->isActive())
+            {
+                // Editor mode: draw world and editor overlay
                 m_background->draw(m_window, dt);
                 Terrain::draw(m_window, dt);
-                NPCManager::get().draw(m_window, dt);
-                Player::get().draw(m_window, dt);
-                m_overlay->draw(m_window, dt);
+                m_editor->draw(m_window);
+
+                // Editor camera movement
+                float speed = 200.f;
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift))
+                    speed *= 2.f;
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+                    m_view.move(sf::Vector2f(speed * dt, 0.f));
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+                    m_view.move(sf::Vector2f(-speed * dt, 0.f));
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+                    m_view.move(sf::Vector2f(0.f, -speed * dt));
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+                    m_view.move(sf::Vector2f(0.f, speed * dt));
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+                {
+                    m_editor->setActive(false);
+                }
+            }
+            bool gameShouldUpdate = true;
+            UIManager::get().update(dt, gameShouldUpdate);
+            if (!m_editor->isActive())
+            {
+                if (gameShouldUpdate)
+                {
+                    update(dt);
+                }
+                else
+                {
+                    // UI blocks game update, but draw world paused
+                    m_window.setView(m_view);
+                    m_background->draw(m_window, dt);
+                    Terrain::draw(m_window, dt);
+                    NPCManager::get().draw(m_window, dt);
+                    Player::get().draw(m_window, dt);
+                    m_overlay->draw(m_window, dt);
+                }
             }
             m_window.setView(UIManager::get().getUIView(m_window));
             UIManager::get().draw(m_window);
+            m_fpsDisplay->update(dt, m_window);
+            m_window.display();
+        }
+    }
+
+    void Game::quit()
+    {
+        MessageScreen::show("Are you sure you want to quit?", "", {"Yes", "No"}, [this](int result) {
+            if (result == 0) { // Yes
+                Log::info << "Game: Quitting game (confirmed).\n";
+                autoSave();
+                m_window.close();
+            }
+        });
+    }
+
+    void Game::saveCurrentState(const std::string &filepath) const
+    {
+        SaveGame save;
+        save.mapName = MapManager::get().getCurrentMap();
+        Character *player = Player::get().getPlayer();
+        if (player)
+        {
+            save.playerPos = player->getPosition() / Scale::get(); // unscaled
+            // We need a way to get the character key; you can store it in Player or Character.
+            // For now, we assume Player stores a string, but it doesn't. We'll add a method later.
+            // For brevity, we'll just save the current character's type if you add a getter.
+            // I'll add a simple workaround: Characters::Player holds the current key.
+            save.playerCharacter = Characters::Player; // defined in characters.hpp
+        }
+        else
+        {
+            save.playerCharacter = Characters::Fighter_Detective;
         }
 
-        m_fpsDisplay->update(dt, m_window);
-        m_window.display();
-    }
-}
+        // Copy story state
+        auto &story = StoryManager::get();
+        save.flags = story.getFlags();
+        save.items = story.getItems();
+        save.choicesMade = story.getChoices();
+        auto& npcManager = NPCManager::get();
+        for (NPC* npc : npcManager.getAllNPCs()) {
+            const std::string& id = npc->getUniqueID();
+            if (!id.empty()) {
+                NPCState state;
+                state.autoTalked = npc->hasAutoTalked();
+                state.talked = npc->hasTalked();
+                save.npcStates[id] = state;
+            }
+        }
 
-void Game::quit() {
-    m_window.close();
-}
+        if (!save.save(filepath))
+        {
+            Log::error << "Failed to save game to " << filepath << "\n";
+        }
+        else
+        {
+            Log::info << "Game saved to " << filepath << "\n";
+        }
+    }
+
+    void Game::autoSave() const
+    {
+        // Create saves directory if it doesn't exist
+        std::filesystem::create_directories(m_saveDir);
+        saveCurrentState(m_saveDir + "autosave.dat");
+    }
+
+    bool Game::hasAutosave() const
+    {
+        return std::filesystem::exists(m_saveDir + "autosave.dat");
+    }
+
+    void Game::loadAutosave()
+    {
+        if (hasAutosave())
+        {
+            loadSaveFromFile(m_saveDir + "autosave.dat");
+        }
+        else
+        {
+            Log::info << "No autosave found.\n";
+        }
+    }
+
+    void Game::loadSaveFromFile(const std::string &filepath)
+    {
+        SaveGame save;
+        if (!save.load(filepath))
+        {
+            Log::error << "Failed to load save from " << filepath << "\n";
+            return;
+        }
+        loadSave(save);
+    }
+
+    void Game::loadSave(const SaveGame &save)
+    {
+        // 1. Clear current world
+        MapManager::get().clearCurrentMapData();
+
+        // 2. Restore story state
+        auto &story = StoryManager::get();
+        story.setFlags(save.flags);
+        story.setItems(save.items);
+        story.setChoices(save.choicesMade);
+
+        // 3. Load the map
+        MapManager::get().loadMap(save.mapName);
+
+        // 4. Spawn NPCs (they will use the restored story flags)
+        MapManager::get().spawnNPCs();
+
+        // 5. Set player character and position
+        Character *player = Player::get().getPlayer();
+        if (player)
+        {
+            player->setCharacter(save.playerCharacter);
+            player->resetToPosition(save.playerPos);
+            player->snapToGround();
+            // Update the global player key
+            Characters::Player = save.playerCharacter;
+        }
+
+        auto& npcManager = NPCManager::get();
+        for (const auto& [id, state] : save.npcStates) {
+            NPC* npc = npcManager.getNPC(id);
+            if (npc) {
+                npc->setAutoTalked(state.autoTalked);
+                npc->setTalked(state.talked);
+            }
+        }
+
+        // 6. Snap camera
+        snapCameraToPlayer();
+
+        Log::info << "Game loaded from save.\n";
+    }
 
 } // namespace Game
 
@@ -6973,6 +8178,129 @@ void showInfoBox(const std::string& message) {
         box.draw(text);
         box.display();
     }
+}
+
+/* game\save_game.hpp */
+// game/save_game.hpp
+#pragma once
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include <SFML/System/Vector2.hpp>
+
+struct NPCState {
+    bool autoTalked = false;
+    bool talked = false;
+    // extend later if needed (e.g., script progress)
+};
+
+struct SaveGame {
+    std::string mapName;
+    sf::Vector2f playerPos;          // unscaled world coordinates
+    std::string playerCharacter;     // key like "fighter_detective"
+    std::unordered_map<std::string, NPCState> npcStates;
+
+    // Story state
+    std::unordered_map<std::string, bool> flags;
+    std::unordered_map<std::string, bool> items;
+    std::vector<std::string> choicesMade;
+
+    // Save/load to file
+    bool save(const std::string& filepath) const;
+    bool load(const std::string& filepath);
+};
+
+/* game\save_game.cpp */
+#include "save_game.hpp"
+#include <fstream>
+#include <sstream>
+#include <debug/logs.hpp>
+
+bool SaveGame::save(const std::string& filepath) const {
+    std::ofstream out(filepath);
+    if (!out.is_open()) {
+        Log::error << "Failed to open save file for writing: " << filepath << "\n";
+        return false;
+    }
+    out << "map=" << mapName << "\n";
+    out << "playerX=" << playerPos.x << "\n";
+    out << "playerY=" << playerPos.y << "\n";
+    out << "playerChar=" << playerCharacter << "\n";
+    // Write story state using the same format as StoryManager
+    out << "#flags\n";
+    for (const auto& [k, v] : flags)
+        out << k << "=" << (v ? "1" : "0") << "\n";
+    out << "#items\n";
+    for (const auto& [k, v] : items)
+        out << k << "=" << (v ? "1" : "0") << "\n";
+    out << "#choices\n";
+    for (const auto& choice : choicesMade)
+        out << choice << "\n";
+    out << "#npcs\n";
+    for (const auto& [id, state] : npcStates) {
+        out << id << " " << (state.autoTalked ? 1 : 0) << " " << (state.talked ? 1 : 0) << "\n";
+    }
+    out << "#end\n";
+    return true;
+}
+
+bool SaveGame::load(const std::string& filepath) {
+    std::ifstream in(filepath);
+    if (!in.is_open()) {
+        Log::error << "Failed to open save file for reading: " << filepath << "\n";
+        return false;
+    }
+    std::string line, section;
+    while (std::getline(in, line)) {
+        if (line.empty()) continue;
+        if (line[0] == '#') {
+            section = line.substr(1);
+            continue;
+        }
+        // Parse key=value lines (only before the story sections)
+        if (section.empty()) {
+            size_t eq = line.find('=');
+            if (eq == std::string::npos) continue;
+            std::string key = line.substr(0, eq);
+            std::string val = line.substr(eq+1);
+            if (key == "map") mapName = val;
+            else if (key == "playerX") playerPos.x = std::stof(val);
+            else if (key == "playerY") playerPos.y = std::stof(val);
+            else if (key == "playerChar") playerCharacter = val;
+        } else {
+            // Section parsing for flags/items/choices
+            if (section == "flags") {
+                size_t eq = line.find('=');
+                if (eq != std::string::npos) {
+                    std::string k = line.substr(0, eq);
+                    bool v = (line.substr(eq+1) == "1");
+                    flags[k] = v;
+                }
+            } else if (section == "items") {
+                size_t eq = line.find('=');
+                if (eq != std::string::npos) {
+                    std::string k = line.substr(0, eq);
+                    bool v = (line.substr(eq+1) == "1");
+                    items[k] = v;
+                }
+            } else if (section == "choices") {
+                choicesMade.push_back(line);
+            } else if (section == "npcs") {
+                std::istringstream iss(line);
+                std::string id;
+                int autoTalked, talked;
+                if (iss >> id >> autoTalked >> talked) {
+                    NPCState state;
+                    state.autoTalked = (autoTalked != 0);
+                    state.talked = (talked != 0);
+                    npcStates[id] = state;
+                }
+            } else if (section == "end") {
+                break;
+            }
+        }
+    }
+    return true;
 }
 
 /* map\terrain.cpp */
@@ -7806,6 +9134,7 @@ public:
     void setPlayer(Character* player) { m_player = player; }
     void spawnNPCs();
     void setGame(Game::Game* game) { m_game = game; }
+    void clearCurrentMapData();
 
 private:
     MapManager() = default;
@@ -7815,7 +9144,6 @@ private:
     std::vector<Transition> transitions;
     Character* m_player = nullptr;
 
-    void clearCurrentMapData();
 };
 
 /* map\map_manager.cpp */
@@ -7920,10 +9248,9 @@ std::optional<Transition> MapManager::getTransitionAt(const sf::Vector2f& positi
     for (auto& tr : transitions) {
         sf::Vector2f triggerPos = tr.triggerPos * Scale::get(); // Scale trigger position to world coordinates
         sf::Vector2f diff = triggerPos - position;
-        Log::info << "Checking transition at " << triggerPos.x << ", " << triggerPos.y 
-                  << " for player at " << position.x << ", " << position.y 
-                  << ". Distance=" << std::hypot(diff.x, diff.y) << "\n";
-        if (std::hypot(diff.x, diff.y) <= threshold) {
+        float dY = std::abs(diff.y);
+        float dX = std::abs(diff.x);
+        if (dX <= threshold && dY <= threshold) {
             return tr;
         }
     }
@@ -7940,9 +9267,31 @@ void MapManager::spawnNPCs() {
 }
 
 void MapManager::switchToMap(const std::string& mapName, std::optional<sf::Vector2f> spawnPos) {
+    if (m_game) {
+        m_game->autoSave();
+    }
     if (mapName == currentMap) {
-        Log::warn << "Already on map " << mapName << ", ignoring transition.\n";
-        return;
+        // if same then just reposition player but with transition
+        auto action = [this, spawnPos](TransitionScreen& screen) {
+            Log::info << "TransitionScreen: action called for repositioning player in same map " << currentMap << "\n";
+            if (m_player) {
+                if (spawnPos.has_value()) {
+                    m_player->resetToPosition(*spawnPos);
+                    Log::info << "Player placed at custom spawn (" << spawnPos->x << ", " << spawnPos->y << ")\n";
+                } else {
+                    m_player->resetToSpawn();
+                    m_player->snapToGround();
+                    Log::info << "Player reset to map default spawn.\n";
+                }
+            } else {
+                Log::warn << "No player pointer in MapManager; cannot reposition player.\n";
+            }
+            if (m_game) {
+                m_game->snapCameraToPlayer();
+                m_game->autoSave();
+            }
+            screen.continueTransition();
+        };
     }
 
     Log::info << "Switching from " << currentMap << " to " << mapName << "\n";
@@ -7971,6 +9320,7 @@ void MapManager::switchToMap(const std::string& mapName, std::optional<sf::Vecto
         }
         if (m_game) {
             m_game->snapCameraToPlayer();
+            m_game->autoSave();
         }
 
         Log::info << "continueTransition() called after map switch.\n";

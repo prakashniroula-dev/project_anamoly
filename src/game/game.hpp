@@ -9,6 +9,7 @@ class Background;
 class Overlay;
 class LevelEditor;
 class FpsDisplay;
+class SaveGame;
 // struct Transition;
 
 namespace Game {
@@ -19,7 +20,18 @@ namespace Game {
         ~Game();
         void snapCameraToPlayer();
         void quit();
+        void loadSave(const SaveGame& save);
+        void saveCurrentState(const std::string& filepath) const;  // for manual save
+        void autoSave() const;   // saves to "autosave.dat"
 
+        // For the main menu to know if autosave exists
+        bool hasAutosave() const;
+        void loadSaveFromFile(const std::string& filepath);
+        void loadAutosave();
+        void reset();
+        void startGame();
+        void deleteAutosave() { std::filesystem::remove(m_saveDir + "autosave.dat"); }
+        
     private:
         // Window & loop
         sf::RenderWindow m_window;
@@ -28,6 +40,7 @@ namespace Game {
         unsigned int     m_width;
         unsigned int     m_height;
         std::string      m_title;
+        std::string m_saveDir = "saves/";
 
         // FPS display (included as a member, but definition in separate file)
         FpsDisplay*      m_fpsDisplay = nullptr; // or unique_ptr
@@ -55,7 +68,6 @@ namespace Game {
         void handleEvents();
         void initResources();   // load textures, spawns, etc.
         bool m_gameStarted = false;
-        void startGame();
 
         // Disable copying
         Game(const Game&) = delete;

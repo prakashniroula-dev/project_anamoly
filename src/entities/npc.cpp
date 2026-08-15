@@ -7,6 +7,7 @@
 #include <cmath>
 #include <ui/ui_screen.hpp>
 #include <entities/player.hpp>
+#include <story/story_manager.hpp>
 
 NPC::NPC(const NPCType& type, const sf::Vector2f& spawnPos, const std::string& uniqueID)
     : Character(type.characterKey, false), type(type), uniqueID(uniqueID) {
@@ -31,6 +32,13 @@ void NPC::update(sf::RenderWindow& win, float dt) {
     // Log::info << "NPC update: state=" << static_cast<int>(state) << ", scriptRunning=" << m_scriptRunning << "\n";
     Character::update(win, dt); // base physics & animation
     if (m_scriptRunning) {
+        if (m_actionTimer > 0.f) {
+            m_actionTimer -= dt;
+            if (m_actionTimer <= 0.f) {
+                advanceScript();
+            }
+            return; // wait for timer to finish
+        }
         if (m_waitingForDialogue) {
             return;   // wait for dialogue to end
         }
@@ -56,13 +64,6 @@ void NPC::update(sf::RenderWindow& win, float dt) {
                 // Optional: add vertical movement if needed (e.g., jump)
             }
         }
-        // Handle Wait timer
-        if (m_actionTimer > 0.f) {
-            m_actionTimer -= dt;
-            if (m_actionTimer <= 0.f) {
-                advanceScript();
-            }
-        }
     } else {
         if (!m_aiPaused) {
             updateBehavior(dt);
@@ -71,7 +72,7 @@ void NPC::update(sf::RenderWindow& win, float dt) {
     }
 }
 
-void NPC::runSequence(const std::vector<Action>& actions) {
+void NPC::runSequence(const std::vector<Action::Action>& actions) {
     m_script = actions;
     m_waiting = false;
     for (auto& action : m_script) {
@@ -91,14 +92,73 @@ void NPC::runSequence(const std::vector<Action>& actions) {
 void NPC::executeCurrentAction() {
     if (m_currentActionIndex >= m_script.size()) {
         Log::info << "NPC script finished." << std::endl;
-        // script finished
         m_scriptRunning = false;
         pauseAI(false);
         return;
     }
+
     Log::info << "Try to execute action " << m_currentActionIndex << " of " << m_script.size() << std::endl;
-    const Action& action = m_script[m_currentActionIndex];
+    const Action::Action& action = m_script[m_currentActionIndex];
     Log::info << "Executing action " << m_currentActionIndex << ": type=" << static_cast<int>(action.type) << std::endl;
+
+    // ---- Handle flag-related actions unconditionally ----
+    if (action.type == ActionType::CheckFlag ||
+        action.type == ActionType::CheckFlagModeOR ||
+        action.type == ActionType::CheckFlagModeAND ||
+        action.type == ActionType::SetFlag) {
+
+        switch (action.type) {
+            case ActionType::CheckFlag: {
+                if (!checkFlagModeAND && flag_conditions) {
+                    // OR mode: if any previous condition was true, skip this check
+                    advanceScript();
+                    break;
+                }
+                if (checkFlagModeAND && !flag_conditions) {
+                    // AND mode: if any previous condition was false, skip this check
+                    advanceScript();
+                    break;
+                }
+                bool expected = (action.duration == 0.f);
+                bool current  = StoryManager::get().getFlag(action.labelId);
+                flag_conditions = (current == expected);
+                Log::info << "CheckFlag: " << action.labelId << " = " << current
+                          << ", expected = " << expected << ", result = " << flag_conditions << std::endl;
+                advanceScript();
+                break;
+            }
+            case ActionType::CheckFlagModeOR:
+                checkFlagModeAND = false;
+                flag_conditions = false;   // reset for OR mode
+                advanceScript();
+                break;
+            case ActionType::CheckFlagModeAND:
+                checkFlagModeAND = true;
+                flag_conditions = true;    // reset for AND mode
+                advanceScript();
+                break;
+            case ActionType::SetFlag:
+                Log::info << "SetFlag: " << action.labelId << " = " << (action.duration == 0.f) << std::endl;
+                StoryManager::get().setFlag(action.labelId, action.duration == 0.f);
+                advanceScript();
+                break;
+            default:
+                // Should never happen
+                advanceScript();
+                break;
+        }
+        return;  // flag actions are done
+    }
+
+    // ---- Handle regular actions only if flag conditions allow ----
+    if (!flag_conditions) {
+        Log::warn << "Action skipped due to failed flag conditions: type="
+                  << static_cast<int>(action.type) << std::endl;
+        advanceScript();
+        return;
+    }
+
+    // Now flag_conditions is true; execute the action
     switch (action.type) {
         case ActionType::FacePlayer: {
             Character* player = Player::get().getPlayer();
@@ -117,36 +177,27 @@ void NPC::executeCurrentAction() {
             behaviorState.targetPos = action.targetPos;
             m_actionTimer = -1.f;   // no wait timer
             break;
-
         case ActionType::MoveRelative:
             behaviorState.type = BehaviorState::Type::Scripted;
             behaviorState.targetPos = getPosition() / Scale::get() + action.targetPos;
-            m_actionTimer = -1.f;   // no wait timer
+            m_actionTimer = -1.f;
             break;
-
         case ActionType::Wait:
             m_actionTimer = action.duration;
             Log::info << "Waiting for " << m_actionTimer << " seconds.\n";
             break;
-
         case ActionType::LockPlayer:
             Player::get().lockControls();
             advanceScript();
             break;
-
         case ActionType::UnlockPlayer:
             Player::get().unlockControls();
             advanceScript();
             break;
-
         case ActionType::PlayAnimation:
-            // Set a scripted animation (we'll need a new state)
-            // For simplicity, we can override the moving/state enums.
-            // We'll add a new member m_scriptedAnim and use it in animate().
             m_scriptedAnim = action.animKey;
             advanceScript();
             break;
-
         case ActionType::ShowDialogue:
             if (action.npc) {
                 UIManager::get().pushScreen(std::make_unique<DialogScreen>(action.npc));
@@ -155,38 +206,37 @@ void NPC::executeCurrentAction() {
             }
             m_waitingForDialogue = true;   // block script until dialogue closes
             break;
-
         case ActionType::SwapPlayer:
             if (action.npc) {
                 Player::get().swapTo(action.npc);
             } else {
-                // If no NPC specified, swap back?
                 Player::get().swapBack();
             }
             advanceScript();
             break;
-
         case ActionType::CallFunction: {
-            Log::info << "Calling function: " << action.functionName << std::endl;
-            auto it = FunctionRegistry::functions.find(action.functionName);
+            Log::info << "Calling function: " << action.extName << std::endl;
+            auto it = FunctionRegistry::functions.find(action.extName);
             if (it != FunctionRegistry::functions.end()) {
                 it->second(this);
             } else {
-                Log::warn << "Unknown function: " << action.functionName << std::endl;
+                Log::warn << "Unknown function: " << action.extName << std::endl;
             }
             advanceScript();
             break;
         }
-
         case ActionType::EndSequence:
             m_scriptRunning = false;
             pauseAI(false);
-            // Optionally switch back to patrol/idle
             behaviorState.type = BehaviorState::Type::Idle;
+            // No advanceScript – script ends here
+            break;
+        default:
+            Log::warn << "Unknown action type: " << static_cast<int>(action.type) << std::endl;
+            advanceScript();
             break;
     }
 }
-
 void NPC::advanceScript() {
     ++m_currentActionIndex;
     executeCurrentAction();
