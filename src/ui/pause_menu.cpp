@@ -6,6 +6,7 @@
 #include <ui/options_menu.hpp>
 #include <ui/save_load_screen.hpp>
 #include <ui/main_menu.hpp>
+#include <sound/sound_manager.hpp>
 
 PauseMenu::PauseMenu(Game::Game* gameInstance) : game(gameInstance), titleLine1(UIManager::get().getFont()), titleLine2(UIManager::get().getFont()) {
     labels = {"Continue", "Save", "Main Menu", "Options", "Quit"};
@@ -157,6 +158,9 @@ bool PauseMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
 
 void PauseMenu::executeSelected() {
     Option opt = static_cast<Option>(selectedIndex);
+    if (opt >= Option::Resume && opt <= Option::Quit) {
+      SoundManager::get().playSound("ui_click");
+    }
     switch (opt) {
         case Resume:
             Log::info << "PauseMenu: Starting new game.\n";

@@ -1,4 +1,4 @@
-#include <game/Game.hpp>
+#include <game/game.hpp>
 #include <game/fps_display.hpp>
 #include <game/infobox.hpp>
 #include <debug/logs.hpp>
@@ -24,41 +24,101 @@
 #include <story/story_manager.hpp>
 #include <ui/pause_menu.hpp>
 #include <ui/message_screen.hpp>
+#include <sound/sound_manager.hpp>
+#include <ui/loading_screen.hpp>
 
 namespace Game
 {
 
-    Game::Game(const std::string &title, unsigned int width, unsigned int height, const std::string &initialMap = "default")
-        : m_width(width), m_height(height), m_title(title), m_initialMap(initialMap)
+    Game::Game(const std::string &title, unsigned int width, unsigned int height, const std::string &initialMap)
+    : m_width(width), m_height(height), m_title(title), m_initialMap(initialMap)
     {
-        // Create window
+        // 1. Create window
         m_window.create(sf::VideoMode({width, height}), title);
         m_window.setVerticalSyncEnabled(false);
         m_window.setFramerateLimit(240);
 
-        // Setup view
+        Log::info << "Window created." << "\n";
+
+        // 2. Setup view
         m_view.setSize(sf::Vector2f(width, height));
         m_view.setViewport(sf::FloatRect(sf::Vector2f(0.f, 0.f), sf::Vector2f(1.f, 1.f)));
         m_view.setCenter(sf::Vector2f(width / 2.f, height / 2.f));
 
-        // Camera parameters
+        Log::info << "View initialized." << "\n";
+
         m_viewY = height / 2.f;
         m_targetY = m_viewY;
         m_smoothSpeed = Character::GRAVITY * 0.7f;
         m_topDeadZone = 80.f;
         m_bottomDeadZone = 200.f;
 
-        // Create FPS display
+        // 3. Create game objects
         m_fpsDisplay = new FpsDisplay();
-
-        // Create game objects
         m_background = new Background();
         m_overlay = new Overlay();
         m_editor = new LevelEditor();
 
-        // Initialize resources
+        // 4. Push loading screen
+        const int TOTAL_STEPS = 12; // adjust to your actual number of steps
+        auto loader = std::make_unique<LoadingScreen>(TOTAL_STEPS);
+        m_loadingScreen = loader.get();
+        UIManager::get().init(); // before pushing loading screen, ensure UIManager is initialized
+        UIManager::get().pushScreen(std::move(loader));
+
+        Log::info << "Loading screen initialized." << "\n";
+
+        // ★ Immediately render the loading screen (shows 0%) ★
+        renderLoadingScreen();
+
+        Log::info << "Loading screen rendered." << "\n";
+
+        // 5. Perform loading steps
         initResources();
+
+        Log::info << "Resources initialized." << "\n";
+
+        // 6. Remove loading screen and show main menu
+        SoundManager::get().playMusic("main_menu", true, 0.4f);
+        UIManager::get().gotoScreen(std::make_unique<MainMenu>(this));
+
+        Log::info << "Main menu displayed." << "\n";
     }
+
+    void Game::renderLoadingScreen() {
+        // Process pending events (so the window stays responsive)
+        while (const std::optional event = m_window.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
+                m_window.close();
+                return;
+            }
+            Log::info << "Game::renderLoadingScreen: processing event.\n";
+            sf::View oldView = m_window.getView();
+            m_window.setView(UIManager::get().getUIView(m_window));
+            UIManager::get().handleEvent(*event, m_window);
+            m_window.setView(oldView);
+        }
+        
+        // Draw the loading screen (it's the only UI screen on top)
+        m_window.clear();
+        m_window.setView(UIManager::get().getUIView(m_window));
+        Log::info << "Set view for loading screen rendering.\n";
+        UIManager::get().draw(m_window);
+        Log::info << "Loading screen drawn.\n";
+        m_window.display();
+        Log::info << "Loading screen displayed.\n";
+    }
+
+    void Game::advanceLoadingScreen(const std::string& status) {
+        if (m_loadingScreen) {
+            m_loadingScreen->setStatus(status);
+            m_loadingScreen->advance();
+            m_loadingScreen->update(1.f); // update immediately to reflect changes
+            renderLoadingScreen();
+        }
+    }
+
+
 
     Game::~Game()
     {
@@ -70,12 +130,19 @@ namespace Game
 
     void Game::initResources()
     {
+        advanceLoadingScreen("Initializing scale...");
         updateScale();
+        advanceLoadingScreen("Loading tiles...");
         Tiles::load();
+        advanceLoadingScreen("Loading objects...");
         Objects::load();
+        advanceLoadingScreen("Loading background...");
         Background::load(m_window);
+
+        advanceLoadingScreen("Loading overlay...");
         Overlay::load(m_window);
 
+        advanceLoadingScreen("Loading map...");
         MapManager::get().setGame(this);
         MapManager::get().loadMap(m_initialMap);
         // Terrain::loadSpawnsFromFile("assets/spawns.txt");
@@ -83,17 +150,26 @@ namespace Game
         // Terrain::loadObjectsFromFile("assets/objects.txt");
         // Terrain::loadSolidFromFile("assets/solid_tiles.txt");
 
+        advanceLoadingScreen("Loading characters...");
         Characters::load();
+        
+        advanceLoadingScreen("Initializing player & UI...");
         Player::get().init();
-        UIManager::get().init();
+        
+        advanceLoadingScreen("Loading NPCs and scripts...");
         NPCManager::get().loadDefinitions(); // register NPC types
         ScriptRegistry::init();              // register scripts
+
+        advanceLoadingScreen("Loading sounds...");
+        SoundManager::get().initAllSounds();
+
+        advanceLoadingScreen("Finalizing...");
         m_editor->init();
         Player::get().setCharacter(Characters::Fighter_Detective);
         NPCManager::get().setPlayer(Player::get().getPlayer());
         MapManager::get().setPlayer(Player::get().getPlayer());
-        Game::reset();
-        UIManager::get().pushScreen(std::make_unique<MainMenu>(this));
+
+        advanceLoadingScreen("Loaded...");
     }
 
     void Game::snapCameraToPlayer()
@@ -135,6 +211,8 @@ namespace Game
             npc->snapToGround();
         }
         snapCameraToPlayer();
+        // SoundManager::get().stopMusic();
+        SoundManager::get().playMusic("main_theme", true, 0.4f);
         Log::info << "Game started, NPCs spawned.\n";
     }
 
@@ -311,6 +389,10 @@ namespace Game
                     else if (m_nearTransition.has_value())
                     { // ← fixed condition
                         const Transition &tr = *m_nearTransition;
+                        const std::string label = tr.label.empty() ? "Unknown" : tr.label;
+                        if ( label == "Door" ) {
+                            SoundManager::get().playSound("heavy_door_open");
+                        }
                         MapManager::get().switchToMap(tr.targetMap, tr.spawnPosition);
                         m_nearTransition.reset();
                     }
@@ -390,6 +472,7 @@ namespace Game
             }
             m_window.setView(UIManager::get().getUIView(m_window));
             UIManager::get().draw(m_window);
+            SoundManager::get().update(dt);
             m_fpsDisplay->update(dt, m_window);
             m_window.display();
         }

@@ -27,27 +27,32 @@ bool UIManager::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
 }
 
 void UIManager::update(float dt, bool& gameShouldUpdate) {
-    if (m_screens.empty())
-        return;
-    
+    gameShouldUpdate = true; // assume game can update
+    if (m_screens.empty()) return;
+
     for (auto it = m_screens.rbegin(); it != m_screens.rend(); ++it) {
-        bool blocks = (*it)->blocksGameUpdate();   // store flag before update
-        gameShouldUpdate = !blocks;
+        bool blocks = (*it)->blocksGameUpdate();
+        if (blocks) {
+            gameShouldUpdate = false;
+        }
         (*it)->update(dt);
-        if ( gameShouldUpdate ) {
-            break; // screens below are blocked
+        if (blocks) {
+            break; // stop processing lower screens
         }
     }
 }
 
 void UIManager::draw(sf::RenderWindow& window) const {
     auto start = m_screens.begin();
+    //Log::info << "UIManager::draw: m_screens.size()=" << m_screens.size() << "\n";
     for (auto it = m_screens.begin(); it != m_screens.end(); ++it) {
         if (!(*it)->displayBelow()) {
             start = it;
         }
     }
+    //Log::info << "UIManager::draw: drawing screens from index " << std::distance(m_screens.begin(), start) << " to " << m_screens.size() - 1 << "\n";
     for (auto it = start; it != m_screens.end(); ++it) {
+        //Log::info << "Calling draw() for screen at index " << std::distance(m_screens.begin(), it) << "\n";
         (*it)->draw(window);
     }
 }

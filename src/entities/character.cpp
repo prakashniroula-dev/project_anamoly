@@ -14,6 +14,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <algorithm>
 #include <core/constants.hpp>
+#include <sound/sound_manager.hpp>
 
 // ---------- ANIMATION KEYS (single copy) ----------
 namespace Anim {
@@ -300,6 +301,10 @@ void Character::drawDebugBounds(sf::RenderWindow& win) {
 // ---------- PUBLIC INTERFACE ----------
 void Character::walk(int dir) {
     if (state != CharacterState::None && state != CharacterState::Jumping) return;
+    if (m_playerControls) {
+        Log::info << "Playing footstep sound for direction: " << dir << "\n";
+        SoundManager::get().playFootStep();
+    }
     moving = CharacterMoving::Walking;
     vel.x = WALK_SPEED * dir;
     direction = dir;
@@ -316,10 +321,10 @@ void Character::shoot() {
         Log::info << "NPC shooting at position: (" << pos.x << ", " << pos.y << ")\n";
         Log::info << "State: " << static_cast<int>(state) << ", Moving: " << static_cast<int>(moving) << "\n";
     }
-    if (m_playerControls) {
-        if ( state != CharacterState::None) return;
-    }
-    if (state != CharacterState::Shooting) timer = 0;
+    if (state != CharacterState::Shooting) {
+        SoundManager::get().playSound("shot");
+        timer = 0;
+    };
     state = CharacterState::Shooting;
 }
 

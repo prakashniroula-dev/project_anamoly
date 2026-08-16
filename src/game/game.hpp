@@ -1,3 +1,4 @@
+// game/Game.hpp
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -10,7 +11,7 @@ class Overlay;
 class LevelEditor;
 class FpsDisplay;
 class SaveGame;
-// struct Transition;
+class LoadingScreen;   // <-- Add this
 
 namespace Game {
     class Game {
@@ -21,10 +22,8 @@ namespace Game {
         void snapCameraToPlayer();
         void quit();
         void loadSave(const SaveGame& save);
-        void saveCurrentState(const std::string& filepath) const;  // for manual save
-        void autoSave() const;   // saves to "autosave.dat"
-
-        // For the main menu to know if autosave exists
+        void saveCurrentState(const std::string& filepath) const;
+        void autoSave() const;
         bool hasAutosave() const;
         void loadSaveFromFile(const std::string& filepath);
         void loadAutosave();
@@ -40,10 +39,12 @@ namespace Game {
         unsigned int     m_width;
         unsigned int     m_height;
         std::string      m_title;
-        std::string m_saveDir = "saves/";
+        std::string      m_saveDir = "saves/";
 
-        // FPS display (included as a member, but definition in separate file)
-        FpsDisplay*      m_fpsDisplay = nullptr; // or unique_ptr
+        LoadingScreen*   m_loadingScreen = nullptr;
+
+        // FPS display
+        FpsDisplay*      m_fpsDisplay = nullptr;
 
         // World objects
         Background*      m_background = nullptr;
@@ -57,7 +58,7 @@ namespace Game {
         float m_topDeadZone;
         float m_bottomDeadZone;
 
-        // map transition near detection
+        // map transition
         std::optional<Transition> m_nearTransition;
         std::string m_initialMap;
 
@@ -66,10 +67,12 @@ namespace Game {
         void updateCamera(float dt);
         void update(float dt);
         void handleEvents();
-        void initResources();   // load textures, spawns, etc.
+        void initResources();
+        void renderLoadingScreen();                  // helper to refresh the window
+        void advanceLoadingScreen(const std::string& status); // unified step
+
         bool m_gameStarted = false;
 
-        // Disable copying
         Game(const Game&) = delete;
         Game& operator=(const Game&) = delete;
     };

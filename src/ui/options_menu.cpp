@@ -5,6 +5,7 @@
 #include <SFML/Window/Mouse.hpp>
 #include <algorithm>
 #include <cmath>
+#include <sound/sound_manager.hpp>
 
 // -----------------------------------------------------------------------------
 // Layout constants
@@ -306,14 +307,18 @@ void OptionsMenu::onControlChanged(Control& ctrl) {
             m_maxFps = steps[idx];
             break;
         }
-        case ControlID::Music:    m_musicOn = (ctrl.value > 0.5f); break;
-        case ControlID::Sfx:      m_sfxOn = (ctrl.value > 0.5f); break;
+        case ControlID::Music:    m_musicOn = (ctrl.value > 0.5f); SoundManager::get().playSound("ui_click"); break;
+        case ControlID::Sfx:      m_sfxOn = (ctrl.value > 0.5f); SoundManager::get().playSound("ui_click"); break;
         case ControlID::Back:     break;
     }
     applySettings();
 }
 
 void OptionsMenu::applySettings() {
+    // Apply to SoundManager
+    SoundManager::get().setMasterVolume(m_volume);
+    SoundManager::get().setMusicVolume(m_musicOn ? 1.0f : 0.0f);
+    SoundManager::get().setSFXVolume(m_sfxOn ? 1.0f : 0.0f);
     Log::info << "Options applied: Volume=" << (int)(m_volume*100)
               << "%, FPS=" << (m_maxFps==0?"Unlimited":std::to_string(m_maxFps))
               << ", Music=" << (m_musicOn?"On":"Off")
@@ -415,6 +420,7 @@ bool OptionsMenu::handleMouseMove(const sf::Vector2f& mousePos) {
 bool OptionsMenu::handleMouseRelease(const sf::Vector2f& mousePos) {
     for (Control& ctrl : m_controls) {
         if ((ctrl.id == ControlID::Volume || ctrl.id == ControlID::MaxFps) && ctrl.isActive) {
+            SoundManager::get().playSound("ui_click");
             ctrl.isActive = false;
             return true;
         }
@@ -494,6 +500,7 @@ void OptionsMenu::toggleCurrent() {
 void OptionsMenu::activateCurrent() {
     Control& ctrl = m_controls[m_selectedIndex];
     if (ctrl.id == ControlID::Back) {
+        SoundManager::get().playSound("ui_click");
         UIManager::get().popScreen();
     }
 }

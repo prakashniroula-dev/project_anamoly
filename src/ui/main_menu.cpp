@@ -8,6 +8,7 @@
 #include <ui/transition_screen.hpp>
 #include <ui/message_screen.hpp>
 #include <story/story_manager.hpp>
+#include <sound/sound_manager.hpp>
 
 MainMenu::MainMenu(Game::Game* gameInstance) : game(gameInstance), titleLine1(UIManager::get().getFont()), titleLine2(UIManager::get().getFont()) {
     labels = {"New Game", "Continue", "Save/Load", "Options", "Quit"};
@@ -107,10 +108,6 @@ bool MainMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
 
     // ---- Keyboard ----
     if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
-        if (key->code == sf::Keyboard::Key::Escape) {
-            UIManager::get().popScreen();
-            return true;
-        }
         if (key->code == sf::Keyboard::Key::Up) {
             selectedIndex = (selectedIndex - 1 + optionTexts.size()) % optionTexts.size();
             return true;
@@ -159,6 +156,10 @@ bool MainMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
 
 void MainMenu::executeSelected() {
     Option opt = static_cast<Option>(selectedIndex);
+    if ( opt >= Option::NewGame && opt <= Option::Quit ) {
+        // play a click sound effect
+        SoundManager::get().playSound("ui_click");
+    }
     switch (opt) {
         case NewGame: {
             if (game->hasAutosave()) {

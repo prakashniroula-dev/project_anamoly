@@ -3,6 +3,7 @@
 #include <debug/logs.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
+#include <sound/sound_manager.hpp>
 
 MessageScreen::MessageScreen(const std::string& message,
                              const std::string& description,
@@ -184,8 +185,9 @@ bool MessageScreen::handleEvent(const sf::Event& event, sf::RenderWindow& window
 }
 
 void MessageScreen::executeSelection() {
+  SoundManager::get().playSound("ui_click");
     if (m_onResult) {
-        m_onResult(m_selectedIndex);
+      m_onResult(m_selectedIndex);
     }
     UIManager::get().popScreen();
 }
