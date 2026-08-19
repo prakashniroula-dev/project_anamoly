@@ -148,6 +148,7 @@ bool MapData::loadFromDirectory(const std::string& mapDir) {
           }
       }
   });
+  Log::info << "loaded cutscenes: " << cutsceneTriggers.size() << "\n";
 
     // 6. Transitions
   loadFile("transitions.txt", [&](std::ifstream& f) {
@@ -310,5 +311,7 @@ void MapData::clear() {
     spawns.clear();
     inspectables.clear();
     transitions.clear();
+    cutsceneTriggers.clear();
+    triggeredCutscenes.clear();
     playerSpawnPos = {0.f,0.f};
 }

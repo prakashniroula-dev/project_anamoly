@@ -35,7 +35,7 @@ namespace StoryHelpers {
                 andParts.push_back(temp.substr(0, p));
                 temp.erase(0, p + 2);
             }
-            andParts.push_back(temp);
+            andParts.push_back(temp);   
 
             bool andResult = true;
             for (const auto& atom : andParts) {

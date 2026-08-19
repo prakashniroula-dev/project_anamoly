@@ -97,7 +97,7 @@ bool NPC::runSequence(const std::vector<Action::Action>& actions) {
     m_script = actions;
     m_waiting = false;
     // for (auto& action : m_script) {
-    //     if (action.type == ActionType::ShowDialogue || action.type == ActionType::SwapPlayer) {
+    //     if (action.type == ActionType::ShowDialog || action.type == ActionType::SwapPlayer) {
     //         action.npc = this;
     //     }
     // }
@@ -240,7 +240,7 @@ void NPC::executeCurrentAction() {
             advanceScript();
             break;
 
-        case ActionType::ShowDialogue: {
+        case ActionType::ShowDialog: {
             std::string dialogueId = std::get<std::string>(action.param);
             bool allowEscape = std::get<bool>(action.param2);
             UIManager::get().pushScreen(std::make_unique<DialogScreen>(this, dialogueId, allowEscape));

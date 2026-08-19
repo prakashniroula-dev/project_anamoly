@@ -1,3 +1,4 @@
 cutscene_intro 50.1 254.9 50 intro null
 cutscene_intro2 50 255 50 case0 explainer
 cutscene_flash 73.6 481.1 50 flash null
+cutscene_first_phase 74.6 482.1 99999 first_phase_end null2

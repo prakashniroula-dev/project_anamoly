@@ -1,4 +1,4 @@
 36.7 63.9 outside Travel 611.1 97.1
 419.5 95.3 organization Door 1348.7 256.1
 745.4 101.7 organization Door 836.9 256.4
-1663.8 161.3 bunker Travel 106.7 64.7
+1663.8 161.3 outside_bunker Travel 106.7 64.7

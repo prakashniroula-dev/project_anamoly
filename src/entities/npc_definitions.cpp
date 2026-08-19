@@ -24,6 +24,7 @@ void NPCManager::loadDefinitions() {
   explainer.id = "explainer_npc";
   explainer.characterKey = Characters::Fighter_Boss;
   explainer.behaviorType = "idle";
+  explainer.autoStartDialogue = false;
   explainer.dialogue = {
     makeDialogLine("case0")
     .exchange("David", "Detective Mathew... how's it going with the case ?")
@@ -55,6 +56,26 @@ void NPCManager::loadDefinitions() {
   };
   registerType(explainer);
 
+  NPCType null2;
+  null2.id = "null2";
+  null2.characterKey = Characters::Fighter_Boss;
+  null2.behaviorType = "scripted";
+  null2.cutsceneRadius = 999999.f; // always trigger
+  null2.dialogue = {
+    makeDialogLine("first_phase_end")
+    .exchange("(You)", "This won't do, I need to get more information")
+    .sound("null")
+    .next(1),
+    makeDialogLine("first_phase_end2")
+    .exchange("(You)", "I need to investigate the abandoned building.")
+    .sound("null")
+    .next(2),
+    makeDialogLine("first_phase_end3")
+    .exchange("(You)", "I think I've left the keys to the door somewhere in my desk.")
+    .sound("null")
+  };
+  registerType(null2);
+
   NPCType null;
   null.id = "null";
   null.characterKey = Characters::Fighter_Boss;
@@ -82,6 +103,58 @@ void NPCManager::loadDefinitions() {
     makeDialogLine("flash_end3").exchange("(You)", "I.. need to focus.. I have a deadline.")
     .sound("null"),
 
+    makeDialogLine("family_photo").exchange("(...)", "I.. I feel like I've seen this before..").next(10)
+    .sound("null"),
+    makeDialogLine("family_photo1").exchange("(...)", "I.. I need to find out more about this..").next(11)
+    .sound("null"),
+    makeDialogLine("family_photo2").exchange("(...)", "It feel like I've *known* this.. place and people")
+    .sound("null"),
+
+    makeDialogLine("family_photo_end_flash").exchange("(You)", "Ah better get back to work..")
+    .sound("null"),
+
+    makeDialogLine("bunker_memory").exchange("(You)", "Wait... I remember this place..").next(14),
+    makeDialogLine("bunker_memory2").exchange("(You)", "I think I've been here before.. the organization.. ").next(15).sound("null"),
+    makeDialogLine("bunker_memory3").exchange("(You)", "I remember a bunker after that..")
+    .next(16),
+    makeDialogLine("bunker_memory4").exchange("(You)", ".. the keys, they used to toss in some experiment boxes.")
+    .sound("null"),
+
+    makeDialogLine("bunker_cutscene").exchange("(You)", "I finally remember.. this place..").next(18)
+    .sound("null"),
+    makeDialogLine("bunker3").exchange("(You)", "I remember the incident.. the prototype.. the anamoly.. is me").next(19)
+    .sound("null"),
+    makeDialogLine("bunker4").exchange("(You)", "But then.. what about my family?").next(19)
+    .sound("null"),
+    makeDialogLine("bunker5").exchange("(You)", "What happened ? why don't I remember clearly?")
+    .sound("null"),
+    
+    makeDialogLine("memory_flood")
+    .exchange("(You)", "I remember.. now.. my family they were killed..")
+    .sound("null").next(21),
+    makeDialogLine("memory_flood2")
+    .exchange("(You)", "I.. I remember.. I was working in a lab..")
+    .sound("null").next(22),
+    makeDialogLine("memory_flood3")
+    .exchange("(You)", "I was working on a prototype.. but then.. I know.. the incident")
+    .sound("null").next(23),
+    makeDialogLine("memory_flood4")
+    .exchange("(You)", "I remember.. the anamoly.. it was me.. I was the anamoly.."),
+    makeDialogLine("memory_flood5")
+    .exchange("(You)", "LUCID INC.. I WILL GET MY REVENGE..")
+    .setAction("setFlag(end_game)"),
+    
+    makeDialogLine("other_photos")
+      .exchange("(You)", "I remember.. these... photos")
+      .sound("null").next(26),
+    makeDialogLine("other_photos2")
+      .exchange("(You)", "It's my family... but what happened to them.. I can't remember clearly still..")
+      .sound("null").next(27),
+    makeDialogLine("other_photos3")
+      .exchange("(You)", "I need to find out more about this.., I need to get to the inner bunker")
+      .sound("null")
+
+    
   };
 
   registerType(null);

@@ -20,8 +20,10 @@ void ClueManager::addClue(const ClueInfo& info) {
 
 bool ClueManager::isInspectable(std::string id) {
     ClueInfo& clue = m_definitions[id];
+    Log::info << "Checking if clue is inspectable: " << id << " - " << clue.title << "\n";
+    Log::info << "Result: " << StoryHelpers::evaluateCondition(clue.evaluateState) << "\n";
     return StoryHelpers::evaluateCondition(clue.evaluateState);
-  }
+}
 
 void ClueManager::discoverClue(const std::string& id, bool value) {
   ClueInfo& clue = m_definitions[id];

@@ -1,4 +1,8 @@
-73.7 479.9 photos_001
-408.4 481.6 clue_002
-493.5 256.3 clue_001
 10.7 255.6 outsideKey
+12.7 255.9 clue_002
+73.7 479.9 photos_001
+408.4 481.6 photos_002
+493.5 256.3 clue_001
+494 256 first_phase_end
+277.9 481.6 incident_314
+277 481 incident_216

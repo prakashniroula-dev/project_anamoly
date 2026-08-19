@@ -1,2 +1,2 @@
 36.7 63.9 detective_office Door 66.5 63.9
-611.1 97.1 outside_org Travel 66.5 63.9 
+611.1 97.1 outside_org Travel 66.5 63.9

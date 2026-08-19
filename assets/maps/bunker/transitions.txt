@@ -5,5 +5,5 @@
 280.7 480.9 self Ladder 269.2 323
 2322.8 321.2 self Ladder 2323.3 97.8
 2323.3 97.8 self Ladder 2322.8 321.2
-1636.1 480.2 self Door 1735.3 480.2
-1735.3 480.2 self Door 1636.1 480.2
+1636.1 480.2 self Door 1735.3 480.2 hasItem(bunkerKey) _ " I need the bunker key "
+1735.3 480.2 self Door 1636.1 480.2 hasItem(bunkerKey) _ " I need the bunker key "

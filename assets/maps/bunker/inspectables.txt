@@ -1,0 +1,4 @@
+93.2 480.1 other_photos
+457.1 96.3 bunker_1
+2019.3 481 memory_flood
+1636.1 480.2 bunker_door

@@ -2,3 +2,4 @@
 35.2 255.933 fighter_detective 1 0 0 0 player _ _ _
 224 258.6 fighter_boss 1 0 0 0 explainer_npc explainer _ 513.544189,352.230621;186.857956,354.147736
 988.219 463.227 fighter_boss 1 0 0 0 null null _ _
+1024.78 463.706 fighter_boss 1 0 0 0 null2 null2 _ _

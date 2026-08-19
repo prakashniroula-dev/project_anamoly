@@ -1,551 +1,829 @@
+(info): Window created.
+(info): View initialized.
+(info): Loading screen initialized.
+(info): Game::renderLoadingScreen: processing event.
+(info): Game::renderLoadingScreen: processing event.
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
+(info): Loading screen rendered.
+(info): Game::renderLoadingScreen: processing event.
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
 (!warn) <Textures::load()>: multiple calls for texture key 'exclusion_zone'
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
 (info) <Background::Load()>: Load PowerStationDay textures...
 (info) <Background::Load()>: Load PowerStationNight textures...
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
 (info) <Overlay::Load()>: Load PowerStationOverlay texture...
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
 (info): Loading map: detective_office
-(info): Loaded 63 objects from assets/maps/detective_office\objects.txt
-(info): Loaded player spawn position from file: (460.553, 479.784)
-(info): Loaded 2 spawns from assets/maps/detective_office\spawns.txt
-(info): Loaded 5 transitions.
+(info): loaded cutscenes: 4
+(info): Transition condition: hasItem(outsideKey)
+(info): Transition failMessage: Needs a key..
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
 (info) <Characters::Load()>: Adding Fighter_Boss animations...
 (info) <Characters::Load()>: Adding Fighter_Detective animations...
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
+(info): Clue added: other_photos - Anamoly - Photos
+(info): Clue added: bunker_door - Bunker door
+(info): Clue added: bunker_1 - Anamoly - Bunker
+(info): Clue added: memory_flood - Workplace
+(info): Clue added: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Clue added: family_photo - Anamoly - Photo album
+(info): Clue added: bunker_photos - Anamoly - Bunker photos
+(info): Clue added: org_secret_recording2 - Anamoly - Voice recording #2
+(info): Clue added: org_outsideKey - Anamoly - Old rusty key
+(info): Clue added: bunkerKey - Anamoly - Bunker key
+(info): Clue added: photos_001 - Anamoly - Old photos
+(info): Clue added: photos_002 - Anamoly - Photos
+(info): Clue added: outsideKey - Old rusty key
+(info): Clue added: first_phase_end - Anamoly - Report #1
+(info): Clue added: clue_002 - Anamoly - Robbery Aftermath
+(info): Clue added: clue_001 - Anamoly - Case #314
+(info): Clue added: incident_216 - Anamoly - Incident #216
+(info): Clue added: incident_314 - Anamoly - Incident #314
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
 (info): Getting character sprite for key: fighter_detective
 (info): Getting character sprite for key: fighter_detective
 (info): Getting character sprite for key: fighter_boss
 (info): Getting character sprite for key: fighter_detective
 (info): Getting character sprite for key: fighter_boss
 (info): Getting character sprite for key: fighter_detective
+(info): Getting character sprite for key: fighter_boss
 (info): Getting character sprite for key: fighter_detective
 (info): Getting character sprite for key: fighter_detective
-(info): Resetting game state.
-(info): Loading map: detective_office
-(info): Loaded 63 objects from assets/maps/detective_office\objects.txt
-(info): Loaded player spawn position from file: (460.553, 479.784)
-(info): Loaded 2 spawns from assets/maps/detective_office\spawns.txt
-(info): Loaded 5 transitions.
-(info): TransitionScreen: pushing screen with fadeDuration=2
-(info): TransitionScreen: onEnter() called. fadeDuration=2
-(info): TransitionScreen: update() called. dt=0.016098, state=0, timer=0, currentAlpha=0
-(info): TransitionScreen: update() called. dt=0.01118, state=0, timer=0.016098, currentAlpha=4.10499
-(info): TransitionScreen: update() called. dt=0.013704, state=0, timer=0.027278, currentAlpha=6.95589
-(info): TransitionScreen: update() called. dt=0.013723, state=0, timer=0.040982, currentAlpha=10.4504
-(info): TransitionScreen: update() called. dt=0.010626, state=0, timer=0.054705, currentAlpha=13.9498
-(info): TransitionScreen: update() called. dt=0.013897, state=0, timer=0.065331, currentAlpha=16.6594
-(info): TransitionScreen: update() called. dt=0.013579, state=0, timer=0.079228, currentAlpha=20.2031
-(info): TransitionScreen: update() called. dt=0.013846, state=0, timer=0.092807, currentAlpha=23.6658
-(info): TransitionScreen: update() called. dt=0.015227, state=0, timer=0.106653, currentAlpha=27.1965
-(info): TransitionScreen: update() called. dt=0.01065, state=0, timer=0.12188, currentAlpha=31.0794
-(info): TransitionScreen: update() called. dt=0.012245, state=0, timer=0.13253, currentAlpha=33.7952
-(info): TransitionScreen: update() called. dt=0.009445, state=0, timer=0.144775, currentAlpha=36.9176
-(info): TransitionScreen: update() called. dt=0.01596, state=0, timer=0.15422, currentAlpha=39.3261
-(info): TransitionScreen: update() called. dt=0.012862, state=0, timer=0.17018, currentAlpha=43.3959
-(info): TransitionScreen: update() called. dt=0.01327, state=0, timer=0.183042, currentAlpha=46.6757
-(info): TransitionScreen: update() called. dt=0.00878, state=0, timer=0.196312, currentAlpha=50.0596
-(info): TransitionScreen: update() called. dt=0.015167, state=0, timer=0.205092, currentAlpha=52.2985
-(info): TransitionScreen: update() called. dt=0.014167, state=0, timer=0.220259, currentAlpha=56.166
-(info): TransitionScreen: update() called. dt=0.01359, state=0, timer=0.234426, currentAlpha=59.7786
-(info): TransitionScreen: update() called. dt=0.011702, state=0, timer=0.248016, currentAlpha=63.2441
-(info): TransitionScreen: update() called. dt=0.010575, state=0, timer=0.259718, currentAlpha=66.2281
-(info): TransitionScreen: update() called. dt=0.009914, state=0, timer=0.270293, currentAlpha=68.9247
-(info): TransitionScreen: update() called. dt=0.014764, state=0, timer=0.280207, currentAlpha=71.4528
-(info): TransitionScreen: update() called. dt=0.014109, state=0, timer=0.294971, currentAlpha=75.2176
-(info): TransitionScreen: update() called. dt=0.009646, state=0, timer=0.30908, currentAlpha=78.8154
-(info): TransitionScreen: update() called. dt=0.01563, state=0, timer=0.318726, currentAlpha=81.2751
-(info): TransitionScreen: update() called. dt=0.016125, state=0, timer=0.334356, currentAlpha=85.2608
-(info): TransitionScreen: update() called. dt=0.011355, state=0, timer=0.350481, currentAlpha=89.3727
-(info): TransitionScreen: update() called. dt=0.012429, state=0, timer=0.361836, currentAlpha=92.2682
-(info): TransitionScreen: update() called. dt=0.009053, state=0, timer=0.374265, currentAlpha=95.4376
-(info): TransitionScreen: update() called. dt=0.012366, state=0, timer=0.383318, currentAlpha=97.7461
-(info): TransitionScreen: update() called. dt=0.01322, state=0, timer=0.395684, currentAlpha=100.899
-(info): TransitionScreen: update() called. dt=0.013809, state=0, timer=0.408904, currentAlpha=104.271
-(info): TransitionScreen: update() called. dt=0.012316, state=0, timer=0.422713, currentAlpha=107.792
-(info): TransitionScreen: update() called. dt=0.014174, state=0, timer=0.435029, currentAlpha=110.932
-(info): TransitionScreen: update() called. dt=0.008516, state=0, timer=0.449203, currentAlpha=114.547
-(info): TransitionScreen: update() called. dt=0.011587, state=0, timer=0.457719, currentAlpha=116.718
-(info): TransitionScreen: update() called. dt=0.013964, state=0, timer=0.469306, currentAlpha=119.673
-(info): TransitionScreen: update() called. dt=0.01392, state=0, timer=0.48327, currentAlpha=123.234
-(info): TransitionScreen: update() called. dt=0.016172, state=0, timer=0.49719, currentAlpha=126.783
-(info): TransitionScreen: update() called. dt=0.015139, state=0, timer=0.513362, currentAlpha=130.907
-(info): TransitionScreen: update() called. dt=0.01369, state=0, timer=0.528501, currentAlpha=134.768
-(info): TransitionScreen: update() called. dt=0.008243, state=0, timer=0.542191, currentAlpha=138.259
-(info): TransitionScreen: update() called. dt=0.014783, state=0, timer=0.550434, currentAlpha=140.361
-(info): TransitionScreen: update() called. dt=0.010487, state=0, timer=0.565217, currentAlpha=144.13
-(info): TransitionScreen: update() called. dt=0.010909, state=0, timer=0.575704, currentAlpha=146.805
-(info): TransitionScreen: update() called. dt=0.015023, state=0, timer=0.586613, currentAlpha=149.586
-(info): TransitionScreen: update() called. dt=0.01216, state=0, timer=0.601636, currentAlpha=153.417
-(info): TransitionScreen: update() called. dt=0.009962, state=0, timer=0.613796, currentAlpha=156.518
-(info): TransitionScreen: update() called. dt=0.014137, state=0, timer=0.623758, currentAlpha=159.058
-(info): TransitionScreen: update() called. dt=0.014753, state=0, timer=0.637895, currentAlpha=162.663
-(info): TransitionScreen: update() called. dt=0.014052, state=0, timer=0.652648, currentAlpha=166.425
-(info): TransitionScreen: update() called. dt=0.012885, state=0, timer=0.6667, currentAlpha=170.009
-(info): TransitionScreen: update() called. dt=0.018711, state=0, timer=0.679585, currentAlpha=173.294
-(info): TransitionScreen: update() called. dt=0.011302, state=0, timer=0.698296, currentAlpha=178.065
-(info): TransitionScreen: update() called. dt=0.00751, state=0, timer=0.709598, currentAlpha=180.948
-(info): TransitionScreen: update() called. dt=0.01384, state=0, timer=0.717108, currentAlpha=182.863
-(info): TransitionScreen: update() called. dt=0.015348, state=0, timer=0.730948, currentAlpha=186.392
-(info): TransitionScreen: update() called. dt=0.01519, state=0, timer=0.746296, currentAlpha=190.306
-(info): TransitionScreen: update() called. dt=0.014647, state=0, timer=0.761486, currentAlpha=194.179
-(info): TransitionScreen: update() called. dt=0.008751, state=0, timer=0.776133, currentAlpha=197.914
-(info): TransitionScreen: update() called. dt=0.013455, state=0, timer=0.784884, currentAlpha=200.145
-(info): TransitionScreen: update() called. dt=0.013026, state=0, timer=0.798339, currentAlpha=203.576
-(info): TransitionScreen: update() called. dt=0.011825, state=0, timer=0.811365, currentAlpha=206.898
-(info): TransitionScreen: update() called. dt=0.007845, state=0, timer=0.82319, currentAlpha=209.913
-(info): TransitionScreen: update() called. dt=0.013284, state=0, timer=0.831035, currentAlpha=211.914
-(info): TransitionScreen: update() called. dt=0.009025, state=0, timer=0.844319, currentAlpha=215.301
-(info): TransitionScreen: update() called. dt=0.013002, state=0, timer=0.853344, currentAlpha=217.603
-(info): TransitionScreen: update() called. dt=0.014918, state=0, timer=0.866346, currentAlpha=220.918
-(info): TransitionScreen: update() called. dt=0.013753, state=0, timer=0.881264, currentAlpha=224.722
-(info): TransitionScreen: update() called. dt=0.013792, state=0, timer=0.895017, currentAlpha=228.229
-(info): TransitionScreen: update() called. dt=0.011362, state=0, timer=0.908809, currentAlpha=231.746
-(info): TransitionScreen: update() called. dt=0.014357, state=0, timer=0.920171, currentAlpha=234.644
-(info): TransitionScreen: update() called. dt=0.013322, state=0, timer=0.934528, currentAlpha=238.305
-(info): TransitionScreen: update() called. dt=0.009538, state=0, timer=0.94785, currentAlpha=241.702
-(info): TransitionScreen: update() called. dt=0.00876, state=0, timer=0.957388, currentAlpha=244.134
-(info): TransitionScreen: update() called. dt=0.009911, state=0, timer=0.966148, currentAlpha=246.368
-(info): TransitionScreen: update() called. dt=0.012934, state=0, timer=0.976059, currentAlpha=248.895
-(info): TransitionScreen: update() called. dt=0.013064, state=0, timer=0.988993, currentAlpha=252.193
-(info): TransitionScreen: endWithFade wrapper called.
-(info) <MapManager::spawnNPCs>: Spawning NPCs for map: detective_office
-(info) <NPCManager::createNPC>: Setting waypoints for NPC generic_guard_0
-(info) <NPCManager::spawnAllNPCs>: Finished spawning all NPCs.
-(info): Loading map: detective_office
-(info): Loaded 63 objects from assets/maps/detective_office\objects.txt
-(info): Loaded player spawn position from file: (460.553, 479.784)
-(info): Loaded 2 spawns from assets/maps/detective_office\spawns.txt
-(info): Loaded 5 transitions.
-(info) <MapManager::spawnNPCs>: Spawning NPCs for map: detective_office
-(info) <NPCManager::createNPC>: Setting waypoints for NPC generic_guard_0
-(info) <NPCManager::spawnAllNPCs>: Finished spawning all NPCs.
+(info): Getting character sprite for key: fighter_detective
+(info): Set view for loading screen rendering.
+(info): Loading screen drawn.
+(info): Loading screen displayed.
+(info): Resources initialized.
+(info): Main menu displayed.
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): Spawning NPC: explainer_npc at (224, 258.6)
+(info) <NPCManager::createNPC>: Setting waypoints for NPC explainer
+(info): Spawning NPC: null at (988.219, 463.227)
+(info): Spawning NPC: null2 at (1024.78, 463.706)
+(info): Loading map: organization
+(info): loaded cutscenes: 1
+(info): Transition condition: hasItem(org_outsideKey)
+(info): Transition failMessage: Needs a key
+(info): Spawning NPC: null at (-6.12158, -17.2282)
+(info): Spawning NPC: null2 at (46.6784, -17.7615)
+(info): Clue discovered: clue_002
+(info): Clue discovered: photos_001
+(info): Clue discovered: photos_002
+(info): Clue discovered: incident_314
+(info): Clue discovered: incident_216
+(info): Clue discovered: clue_001
+(info): Clue discovered: first_phase_end
+(info): Clue discovered: outsideKey
+(info): Clue discovered: org_secret_recording1
 (info): Game loaded from save.
 (info): Game started, NPCs spawned.
-(info): TransitionScreen: continueTransition() called.
-(info): TransitionScreen: state=2, timer=0
-(info): TransitionScreen: endWithFade wrapper finished.
-(info): TransitionScreen: update() called. dt=0.020446, state=2, timer=0, currentAlpha=255
-(info): TransitionScreen: update() called. dt=0.012812, state=2, timer=0.020446, currentAlpha=249.786
-(info): TransitionScreen: update() called. dt=0.014623, state=2, timer=0.033258, currentAlpha=246.519
-(info): TransitionScreen: update() called. dt=0.012202, state=2, timer=0.047881, currentAlpha=242.79
-(info): TransitionScreen: update() called. dt=0.010496, state=2, timer=0.060083, currentAlpha=239.679
-(info): TransitionScreen: update() called. dt=0.013019, state=2, timer=0.070579, currentAlpha=237.002
-(info): TransitionScreen: update() called. dt=0.013946, state=2, timer=0.083598, currentAlpha=233.683
-(info): TransitionScreen: update() called. dt=0.012463, state=2, timer=0.097544, currentAlpha=230.126
-(info): TransitionScreen: update() called. dt=0.00951, state=2, timer=0.110007, currentAlpha=226.948
-(info): TransitionScreen: update() called. dt=0.013346, state=2, timer=0.119517, currentAlpha=224.523
-(info): TransitionScreen: update() called. dt=0.016134, state=2, timer=0.132863, currentAlpha=221.12
-(info): TransitionScreen: update() called. dt=0.013623, state=2, timer=0.148997, currentAlpha=217.006
-(info): TransitionScreen: update() called. dt=0.013625, state=2, timer=0.16262, currentAlpha=213.532
-(info): TransitionScreen: update() called. dt=0.011989, state=2, timer=0.176245, currentAlpha=210.058
-(info): TransitionScreen: update() called. dt=0.011909, state=2, timer=0.188234, currentAlpha=207
-(info): TransitionScreen: update() called. dt=0.013293, state=2, timer=0.200143, currentAlpha=203.964
-(info): TransitionScreen: update() called. dt=0.010082, state=2, timer=0.213436, currentAlpha=200.574
-(info): TransitionScreen: update() called. dt=0.01068, state=2, timer=0.223518, currentAlpha=198.003
-(info): TransitionScreen: update() called. dt=0.013375, state=2, timer=0.234198, currentAlpha=195.28
-(info): TransitionScreen: update() called. dt=0.013959, state=2, timer=0.247573, currentAlpha=191.869
-(info): TransitionScreen: update() called. dt=0.016225, state=2, timer=0.261532, currentAlpha=188.309
-(info): TransitionScreen: update() called. dt=0.011339, state=2, timer=0.277757, currentAlpha=184.172
-(info): TransitionScreen: update() called. dt=0.010269, state=2, timer=0.289096, currentAlpha=181.281
-(info): TransitionScreen: update() called. dt=0.012581, state=2, timer=0.299365, currentAlpha=178.662
-(info): TransitionScreen: update() called. dt=0.013223, state=2, timer=0.311946, currentAlpha=175.454
-(info): TransitionScreen: update() called. dt=0.012146, state=2, timer=0.325169, currentAlpha=172.082
-(info): TransitionScreen: update() called. dt=0.013579, state=2, timer=0.337315, currentAlpha=168.985
-(info): TransitionScreen: update() called. dt=0.014813, state=2, timer=0.350894, currentAlpha=165.522
-(info): TransitionScreen: update() called. dt=0.012808, state=2, timer=0.365707, currentAlpha=161.745
-(info): TransitionScreen: update() called. dt=0.014039, state=2, timer=0.378515, currentAlpha=158.479
-(info): TransitionScreen: update() called. dt=0.018016, state=2, timer=0.392554, currentAlpha=154.899
-(info): TransitionScreen: update() called. dt=0.010884, state=2, timer=0.41057, currentAlpha=150.305
-(info): TransitionScreen: update() called. dt=0.012805, state=2, timer=0.421454, currentAlpha=147.529
-(info): TransitionScreen: update() called. dt=0.011384, state=2, timer=0.434259, currentAlpha=144.264
-(info): TransitionScreen: update() called. dt=0.012694, state=2, timer=0.445643, currentAlpha=141.361
-(info): TransitionScreen: update() called. dt=0.011865, state=2, timer=0.458337, currentAlpha=138.124
-(info): TransitionScreen: update() called. dt=0.014959, state=2, timer=0.470202, currentAlpha=135.098
-(info): TransitionScreen: update() called. dt=0.015706, state=2, timer=0.485161, currentAlpha=131.284
-(info): TransitionScreen: update() called. dt=0.012629, state=2, timer=0.500867, currentAlpha=127.279
-(info): TransitionScreen: update() called. dt=0.010712, state=2, timer=0.513496, currentAlpha=124.059
-(info): TransitionScreen: update() called. dt=0.015036, state=2, timer=0.524208, currentAlpha=121.327
-(info): TransitionScreen: update() called. dt=0.010748, state=2, timer=0.539244, currentAlpha=117.493
-(info): TransitionScreen: update() called. dt=0.013298, state=2, timer=0.549992, currentAlpha=114.752
-(info): TransitionScreen: update() called. dt=0.015926, state=2, timer=0.56329, currentAlpha=111.361
-(info): TransitionScreen: update() called. dt=0.014547, state=2, timer=0.579216, currentAlpha=107.3
-(info): TransitionScreen: update() called. dt=0.013952, state=2, timer=0.593763, currentAlpha=103.59
-(info): TransitionScreen: update() called. dt=0.01013, state=2, timer=0.607715, currentAlpha=100.033
-(info): TransitionScreen: update() called. dt=0.013074, state=2, timer=0.617845, currentAlpha=97.4495
-(info): TransitionScreen: update() called. dt=0.012533, state=2, timer=0.630919, currentAlpha=94.1157
-(info): TransitionScreen: update() called. dt=0.012288, state=2, timer=0.643452, currentAlpha=90.9197
-(info): TransitionScreen: update() called. dt=0.011318, state=2, timer=0.65574, currentAlpha=87.7863
-(info): TransitionScreen: update() called. dt=0.013649, state=2, timer=0.667058, currentAlpha=84.9002
-(info): TransitionScreen: update() called. dt=0.014631, state=2, timer=0.680707, currentAlpha=81.4197
-(info): TransitionScreen: update() called. dt=0.015529, state=2, timer=0.695338, currentAlpha=77.6888
-(info): TransitionScreen: update() called. dt=0.013913, state=2, timer=0.710867, currentAlpha=73.7289
-(info): TransitionScreen: update() called. dt=0.014804, state=2, timer=0.72478, currentAlpha=70.1811
-(info): TransitionScreen: update() called. dt=0.009187, state=2, timer=0.739584, currentAlpha=66.4061
-(info): TransitionScreen: update() called. dt=0.012237, state=2, timer=0.748771, currentAlpha=64.0634
-(info): TransitionScreen: update() called. dt=0.010008, state=2, timer=0.761008, currentAlpha=60.943
-(info): TransitionScreen: update() called. dt=0.009306, state=2, timer=0.771016, currentAlpha=58.3909
-(info): TransitionScreen: update() called. dt=0.014952, state=2, timer=0.780322, currentAlpha=56.0179
-(info): TransitionScreen: update() called. dt=0.015691, state=2, timer=0.795274, currentAlpha=52.2052
-(info): TransitionScreen: update() called. dt=0.009027, state=2, timer=0.810965, currentAlpha=48.204
-(info): TransitionScreen: update() called. dt=0.010204, state=2, timer=0.819992, currentAlpha=45.9021
-(info): TransitionScreen: update() called. dt=0.014357, state=2, timer=0.830196, currentAlpha=43.3
-(info): TransitionScreen: update() called. dt=0.014857, state=2, timer=0.844553, currentAlpha=39.639
-(info): TransitionScreen: update() called. dt=0.010978, state=2, timer=0.85941, currentAlpha=35.8505
-(info): TransitionScreen: update() called. dt=0.010055, state=2, timer=0.870388, currentAlpha=33.0511
-(info): TransitionScreen: update() called. dt=0.013941, state=2, timer=0.880443, currentAlpha=30.4871
-(info): TransitionScreen: update() called. dt=0.014205, state=2, timer=0.894384, currentAlpha=26.9321
-(info): TransitionScreen: update() called. dt=0.013895, state=2, timer=0.908589, currentAlpha=23.3098
-(info): TransitionScreen: update() called. dt=0.012555, state=2, timer=0.922484, currentAlpha=19.7666
-(info): TransitionScreen: update() called. dt=0.012112, state=2, timer=0.935039, currentAlpha=16.5651
-(info): TransitionScreen: update() called. dt=0.011235, state=2, timer=0.947151, currentAlpha=13.4765
-(info): TransitionScreen: update() called. dt=0.012444, state=2, timer=0.958386, currentAlpha=10.6116
-(info): TransitionScreen: update() called. dt=0.011147, state=2, timer=0.97083, currentAlpha=7.43839
-(info): TransitionScreen: update() called. dt=0.009108, state=2, timer=0.981977, currentAlpha=4.5959
-(info): TransitionScreen: update() called. dt=0.01244, state=2, timer=0.991085, currentAlpha=2.27336
-(info): TransitionScreen: transition done, popping screen.
-(info): Reached waypoint, waiting 2s before moving to index 1
-(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
-(info): Game saved to saves/autosave.dat
-(info): Switching from detective_office to detective_office
-(info): TransitionScreen: onEnter() called. fadeDuration=1
-(info): TransitionScreen: update() called. dt=0.033003, state=0, timer=0, currentAlpha=0
-(info): TransitionScreen: update() called. dt=0.015445, state=0, timer=0.033003, currentAlpha=16.8315
-(info): TransitionScreen: update() called. dt=0.015476, state=0, timer=0.048448, currentAlpha=24.7085
-(info): TransitionScreen: update() called. dt=0.014831, state=0, timer=0.063924, currentAlpha=32.6012
-(info): TransitionScreen: update() called. dt=0.014035, state=0, timer=0.078755, currentAlpha=40.1651
-(info): TransitionScreen: update() called. dt=0.017223, state=0, timer=0.09279, currentAlpha=47.3229
-(info): TransitionScreen: update() called. dt=0.019283, state=0, timer=0.110013, currentAlpha=56.1066
-(info): TransitionScreen: update() called. dt=0.014459, state=0, timer=0.129296, currentAlpha=65.941
-(info): TransitionScreen: update() called. dt=0.015935, state=0, timer=0.143755, currentAlpha=73.315
-(info): TransitionScreen: update() called. dt=0.015447, state=0, timer=0.15969, currentAlpha=81.4419
-(info): TransitionScreen: update() called. dt=0.010125, state=0, timer=0.175137, currentAlpha=89.3199
-(info): TransitionScreen: update() called. dt=0.013432, state=0, timer=0.185262, currentAlpha=94.4836
-(info): TransitionScreen: update() called. dt=0.016459, state=0, timer=0.198694, currentAlpha=101.334
-(info): TransitionScreen: update() called. dt=0.017473, state=0, timer=0.215153, currentAlpha=109.728
-(info): TransitionScreen: update() called. dt=0.012785, state=0, timer=0.232626, currentAlpha=118.639
-(info): TransitionScreen: update() called. dt=0.011176, state=0, timer=0.245411, currentAlpha=125.16
-(info): TransitionScreen: update() called. dt=0.015771, state=0, timer=0.256587, currentAlpha=130.859
-(info): TransitionScreen: update() called. dt=0.012605, state=0, timer=0.272358, currentAlpha=138.903
-(info): TransitionScreen: update() called. dt=0.016354, state=0, timer=0.284963, currentAlpha=145.331
-(info): TransitionScreen: update() called. dt=0.017761, state=0, timer=0.301317, currentAlpha=153.672
-(info): TransitionScreen: update() called. dt=0.016156, state=0, timer=0.319078, currentAlpha=162.73
-(info): TransitionScreen: update() called. dt=0.011219, state=0, timer=0.335234, currentAlpha=170.969
-(info): TransitionScreen: update() called. dt=0.013323, state=0, timer=0.346453, currentAlpha=176.691
-(info): TransitionScreen: update() called. dt=0.015989, state=0, timer=0.359776, currentAlpha=183.486
-(info): TransitionScreen: update() called. dt=0.016242, state=0, timer=0.375765, currentAlpha=191.64
-(info): TransitionScreen: update() called. dt=0.014772, state=0, timer=0.392007, currentAlpha=199.924
-(info): TransitionScreen: update() called. dt=0.011174, state=0, timer=0.406779, currentAlpha=207.457
-(info): TransitionScreen: update() called. dt=0.01154, state=0, timer=0.417953, currentAlpha=213.156
-(info): TransitionScreen: update() called. dt=0.014643, state=0, timer=0.429493, currentAlpha=219.041
-(info): TransitionScreen: update() called. dt=0.017505, state=0, timer=0.444136, currentAlpha=226.509
-(info): TransitionScreen: update() called. dt=0.013337, state=0, timer=0.461641, currentAlpha=235.437
-(info): TransitionScreen: update() called. dt=0.009893, state=0, timer=0.474978, currentAlpha=242.239
-(info): TransitionScreen: update() called. dt=0.012976, state=0, timer=0.484871, currentAlpha=247.284
-(info): TransitionScreen: update() called. dt=0.013818, state=0, timer=0.497847, currentAlpha=253.902
-(info): TransitionScreen: action called for map switch to detective_office
-(info): Loading map: detective_office
-(info): Loaded 63 objects from assets/maps/detective_office\objects.txt
-(info): Loaded player spawn position from file: (460.553, 479.784)
-(info): Loaded 2 spawns from assets/maps/detective_office\spawns.txt
-(info): Loaded 5 transitions.
-(info) <MapManager::spawnNPCs>: Spawning NPCs for map: detective_office
-(info) <NPCManager::createNPC>: Setting waypoints for NPC generic_guard_0
-(info) <NPCManager::spawnAllNPCs>: Finished spawning all NPCs.
-(info): Player placed at custom spawn (532.7, 64)
-(info): Game saved to saves/autosave.dat
-(info): continueTransition() called after map switch.
-(info): TransitionScreen: continueTransition() called.
-(info): TransitionScreen: state=2, timer=0
-(info): TransitionScreen: update() called. dt=0.077476, state=2, timer=0, currentAlpha=255
-(info): TransitionScreen: update() called. dt=0.014797, state=2, timer=0.077476, currentAlpha=215.487
-(info): TransitionScreen: update() called. dt=0.016206, state=2, timer=0.092273, currentAlpha=207.941
-(info): TransitionScreen: update() called. dt=0.018155, state=2, timer=0.108479, currentAlpha=199.676
-(info): TransitionScreen: update() called. dt=0.015894, state=2, timer=0.126634, currentAlpha=190.417
-(info): TransitionScreen: update() called. dt=0.01382, state=2, timer=0.142528, currentAlpha=182.311
-(info): TransitionScreen: update() called. dt=0.010955, state=2, timer=0.156348, currentAlpha=175.263
-(info): TransitionScreen: update() called. dt=0.015573, state=2, timer=0.167303, currentAlpha=169.675
-(info): TransitionScreen: update() called. dt=0.008356, state=2, timer=0.182876, currentAlpha=161.733
-(info): TransitionScreen: update() called. dt=0.011065, state=2, timer=0.191232, currentAlpha=157.472
-(info): TransitionScreen: update() called. dt=0.016424, state=2, timer=0.202297, currentAlpha=151.829
-(info): TransitionScreen: update() called. dt=0.016309, state=2, timer=0.218721, currentAlpha=143.452
-(info): TransitionScreen: update() called. dt=0.012918, state=2, timer=0.23503, currentAlpha=135.135
-(info): TransitionScreen: update() called. dt=0.015166, state=2, timer=0.247948, currentAlpha=128.547
-(info): TransitionScreen: update() called. dt=0.01536, state=2, timer=0.263114, currentAlpha=120.812
-(info): TransitionScreen: update() called. dt=0.012716, state=2, timer=0.278474, currentAlpha=112.978
-(info): TransitionScreen: update() called. dt=0.017108, state=2, timer=0.29119, currentAlpha=106.493
-(info): TransitionScreen: update() called. dt=0.010757, state=2, timer=0.308298, currentAlpha=97.768
-(info): TransitionScreen: update() called. dt=0.017189, state=2, timer=0.319055, currentAlpha=92.282
-(info): TransitionScreen: update() called. dt=0.014874, state=2, timer=0.336244, currentAlpha=83.5156
-(info): TransitionScreen: update() called. dt=0.013757, state=2, timer=0.351118, currentAlpha=75.9298
-(info): TransitionScreen: update() called. dt=0.013905, state=2, timer=0.364875, currentAlpha=68.9138
-(info): TransitionScreen: update() called. dt=0.01496, state=2, timer=0.37878, currentAlpha=61.8222
-(info): TransitionScreen: update() called. dt=0.015178, state=2, timer=0.39374, currentAlpha=54.1926
-(info): TransitionScreen: update() called. dt=0.016592, state=2, timer=0.408918, currentAlpha=46.4518
-(info): TransitionScreen: update() called. dt=0.012577, state=2, timer=0.42551, currentAlpha=37.9899
-(info): TransitionScreen: update() called. dt=0.011636, state=2, timer=0.438087, currentAlpha=31.5757
-(info): TransitionScreen: update() called. dt=0.016738, state=2, timer=0.449723, currentAlpha=25.6413
-(info): TransitionScreen: update() called. dt=0.014991, state=2, timer=0.466461, currentAlpha=17.1049
-(info): TransitionScreen: update() called. dt=0.011347, state=2, timer=0.481452, currentAlpha=9.45952
-(info): TransitionScreen: update() called. dt=0.014338, state=2, timer=0.492799, currentAlpha=3.67255
-(info): TransitionScreen: transition done, popping screen.
-(info): PauseMenu: Save selected (not implemented).
-(info): Reached waypoint, waiting 2s before moving to index 1
-(info): Resuming patrol to waypoint 1 at (594.823, 565.867)
-(info): OptionsMenu entered.
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=240, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=240, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=240, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=240, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=240, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=240, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=240, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=240, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=240, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=240, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=240, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=61%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=61%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=57%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=47%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=26%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=15%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=7%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=6%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=19%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=54%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=73%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=89%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=93%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=96%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=97%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=98%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=89%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=76%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=51%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=35%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=26%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=25%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=24%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=26%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=46%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=87%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=Off, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=Off, SFX=Off
-(info): Options applied: Volume=100%, FPS=120, Music=Off, SFX=On
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): OptionsMenu exited.
-(info): Options applied: Volume=100%, FPS=120, Music=On, SFX=On
-(info): Resetting game state.
-(info): Loading map: detective_office
-(info): Loaded 63 objects from assets/maps/detective_office\objects.txt
-(info): Loaded player spawn position from file: (460.553, 479.784)
-(info): Loaded 2 spawns from assets/maps/detective_office\spawns.txt
-(info): Loaded 5 transitions.
-(info): OptionsMenu entered.
-(info): OptionsMenu exited.
-(info): Options applied: Volume=100%, FPS=60, Music=On, SFX=On
-(info): TransitionScreen: pushing screen with fadeDuration=2
-(info): TransitionScreen: onEnter() called. fadeDuration=2
-(info): TransitionScreen: update() called. dt=0.010748, state=0, timer=0, currentAlpha=0
-(info): TransitionScreen: update() called. dt=0.01252, state=0, timer=0.010748, currentAlpha=2.74074
-(info): TransitionScreen: update() called. dt=0.013369, state=0, timer=0.023268, currentAlpha=5.93334
-(info): TransitionScreen: update() called. dt=0.015563, state=0, timer=0.036637, currentAlpha=9.34243
-(info): TransitionScreen: update() called. dt=0.013643, state=0, timer=0.0522, currentAlpha=13.311
-(info): TransitionScreen: update() called. dt=0.009883, state=0, timer=0.065843, currentAlpha=16.79
-(info): TransitionScreen: update() called. dt=0.011864, state=0, timer=0.075726, currentAlpha=19.3101
-(info): TransitionScreen: update() called. dt=0.013265, state=0, timer=0.08759, currentAlpha=22.3355
-(info): TransitionScreen: update() called. dt=0.01566, state=0, timer=0.100855, currentAlpha=25.718
-(info): TransitionScreen: update() called. dt=0.015249, state=0, timer=0.116515, currentAlpha=29.7113
-(info): TransitionScreen: update() called. dt=0.012632, state=0, timer=0.131764, currentAlpha=33.5998
-(info): TransitionScreen: update() called. dt=0.009708, state=0, timer=0.144396, currentAlpha=36.821
-(info): TransitionScreen: update() called. dt=0.015254, state=0, timer=0.154104, currentAlpha=39.2965
-(info): TransitionScreen: update() called. dt=0.015246, state=0, timer=0.169358, currentAlpha=43.1863
-(info): TransitionScreen: update() called. dt=0.014391, state=0, timer=0.184604, currentAlpha=47.074
-(info): TransitionScreen: update() called. dt=0.00898, state=0, timer=0.198995, currentAlpha=50.7437
-(info): TransitionScreen: update() called. dt=0.010409, state=0, timer=0.207975, currentAlpha=53.0336
-(info): TransitionScreen: update() called. dt=0.014878, state=0, timer=0.218384, currentAlpha=55.6879
-(info): TransitionScreen: update() called. dt=0.012235, state=0, timer=0.233262, currentAlpha=59.4818
-(info): TransitionScreen: update() called. dt=0.014091, state=0, timer=0.245497, currentAlpha=62.6017
-(info): TransitionScreen: update() called. dt=0.011858, state=0, timer=0.259588, currentAlpha=66.1949
-(info): TransitionScreen: update() called. dt=0.014071, state=0, timer=0.271446, currentAlpha=69.2187
-(info): TransitionScreen: update() called. dt=0.006874, state=0, timer=0.285517, currentAlpha=72.8068
-(info): TransitionScreen: update() called. dt=0.014628, state=0, timer=0.292391, currentAlpha=74.5597
-(info): TransitionScreen: update() called. dt=0.012817, state=0, timer=0.307019, currentAlpha=78.2898
-(info): TransitionScreen: update() called. dt=0.011192, state=0, timer=0.319836, currentAlpha=81.5582
-(info): TransitionScreen: update() called. dt=0.009726, state=0, timer=0.331028, currentAlpha=84.4121
-(info): TransitionScreen: update() called. dt=0.012279, state=0, timer=0.340754, currentAlpha=86.8923
-(info): TransitionScreen: update() called. dt=0.012957, state=0, timer=0.353033, currentAlpha=90.0234
-(info): TransitionScreen: update() called. dt=0.014554, state=0, timer=0.36599, currentAlpha=93.3274
-(info): TransitionScreen: update() called. dt=0.011393, state=0, timer=0.380544, currentAlpha=97.0387
-(info): TransitionScreen: update() called. dt=0.013862, state=0, timer=0.391937, currentAlpha=99.9439
-(info): TransitionScreen: update() called. dt=0.01014, state=0, timer=0.405799, currentAlpha=103.479
-(info): TransitionScreen: update() called. dt=0.013298, state=0, timer=0.415939, currentAlpha=106.064
-(info): TransitionScreen: update() called. dt=0.010369, state=0, timer=0.429237, currentAlpha=109.455
-(info): TransitionScreen: update() called. dt=0.014211, state=0, timer=0.439606, currentAlpha=112.1
-(info): TransitionScreen: update() called. dt=0.011362, state=0, timer=0.453817, currentAlpha=115.723
-(info): TransitionScreen: update() called. dt=0.012621, state=0, timer=0.465179, currentAlpha=118.621
-(info): TransitionScreen: update() called. dt=0.013265, state=0, timer=0.4778, currentAlpha=121.839
-(info): TransitionScreen: update() called. dt=0.015143, state=0, timer=0.491065, currentAlpha=125.222
-(info): TransitionScreen: update() called. dt=0.011141, state=0, timer=0.506208, currentAlpha=129.083
-(info): TransitionScreen: update() called. dt=0.00671, state=0, timer=0.517349, currentAlpha=131.924
-(info): TransitionScreen: update() called. dt=0.006635, state=0, timer=0.524059, currentAlpha=133.635
-(info): TransitionScreen: update() called. dt=0.015759, state=0, timer=0.530694, currentAlpha=135.327
-(info): TransitionScreen: update() called. dt=0.016006, state=0, timer=0.546453, currentAlpha=139.346
-(info): TransitionScreen: update() called. dt=0.008709, state=0, timer=0.562459, currentAlpha=143.427
-(info): TransitionScreen: update() called. dt=0.009952, state=0, timer=0.571168, currentAlpha=145.648
-(info): TransitionScreen: update() called. dt=0.01356, state=0, timer=0.58112, currentAlpha=148.186
-(info): TransitionScreen: update() called. dt=0.015816, state=0, timer=0.59468, currentAlpha=151.643
-(info): TransitionScreen: update() called. dt=0.010795, state=0, timer=0.610496, currentAlpha=155.676
-(info): TransitionScreen: update() called. dt=0.010141, state=0, timer=0.621291, currentAlpha=158.429
-(info): TransitionScreen: update() called. dt=0.014915, state=0, timer=0.631432, currentAlpha=161.015
-(info): TransitionScreen: update() called. dt=0.01505, state=0, timer=0.646347, currentAlpha=164.818
-(info): TransitionScreen: update() called. dt=0.008247, state=0, timer=0.661397, currentAlpha=168.656
-(info): TransitionScreen: update() called. dt=0.009925, state=0, timer=0.669644, currentAlpha=170.759
-(info): TransitionScreen: update() called. dt=0.014213, state=0, timer=0.679569, currentAlpha=173.29
-(info): TransitionScreen: update() called. dt=0.016069, state=0, timer=0.693782, currentAlpha=176.914
-(info): TransitionScreen: update() called. dt=0.011753, state=0, timer=0.709851, currentAlpha=181.012
-(info): TransitionScreen: update() called. dt=0.014175, state=0, timer=0.721604, currentAlpha=184.009
-(info): TransitionScreen: update() called. dt=0.0087, state=0, timer=0.735779, currentAlpha=187.624
-(info): TransitionScreen: update() called. dt=0.013781, state=0, timer=0.744479, currentAlpha=189.842
-(info): TransitionScreen: update() called. dt=0.013021, state=0, timer=0.75826, currentAlpha=193.356
-(info): TransitionScreen: update() called. dt=0.013904, state=0, timer=0.771281, currentAlpha=196.677
-(info): TransitionScreen: update() called. dt=0.010729, state=0, timer=0.785185, currentAlpha=200.222
-(info): TransitionScreen: update() called. dt=0.012757, state=0, timer=0.795914, currentAlpha=202.958
-(info): TransitionScreen: update() called. dt=0.013074, state=0, timer=0.808671, currentAlpha=206.211
-(info): TransitionScreen: update() called. dt=0.010993, state=0, timer=0.821745, currentAlpha=209.545
-(info): TransitionScreen: update() called. dt=0.010964, state=0, timer=0.832738, currentAlpha=212.348
-(info): TransitionScreen: update() called. dt=0.00944, state=0, timer=0.843702, currentAlpha=215.144
-(info): TransitionScreen: update() called. dt=0.014329, state=0, timer=0.853142, currentAlpha=217.551
-(info): TransitionScreen: update() called. dt=0.015214, state=0, timer=0.867471, currentAlpha=221.205
-(info): TransitionScreen: update() called. dt=0.011919, state=0, timer=0.882685, currentAlpha=225.085
-(info): TransitionScreen: update() called. dt=0.0131, state=0, timer=0.894604, currentAlpha=228.124
-(info): TransitionScreen: update() called. dt=0.009167, state=0, timer=0.907704, currentAlpha=231.465
-(info): TransitionScreen: update() called. dt=0.012214, state=0, timer=0.916871, currentAlpha=233.802
-(info): TransitionScreen: update() called. dt=0.010486, state=0, timer=0.929085, currentAlpha=236.917
-(info): TransitionScreen: update() called. dt=0.01399, state=0, timer=0.939571, currentAlpha=239.591
-(info): TransitionScreen: update() called. dt=0.009318, state=0, timer=0.953561, currentAlpha=243.158
-(info): TransitionScreen: update() called. dt=0.013211, state=0, timer=0.962879, currentAlpha=245.534
-(info): TransitionScreen: update() called. dt=0.010126, state=0, timer=0.97609, currentAlpha=248.903
-(info): TransitionScreen: update() called. dt=0.014033, state=0, timer=0.986216, currentAlpha=251.485
-(info): TransitionScreen: endWithFade wrapper called.
-(info) <MapManager::spawnNPCs>: Spawning NPCs for map: detective_office
-(info) <NPCManager::createNPC>: Setting waypoints for NPC generic_guard_0
-(info) <NPCManager::spawnAllNPCs>: Finished spawning all NPCs.
-(info): Loading map: detective_office
-(info): Loaded 63 objects from assets/maps/detective_office\objects.txt
-(info): Loaded player spawn position from file: (460.553, 479.784)
-(info): Loaded 2 spawns from assets/maps/detective_office\spawns.txt
-(info): Loaded 5 transitions.
-(info) <MapManager::spawnNPCs>: Spawning NPCs for map: detective_office
-(info) <NPCManager::createNPC>: Setting waypoints for NPC generic_guard_0
-(info) <NPCManager::spawnAllNPCs>: Finished spawning all NPCs.
-(info): Game loaded from save.
-(info): Game started, NPCs spawned.
-(info): TransitionScreen: continueTransition() called.
-(info): TransitionScreen: state=2, timer=0
-(info): TransitionScreen: endWithFade wrapper finished.
-(info): TransitionScreen: update() called. dt=0.024159, state=2, timer=0, currentAlpha=255
-(info): TransitionScreen: update() called. dt=0.01361, state=2, timer=0.024159, currentAlpha=248.839
-(info): TransitionScreen: update() called. dt=0.009245, state=2, timer=0.037769, currentAlpha=245.369
-(info): TransitionScreen: update() called. dt=0.011935, state=2, timer=0.047014, currentAlpha=243.011
-(info): TransitionScreen: update() called. dt=0.009571, state=2, timer=0.058949, currentAlpha=239.968
-(info): TransitionScreen: update() called. dt=0.009691, state=2, timer=0.06852, currentAlpha=237.527
-(info): TransitionScreen: update() called. dt=0.014774, state=2, timer=0.078211, currentAlpha=235.056
-(info): TransitionScreen: update() called. dt=0.012693, state=2, timer=0.092985, currentAlpha=231.289
-(info): TransitionScreen: update() called. dt=0.010518, state=2, timer=0.105678, currentAlpha=228.052
-(info): TransitionScreen: update() called. dt=0.013636, state=2, timer=0.116196, currentAlpha=225.37
-(info): TransitionScreen: update() called. dt=0.014646, state=2, timer=0.129832, currentAlpha=221.893
-(info): TransitionScreen: update() called. dt=0.008461, state=2, timer=0.144478, currentAlpha=218.158
-(info): TransitionScreen: update() called. dt=0.014836, state=2, timer=0.152939, currentAlpha=216.001
-(info): TransitionScreen: update() called. dt=0.015797, state=2, timer=0.167775, currentAlpha=212.217
-(info): TransitionScreen: update() called. dt=0.013818, state=2, timer=0.183572, currentAlpha=208.189
-(info): TransitionScreen: update() called. dt=0.011959, state=2, timer=0.19739, currentAlpha=204.666
-(info): TransitionScreen: update() called. dt=0.013563, state=2, timer=0.209349, currentAlpha=201.616
-(info): TransitionScreen: update() called. dt=0.013572, state=2, timer=0.222912, currentAlpha=198.157
-(info): TransitionScreen: update() called. dt=0.01352, state=2, timer=0.236484, currentAlpha=194.697
-(info): TransitionScreen: update() called. dt=0.009575, state=2, timer=0.250004, currentAlpha=191.249
-(info): TransitionScreen: update() called. dt=0.010465, state=2, timer=0.259579, currentAlpha=188.807
-(info): TransitionScreen: update() called. dt=0.012776, state=2, timer=0.270044, currentAlpha=186.139
-(info): TransitionScreen: update() called. dt=0.007082, state=2, timer=0.28282, currentAlpha=182.881
-(info): TransitionScreen: update() called. dt=0.00791, state=2, timer=0.289902, currentAlpha=181.075
-(info): TransitionScreen: update() called. dt=0.016782, state=2, timer=0.297812, currentAlpha=179.058
-(info): TransitionScreen: update() called. dt=0.01558, state=2, timer=0.314594, currentAlpha=174.779
-(info): TransitionScreen: update() called. dt=0.010567, state=2, timer=0.330174, currentAlpha=170.806
-(info): TransitionScreen: update() called. dt=0.01167, state=2, timer=0.340741, currentAlpha=168.111
-(info): TransitionScreen: update() called. dt=0.01431, state=2, timer=0.352411, currentAlpha=165.135
-(info): TransitionScreen: update() called. dt=0.011404, state=2, timer=0.366721, currentAlpha=161.486
-(info): TransitionScreen: update() called. dt=0.010504, state=2, timer=0.378125, currentAlpha=158.578
-(info): TransitionScreen: update() called. dt=0.010534, state=2, timer=0.388629, currentAlpha=155.9
-(info): TransitionScreen: update() called. dt=0.013906, state=2, timer=0.399163, currentAlpha=153.213
-(info): TransitionScreen: update() called. dt=0.012719, state=2, timer=0.413069, currentAlpha=149.667
-(info): TransitionScreen: update() called. dt=0.013267, state=2, timer=0.425788, currentAlpha=146.424
-(info): TransitionScreen: update() called. dt=0.01723, state=2, timer=0.439055, currentAlpha=143.041
-(info): TransitionScreen: update() called. dt=0.013351, state=2, timer=0.456285, currentAlpha=138.647
-(info): TransitionScreen: update() called. dt=0.013305, state=2, timer=0.469636, currentAlpha=135.243
-(info): TransitionScreen: update() called. dt=0.013818, state=2, timer=0.482941, currentAlpha=131.85
-(info): TransitionScreen: update() called. dt=0.012034, state=2, timer=0.496759, currentAlpha=128.326
-(info): TransitionScreen: update() called. dt=0.013609, state=2, timer=0.508793, currentAlpha=125.258
-(info): TransitionScreen: update() called. dt=0.014049, state=2, timer=0.522402, currentAlpha=121.787
-(info): TransitionScreen: update() called. dt=0.013392, state=2, timer=0.536451, currentAlpha=118.205
-(info): TransitionScreen: update() called. dt=0.014052, state=2, timer=0.549843, currentAlpha=114.79
-(info): TransitionScreen: update() called. dt=0.008514, state=2, timer=0.563895, currentAlpha=111.207
-(info): TransitionScreen: update() called. dt=0.009298, state=2, timer=0.572409, currentAlpha=109.036
-(info): TransitionScreen: update() called. dt=0.01278, state=2, timer=0.581707, currentAlpha=106.665
-(info): TransitionScreen: update() called. dt=0.011872, state=2, timer=0.594487, currentAlpha=103.406
-(info): TransitionScreen: update() called. dt=0.013117, state=2, timer=0.606359, currentAlpha=100.378
-(info): TransitionScreen: update() called. dt=0.016903, state=2, timer=0.619476, currentAlpha=97.0336
-(info): TransitionScreen: update() called. dt=0.0121, state=2, timer=0.636379, currentAlpha=92.7234
-(info): TransitionScreen: update() called. dt=0.014923, state=2, timer=0.648479, currentAlpha=89.6379
-(info): TransitionScreen: update() called. dt=0.013552, state=2, timer=0.663402, currentAlpha=85.8325
-(info): TransitionScreen: update() called. dt=0.008183, state=2, timer=0.676954, currentAlpha=82.3768
-(info): TransitionScreen: update() called. dt=0.009987, state=2, timer=0.685137, currentAlpha=80.2901
-(info): TransitionScreen: update() called. dt=0.01372, state=2, timer=0.695124, currentAlpha=77.7434
-(info): TransitionScreen: update() called. dt=0.010426, state=2, timer=0.708844, currentAlpha=74.2448
-(info): TransitionScreen: update() called. dt=0.013553, state=2, timer=0.71927, currentAlpha=71.5862
-(info): TransitionScreen: update() called. dt=0.013759, state=2, timer=0.732823, currentAlpha=68.1302
-(info): TransitionScreen: update() called. dt=0.013685, state=2, timer=0.746582, currentAlpha=64.6216
-(info): TransitionScreen: update() called. dt=0.013718, state=2, timer=0.760267, currentAlpha=61.1319
-(info): TransitionScreen: update() called. dt=0.014158, state=2, timer=0.773985, currentAlpha=57.6339
-(info): TransitionScreen: update() called. dt=0.01334, state=2, timer=0.788143, currentAlpha=54.0236
-(info): TransitionScreen: update() called. dt=0.011966, state=2, timer=0.801483, currentAlpha=50.6219
-(info): TransitionScreen: update() called. dt=0.007435, state=2, timer=0.813449, currentAlpha=47.5705
-(info): TransitionScreen: update() called. dt=0.012901, state=2, timer=0.820884, currentAlpha=45.6746
-(info): TransitionScreen: update() called. dt=0.014975, state=2, timer=0.833785, currentAlpha=42.3848
-(info): TransitionScreen: update() called. dt=0.012913, state=2, timer=0.84876, currentAlpha=38.5662
-(info): TransitionScreen: update() called. dt=0.010066, state=2, timer=0.861673, currentAlpha=35.2734
-(info): TransitionScreen: update() called. dt=0.015048, state=2, timer=0.871739, currentAlpha=32.7066
-(info): TransitionScreen: update() called. dt=0.017178, state=2, timer=0.886787, currentAlpha=28.8693
-(info): TransitionScreen: update() called. dt=0.012904, state=2, timer=0.903965, currentAlpha=24.4889
-(info): TransitionScreen: update() called. dt=0.008822, state=2, timer=0.916869, currentAlpha=21.1984
-(info): TransitionScreen: update() called. dt=0.01305, state=2, timer=0.925691, currentAlpha=18.9488
-(info): TransitionScreen: update() called. dt=0.009535, state=2, timer=0.938741, currentAlpha=15.6211
-(info): TransitionScreen: update() called. dt=0.013506, state=2, timer=0.948276, currentAlpha=13.1896
-(info): TransitionScreen: update() called. dt=0.015529, state=2, timer=0.961782, currentAlpha=9.7456
-(info): TransitionScreen: update() called. dt=0.014197, state=2, timer=0.977311, currentAlpha=5.78571
-(info): TransitionScreen: update() called. dt=0.013621, state=2, timer=0.991508, currentAlpha=2.16547
-(info): TransitionScreen: transition done, popping screen.
-(info): PauseMenu: Starting new game.
-(info): PauseMenu: Starting new game.
-(info): Reached waypoint, waiting 2s before moving to index 1
-(info): PauseMenu: Starting new game.
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+Failed to load image
+    Provided path: assets/ui/parchment.png
+    Absolute path: E:\home\main\projects\replay\assets\ui\parchment.png
+Reason: No such file or directory
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): Checking if clue is inspectable: org_secret_recording1 - Anamoly - Voice recording #1
+(info): Result: 1
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: false
+(info): EventConsumed: true
+(info): EventConsumed: false
 (info): PauseMenu: Quit selected.
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
+(info): EventConsumed: true
 (info): Game: Quitting game (confirmed).
+(info): Writing autosave...
 (info): Game saved to saves/autosave.dat
+(info): EventConsumed: true

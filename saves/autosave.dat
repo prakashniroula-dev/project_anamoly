@@ -1,13 +1,33 @@
-map=detective_office
-playerX=474.796
-playerY=72
+map=organization
+playerX=66.613
+playerY=456
 playerChar=fighter_detective
 #flags
-guardCutsceneDone=1
-met_guard=1
+disable_movement=0
+intro=1
+case0=1
+case0_2=1
+first_phase_end=1
+first_clue=1
+flash=1
 #items
+outsideKey=1
 #choices
 choice1
+choice1
 #npcs
-generic_guard_0 0 0
+null2 0 0
+null 0 0
+player 0 0
+#clues
+clue_002
+photos_001
+photos_002
+incident_314
+incident_216
+clue_001
+first_phase_end
+outsideKey
+org_secret_recording1
+#endclues
 #end

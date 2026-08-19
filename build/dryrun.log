@@ -1,8 +1,14 @@
 make.exe --dry-run --always-make --keep-going --print-directory
 make: Entering directory 'e:/home/main/projects/replay'
  
+mkdir -p obj/clue/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/clue/clue_definitions.cpp -o obj/clue/clue_definitions.o
+ 
+mkdir -p obj/clue/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/clue/clue_manager.cpp -o obj/clue/clue_manager.o
 mkdir -p obj/core/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/core/scale.cpp -o obj/core/scale.o
+ 
 mkdir -p obj/editor/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/editor/level_editor.cpp -o obj/editor/level_editor.o
 mkdir -p obj/editor/
@@ -23,15 +29,22 @@ g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/entities/character.cpp
 mkdir -p obj/entities/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/entities/npc.cpp -o obj/entities/npc.o
 mkdir -p obj/entities/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/entities/npc_definitions.cpp -o obj/entities/npc_definitions.o
+mkdir -p obj/entities/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/entities/npc_manager.cpp -o obj/entities/npc_manager.o
 mkdir -p obj/entities/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/entities/player.cpp -o obj/entities/player.o
 mkdir -p obj/game/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/game/fps_display.cpp -o obj/game/fps_display.o
+ 
 mkdir -p obj/game/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/game/game.cpp -o obj/game/game.o
 mkdir -p obj/game/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/game/infobox.cpp -o obj/game/infobox.o
+mkdir -p obj/game/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/game/interaction_manager.cpp -o obj/game/interaction_manager.o
+mkdir -p obj/game/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/game/save_game.cpp -o obj/game/save_game.o
 mkdir -p obj/graphics/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/graphics/animation.cpp -o obj/graphics/animation.o
 mkdir -p obj/graphics/
@@ -45,22 +58,48 @@ g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/graphics/tiles.cpp -o 
 mkdir -p obj/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/main.cpp -o obj/main.o
 mkdir -p obj/map/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/map/map_data.cpp -o obj/map/map_data.o
+mkdir -p obj/map/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/map/map_manager.cpp -o obj/map/map_manager.o
 mkdir -p obj/map/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/map/objects.cpp -o obj/map/objects.o
 mkdir -p obj/map/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/map/terrain.cpp -o obj/map/terrain.o
+mkdir -p obj/sound/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/sound/sound_manager.cpp -o obj/sound/sound_manager.o
+mkdir -p obj/story/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/story/script_definitions.cpp -o obj/story/script_definitions.o
 mkdir -p obj/story/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/story/script_registry.cpp -o obj/story/script_registry.o
+mkdir -p obj/story/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/story/story_manager.cpp -o obj/story/story_manager.o
+mkdir -p obj/ui/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/clue_screen.cpp -o obj/ui/clue_screen.o
+mkdir -p obj/ui/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/death_screen.cpp -o obj/ui/death_screen.o
 mkdir -p obj/ui/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/dialog_screen.cpp -o obj/ui/dialog_screen.o
 mkdir -p obj/ui/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/flash_screen.cpp -o obj/ui/flash_screen.o
+mkdir -p obj/ui/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/loading_screen.cpp -o obj/ui/loading_screen.o
+mkdir -p obj/ui/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/main_menu.cpp -o obj/ui/main_menu.o
+mkdir -p obj/ui/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/message_screen.cpp -o obj/ui/message_screen.o
+mkdir -p obj/ui/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/notification.cpp -o obj/ui/notification.o
+mkdir -p obj/ui/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/options_menu.cpp -o obj/ui/options_menu.o
+mkdir -p obj/ui/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/pause_menu.cpp -o obj/ui/pause_menu.o
+mkdir -p obj/ui/
+g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/save_load_screen.cpp -o obj/ui/save_load_screen.o
 mkdir -p obj/ui/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/transition_screen.cpp -o obj/ui/transition_screen.o
 mkdir -p obj/ui/
 g++ -std=c++17 -Wall -MMD -MP -ISFML/include -Isrc -c src/ui/ui_manager.cpp -o obj/ui/ui_manager.o
 mkdir -p bin
-g++ obj/core/scale.o obj/editor/level_editor.o obj/editor/object_editor.o obj/editor/palette.o obj/editor/solid_editor.o obj/editor/spawn_editor.o obj/editor/tile_editor.o obj/editor/waypoint_editor.o obj/entities/character.o obj/entities/npc.o obj/entities/npc_manager.o obj/entities/player.o obj/game/fps_display.o obj/game/game.o obj/game/infobox.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/overlay.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o obj/map/map_manager.o obj/map/objects.o obj/map/terrain.o obj/story/script_registry.o obj/ui/dialog_screen.o obj/ui/main_menu.o obj/ui/transition_screen.o obj/ui/ui_manager.o -o bin/myapp -LSFML/lib -lsfml-graphics -lsfml-window -lsfml-system
+g++ obj/clue/clue_definitions.o obj/clue/clue_manager.o obj/core/scale.o obj/editor/level_editor.o obj/editor/object_editor.o obj/editor/palette.o obj/editor/solid_editor.o obj/editor/spawn_editor.o obj/editor/tile_editor.o obj/editor/waypoint_editor.o obj/entities/character.o obj/entities/npc.o obj/entities/npc_definitions.o obj/entities/npc_manager.o obj/entities/player.o obj/game/fps_display.o obj/game/game.o obj/game/infobox.o obj/game/interaction_manager.o obj/game/save_game.o obj/graphics/animation.o obj/graphics/background.o obj/graphics/overlay.o obj/graphics/textures.o obj/graphics/tiles.o obj/main.o obj/map/map_data.o obj/map/map_manager.o obj/map/objects.o obj/map/terrain.o obj/sound/sound_manager.o obj/story/script_definitions.o obj/story/script_registry.o obj/story/story_manager.o obj/ui/clue_screen.o obj/ui/death_screen.o obj/ui/dialog_screen.o obj/ui/flash_screen.o obj/ui/loading_screen.o obj/ui/main_menu.o obj/ui/message_screen.o obj/ui/notification.o obj/ui/options_menu.o obj/ui/pause_menu.o obj/ui/save_load_screen.o obj/ui/transition_screen.o obj/ui/ui_manager.o -o bin/myapp -LSFML/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 make: Leaving directory 'e:/home/main/projects/replay'
  

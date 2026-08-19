@@ -21,7 +21,7 @@ enum class ActionType {
     LockPlayer,
     UnlockPlayer,
     PlayAnimation,
-    ShowDialogue,
+    ShowDialog,
     SwapPlayer,
     FacePlayer,
     CallFunction,
@@ -86,8 +86,8 @@ namespace Action {
         return a;
     }
     
-    inline Action ShowDialogue(const std::string& dialogueId, bool allowEscape = true) {
-        Action a(ActionType::ShowDialogue);
+    inline Action ShowDialog(const std::string& dialogueId, bool allowEscape = true) {
+        Action a(ActionType::ShowDialog);
         a.param = dialogueId;
         a.param2 = allowEscape;
         return a;

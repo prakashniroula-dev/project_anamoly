@@ -1,0 +1,3 @@
+bunker_cutscene 457.1 96.3 50 bunker_cutscene
+other_photos 93.2 480.1 other_photos
+memory_flood 2019.3 481 50 memory_flood

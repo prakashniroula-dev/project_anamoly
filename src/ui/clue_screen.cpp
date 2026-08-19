@@ -123,11 +123,11 @@ ClueScreen::ClueScreen(const std::string& initialClueId)
     m_downButton = m_upButton;
 
     m_upArrow.setFont(m_font);
-    m_upArrow.setString("▲");
+    m_upArrow.setString("Up");
     m_upArrow.setCharacterSize(20);
     m_upArrow.setFillColor(sf::Color(80, 50, 30));
     m_downArrow.setFont(m_font);
-    m_downArrow.setString("▼");
+    m_downArrow.setString("Down");
     m_downArrow.setCharacterSize(20);
     m_downArrow.setFillColor(sf::Color(80, 50, 30));
 

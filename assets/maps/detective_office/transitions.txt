@@ -1,5 +1,5 @@
-116.8 477.9 self Ladder 147.2 256.8 _ _ _
-565.3 255.7 self Ladder 532.7 64 _ _ _
-147.2 256.8 self Ladder 116.8 477.9 _ _ _
-532.7 64 self Ladder 565.3 255.7 _ _ _
-66.5 63.9 outside Door 36.7 63.9 hasItem(outsideKey) _ " The door is locked, maybe opens with some key "
+116.8 477.9 self Ladder 147.2 256.8
+565.3 255.7 self Ladder 532.7 64
+147.2 256.8 self Ladder 116.8 477.9
+532.7 64 self Ladder 565.3 255.7
+66.5 63.9 outside Door 36.7 63.9 hasItem(outsideKey) _ " Needs a key.. "
