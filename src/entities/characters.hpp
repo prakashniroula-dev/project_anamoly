@@ -11,6 +11,8 @@
 #include <core/scale.hpp>
 #include <graphics/tiles.hpp>
 #include <map/terrain.hpp>
+#include <cmath>
+#include <algorithm>
 
 // Animation key constants (declared as extern)
 namespace Anim {
@@ -20,6 +22,7 @@ namespace Anim {
     extern const std::string Idle;
     extern const std::string Shoot;
     extern const std::string Recharge;
+    extern const std::string Dead;
 }
 
 // Character type constants
@@ -45,9 +48,13 @@ namespace Characters {
 class Character : public GameObject {
     protected:
     enum CharacterMoving { Idle, Walking, Running };
-    enum CharacterState { None, Jumping, Shooting, Recharging };
+    enum CharacterState { None, Jumping, Shooting, Recharging, Dead };
     bool m_grounded = false;
     bool m_playerControls = true;
+    bool m_alive = true;
+    bool m_isDead = false;
+    float m_deathTimer = 0.f;
+    std::function<void()> m_deathCallback;
 
     // ---------- PHYSICS CONSTANTS ----------
     // ---------- PHYSICS CONSTANTS ----------
@@ -88,6 +95,8 @@ class Character : public GameObject {
 
     // ---------- DEBUG ----------
     void drawDebugBounds(sf::RenderWindow& win);
+    void die(const std::function<void()>& callback = nullptr);
+    bool isAlive() const { return m_alive; }
 
     
 public:
@@ -98,6 +107,8 @@ public:
     void snapToGround();
     void resetToSpawn() { pos = SPAWN_POS(); snapToGround(); vel = sf::Vector2f(0.f, 0.f); state = CharacterState::None; moving = CharacterMoving::Idle; timer = 0.f; }
     void resetToPosition(sf::Vector2f newPos) { pos = newPos; snapToGround(); vel = sf::Vector2f(0.f, 0.f); state = CharacterState::None; moving = CharacterMoving::Idle; timer = 0.f; }
+
+    void handleEvents();
     
     inline sf::Vector2f getPosition() const { return pos * Scale::get(); }
     inline sf::Vector2f getSize() const { return sf::Vector2f(128.f, 128.f); } // Placeholder size
@@ -111,8 +122,8 @@ public:
     void recharge();
     void idle();
     void jump();
-    void lockControls() { m_playerControls = false; }
-    void unlockControls() { m_playerControls = true; }
+    void lockControls() { idle(); m_playerControls = false; }
+    void unlockControls() {  m_playerControls = true; }
     bool controlsLocked() const { return !m_playerControls; }
 
     // GameObject interface

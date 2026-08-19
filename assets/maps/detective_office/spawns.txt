@@ -1,5 +1,4 @@
-# Spawns: x y characterKey scale rotation flipX flipY npcTypeId uniqueID scriptName waypoints
-# waypoints format: x1,y1;x2,y2;... (semicolon separated, no spaces)
-# Empty uniqueID or scriptName are stored as '_'
-357.867 481.067 fighter_boss 1 0 0 0 generic_guard _ _ 101.866669,571.200012;594.823059,565.866638;304.850891,563.200012;594.984192,561.066650
-460.553 479.784 fighter_detective 1 0 0 0 player _ _ _
+# x y charKey scale rot flipX flipY npcTypeId uniqueID scriptName waypoints
+35.2 255.933 fighter_detective 1 0 0 0 player _ _ _
+224 258.6 fighter_boss 1 0 0 0 explainer_npc explainer _ 513.544189,352.230621;186.857956,354.147736
+988.219 463.227 fighter_boss 1 0 0 0 null null _ _

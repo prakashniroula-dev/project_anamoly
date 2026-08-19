@@ -11,7 +11,8 @@ class Overlay;
 class LevelEditor;
 class FpsDisplay;
 class SaveGame;
-class LoadingScreen;   // <-- Add this
+class InteractionManager;
+class LoadingScreen; 
 
 namespace Game {
     class Game {
@@ -30,6 +31,7 @@ namespace Game {
         void reset();
         void startGame();
         void deleteAutosave() { std::filesystem::remove(m_saveDir + "autosave.dat"); }
+        
         
     private:
         // Window & loop
@@ -59,7 +61,7 @@ namespace Game {
         float m_bottomDeadZone;
 
         // map transition
-        std::optional<Transition> m_nearTransition;
+        // std::optional<Transition> m_nearTransition;
         std::string m_initialMap;
 
         // Private methods

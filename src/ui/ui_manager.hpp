@@ -35,6 +35,9 @@ public:
         return uiView;
     }
 
+    //     bool hasNotificationScreen() const;
+    // void removeNotificationScreen();
+
 private:
     UIManager() = default;                          // private constructor
     std::vector<std::unique_ptr<UIScreen>> m_screens;

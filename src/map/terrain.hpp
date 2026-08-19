@@ -1,3 +1,4 @@
+/* map\terrain.hpp */
 #pragma once
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <unordered_map>
@@ -6,24 +7,7 @@
 #include <functional>
 #include <graphics/tiles.hpp>
 #include <map/objects.hpp>
-
-using SolidMap = std::map<std::pair<int, int>, int>;
-struct NpcSpawn {
-    sf::Vector2f position;
-    std::string characterKey;   // matches Characters::... constants
-};
-
-struct SpawnProps {
-    std::string characterKey;
-    float scale = 1.f;
-    float rotation = 0.f;
-    bool flipX = false;
-    bool flipY = false;
-    std::string npcTypeId;
-    std::string uniqueID;
-    std::string scriptName;   // NEW: if not empty, this NPC will run this script on spawn/trigger
-    std::vector<sf::Vector2f> waypoints;
-};
+#include <map/types.hpp>
 
 using SpawnMap = std::map<std::pair<float, float>, SpawnProps>;
 

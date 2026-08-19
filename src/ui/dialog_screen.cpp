@@ -2,8 +2,29 @@
 #include <ui/ui_manager.hpp>
 #include <debug/logs.hpp>
 #include <story/story_helpers.hpp>
+#include <sound/sound_manager.hpp>
+#include <cstdlib>
+#include <entities/npc_manager.hpp>
 
-DialogScreen::DialogScreen(NPC *npc) : npc(npc), speakerText(font), dialogueText(font)
+void DialogScreen::show(const DialogLine& line) {
+  auto registeredType = NPCManager::get().getRegisteredType("dummy");
+  if ( registeredType == nullptr ) {
+    Log::error << "DialogScreen::show: NPC type 'dummy' not registered!" << std::endl;
+    return;
+  }
+  registeredType->dialogue.clear();
+  registeredType->dialogue.push_back(line);
+  if (NPCManager::get().getNPC("dummy") == nullptr) {
+    NPCManager::get().createNPC(
+      SpawnProps{
+        Characters::Fighter_Detective, 1.f, 0.f, false, false, "dummy", "dummy", "", {}
+      }, sf::Vector2f(0.f, 0.f)
+    );
+  }
+  UIManager::get().pushScreen(std::make_unique<DialogScreen>(NPCManager::get().getNPC("dummy"), line.id));
+}
+
+DialogScreen::DialogScreen(NPC *npc, bool allowEscape) : npc(npc), speakerText(font), dialogueText(font), m_allowEscape(allowEscape)
 {
   if (!npc)
   {
@@ -19,6 +40,24 @@ DialogScreen::DialogScreen(NPC *npc) : npc(npc), speakerText(font), dialogueText
   background.setFillColor(sf::Color(0, 0, 0, 200));
 }
 
+DialogScreen::DialogScreen(NPC *npc, const std::string &dialogueId, bool allowEscape) : DialogScreen(npc, allowEscape)
+{
+  if (!npc) return;
+  // Find the dialogue line with the given ID
+  Log::info << "DialogScreen: DialogID = " << dialogueId << "\n";
+  const auto &dialogue = npc->getType().dialogue;
+  for (size_t i = 0; i < dialogue.size(); ++i)
+  {
+    if (dialogue[i].id == dialogueId)
+    {
+      Log::info << "DialogScreen: Found dialogue ID '" << dialogueId << "' at index " << i << std::endl;
+      moveToLine(static_cast<int>(i));
+      return;
+    }
+  }
+  Log::error << "DialogScreen: Dialogue ID '" << dialogueId << "' not found for NPC" << std::endl;
+}
+
 // Add this method
 void DialogScreen::moveToLine(int index)
 {
@@ -29,7 +68,7 @@ void DialogScreen::moveToLine(int index)
     UIManager::get().popScreen();
     return;
   }
-  const DialogueLine *line = &dialogue[index];
+  const DialogLine *line = &dialogue[index];
   if (!isLineValid(line))
   {
     // If the line is invalid, try to advance to its nextIndex (if any)
@@ -54,7 +93,9 @@ void DialogScreen::onEnter()
   Log::info << "DialogScreen onEnter() for NPC!" << std::endl;
   if (!npc->getType().dialogue.empty())
   {
-    moveToLine(0); // start from index 0, but it will skip if invalid
+    if (currentLine == nullptr) {
+      moveToLine(0);
+    }
   }
   else
   {
@@ -111,9 +152,24 @@ void DialogScreen::refreshDisplay()
   }
 
   highlightedOption = 0; // reset highlight to first option
+  std::string soundKey = currentLine->soundKey;
+  if (currentLine && currentLine->speaker == "Player") {
+    if (soundKey.empty()) {
+      soundKey = "null";
+    }
+  };
+
+  if (currentLine && !soundKey.empty()) {
+    if(soundKey == "null") return;
+    SoundManager::get().playSound(soundKey);
+  } else {
+      // fallback random
+      int idx = rand() % 4;
+    SoundManager::get().playSound("npc_talk_continue" + std::to_string(idx));
+  }
 }
 
-bool DialogScreen::isLineValid(const DialogueLine *line) const
+bool DialogScreen::isLineValid(const DialogLine *line) const
 {
   if (!line)
     return false;
@@ -124,12 +180,14 @@ void DialogScreen::selectOption(size_t index)
 {
   if (index >= visibleOptions.size())
     return;
-  const DialogueLine *chosen = visibleOptions[index];
+  const DialogLine *chosen = visibleOptions[index];
   // Execute action before moving
   StoryHelpers::executeAction(chosen->action);
   // Record the choice (using its ID if provided, else fallback)
   std::string choiceId = chosen->id.empty() ? chosen->text : chosen->id;
   StoryManager::get().addChoice(choiceId);
+
+  StoryHelpers::executeAction(currentLine->action); // execute current line's action as well
   // Move to the chosen line (which is the child)
   currentLine = chosen;
   refreshDisplay(); // this will show the chosen line's text and its options
@@ -146,7 +204,9 @@ bool DialogScreen::handleEvent(const sf::Event &event, sf::RenderWindow &window)
     // ESC to close
     if (key->code == sf::Keyboard::Key::Escape)
     {
-      UIManager::get().popScreen();
+      if (m_allowEscape) {
+        UIManager::get().popScreen();
+      }
       return true;
     }
 
@@ -167,6 +227,7 @@ bool DialogScreen::handleEvent(const sf::Event &event, sf::RenderWindow &window)
       if (key->code == sf::Keyboard::Key::Enter || key->code == sf::Keyboard::Key::Space)
       {
         selectOption(highlightedOption);
+        StoryManager::get().setFlag("disable_movement");
         return true;
       }
     }
@@ -175,6 +236,7 @@ bool DialogScreen::handleEvent(const sf::Event &event, sf::RenderWindow &window)
       // No options – Enter/Space advances to next line
       if (key->code == sf::Keyboard::Key::Enter || key->code == sf::Keyboard::Key::Space)
       {
+        StoryManager::get().setFlag("disable_movement");
         advanceToNextLine();
         return true;
       }

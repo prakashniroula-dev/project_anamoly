@@ -26,6 +26,12 @@
 #include <ui/message_screen.hpp>
 #include <sound/sound_manager.hpp>
 #include <ui/loading_screen.hpp>
+#include <settings/settings.hpp>
+#include <cstdlib>
+#include <game/interaction_manager.hpp>
+#include <clue/clue_manager.hpp>
+#include <story/story_manager.hpp>
+#include <ui/notification.hpp>
 
 namespace Game
 {
@@ -60,7 +66,7 @@ namespace Game
         m_editor = new LevelEditor();
 
         // 4. Push loading screen
-        const int TOTAL_STEPS = 12; // adjust to your actual number of steps
+        const int TOTAL_STEPS = 14; // adjust to your actual number of steps
         auto loader = std::make_unique<LoadingScreen>(TOTAL_STEPS);
         m_loadingScreen = loader.get();
         UIManager::get().init(); // before pushing loading screen, ensure UIManager is initialized
@@ -77,9 +83,8 @@ namespace Game
         initResources();
 
         Log::info << "Resources initialized." << "\n";
-
         // 6. Remove loading screen and show main menu
-        SoundManager::get().playMusic("main_menu", true, 0.4f);
+        SoundManager::get().playMusic("main_menu", true);
         UIManager::get().gotoScreen(std::make_unique<MainMenu>(this));
 
         Log::info << "Main menu displayed." << "\n";
@@ -132,10 +137,13 @@ namespace Game
     {
         advanceLoadingScreen("Initializing scale...");
         updateScale();
+        
         advanceLoadingScreen("Loading tiles...");
         Tiles::load();
+        
         advanceLoadingScreen("Loading objects...");
         Objects::load();
+
         advanceLoadingScreen("Loading background...");
         Background::load(m_window);
 
@@ -145,10 +153,6 @@ namespace Game
         advanceLoadingScreen("Loading map...");
         MapManager::get().setGame(this);
         MapManager::get().loadMap(m_initialMap);
-        // Terrain::loadSpawnsFromFile("assets/spawns.txt");
-        // Terrain::loadFromFile("assets/map.txt");
-        // Terrain::loadObjectsFromFile("assets/objects.txt");
-        // Terrain::loadSolidFromFile("assets/solid_tiles.txt");
 
         advanceLoadingScreen("Loading characters...");
         Characters::load();
@@ -160,14 +164,45 @@ namespace Game
         NPCManager::get().loadDefinitions(); // register NPC types
         ScriptRegistry::init();              // register scripts
 
+        advanceLoadingScreen("Registering clues...");
+        ClueManager::get().registerClues();
+
         advanceLoadingScreen("Loading sounds...");
         SoundManager::get().initAllSounds();
+
+        advanceLoadingScreen("Loading & applying settings...");
+        Settings::init(); // Load settings from file
+        Settings::get().apply();
 
         advanceLoadingScreen("Finalizing...");
         m_editor->init();
         Player::get().setCharacter(Characters::Fighter_Detective);
-        NPCManager::get().setPlayer(Player::get().getPlayer());
-        MapManager::get().setPlayer(Player::get().getPlayer());
+
+        sf::Vector2f playerSpawn = Terrain::getPlayerSpawnPosition();
+        std::string playerCharKey = Characters::Fighter_Detective;
+
+        // Read character key from the player spawn point if present
+        for (const auto& [pos, props] : Terrain::getSpawnMap()) {
+            if (props.npcTypeId == "player") {
+                if (!props.characterKey.empty())
+                    playerCharKey = props.characterKey;
+                break;
+            }
+        }
+
+        NPC* playerNPC = NPCManager::get().getNPC("player");
+        if (!playerNPC) {
+            playerNPC = NPCManager::get().createNPC("player", playerSpawn, "player");
+            if (playerNPC) {
+                playerNPC->setCharacter(playerCharKey);
+                playerNPC->snapToGround();
+            }
+        }
+        if (playerNPC) {
+            Player::get().setPlayer(*playerNPC);
+            playerNPC->unlockControls();
+            playerNPC->pauseAI(true); // AI disabled while player-controlled
+        }
 
         advanceLoadingScreen("Loaded...");
     }
@@ -212,7 +247,7 @@ namespace Game
         }
         snapCameraToPlayer();
         // SoundManager::get().stopMusic();
-        SoundManager::get().playMusic("main_theme", true, 0.4f);
+        SoundManager::get().playMusic("main_theme", true);
         Log::info << "Game started, NPCs spawned.\n";
     }
 
@@ -221,11 +256,13 @@ namespace Game
         Log::info << "Resetting game state.\n";
         m_gameStarted = false;
         NPCManager::get().clearAll();
+        Player::get().clearStack();
         MapManager::get().clearCurrentMapData();
         MapManager::get().loadMap(m_initialMap);
         Player::get().setCharacter(Characters::Fighter_Detective);
         UIManager::get().clearScreens();
         Player::get().getPlayer()->resetToSpawn();
+        ClueManager::get().clearAll();
         m_view.setCenter(sf::Vector2f(m_width / 2.f, m_height / 2.f));
         m_view.setViewport(sf::FloatRect(sf::Vector2f(0.f, 0.f), sf::Vector2f(1.f, 1.f)));
         m_window.setView(m_view);
@@ -295,52 +332,38 @@ namespace Game
         //     MapManager::get().spawnPendingNPCs();
         // }
 
+
         m_background->draw(m_window, dt);
         Terrain::draw(m_window, dt);
 
         player.update(m_window, dt);
         updateCamera(dt);
 
-        m_overlay->draw(m_window, dt);
+
+        bool isCutscene = StoryManager::get().hasFlag("cutscene");
+        if (!isCutscene) m_overlay->draw(m_window, dt);
         NPCManager::get().draw(m_window, dt);
         player.draw(m_window, dt);
-
-        sf::Vector2f playerPos = player.getPlayer()->getPosition();
+        if (isCutscene) m_overlay->draw(m_window, dt);
 
         NPCManager::get().update(m_window, dt);
-        // Check for transitions using MapManager
-        m_nearTransition = MapManager::get().getTransitionAt(playerPos, 100.f);
-        if (!m_editor->isActive())
-        {
-            sf::Vector2f playerPos = Player::get().getPlayer()->getPosition();
-            NPC *nearest = NPCManager::get().getNearestInteractable(playerPos);
-            bool tooltip = false;
-            if (m_nearTransition.has_value())
-            { // ← fixed condition
-                Player::get().setTooltip(m_nearTransition->label);
-                tooltip = true;
-            }
-
-            if (nearest)
-            {
-                Player::get().setTooltip("Talk");
-                tooltip = true;
-            }
-
-            if (!tooltip)
-            {
-                Player::get().clearTooltip();
-            }
+        Character* player_char = Player::get().getPlayer();
+        sf::Vector2f playerPos = player_char ? player_char->getPosition() : sf::Vector2f(0.f, 0.f);
+        if (player_char) {
+            MapManager::get().checkCutsceneTriggers(player_char->getPosition());
         }
+        InteractionManager::get().update(playerPos);
     }
 
     void Game::handleEvents()
     {
         while (const std::optional event = m_window.pollEvent())
         {
+            bool eventConsumed = false;
             sf::View oldView = m_window.getView();                  // Save the current view
             m_window.setView(UIManager::get().getUIView(m_window)); // Set the view to UI view for event handling
-            bool eventConsumed = UIManager::get().handleEvent(*event, m_window);
+            eventConsumed = UIManager::get().handleEvent(*event, m_window);
+            Log::info << "EventConsumed: " << (eventConsumed ? "true" : "false") << "\n";
             m_window.setView(oldView); // Restore the original view
             if (eventConsumed) continue;
             if (event->is<sf::Event::Closed>())
@@ -378,32 +401,22 @@ namespace Game
                     // showInfoBox("Saved map: " + MapManager::get().getCurrentMap());
                 }
 
-                if (key->code == sf::Keyboard::Key::E && !m_editor->isActive())
-                {
-                    sf::Vector2f playerPos = Player::get().getPlayer()->getPosition();
-                    NPC *nearest = NPCManager::get().getNearestInteractable(playerPos);
-                    if (nearest)
-                    {
-                        NPCManager::get().interact();
-                    }
-                    else if (m_nearTransition.has_value())
-                    { // ← fixed condition
-                        const Transition &tr = *m_nearTransition;
-                        const std::string label = tr.label.empty() ? "Unknown" : tr.label;
-                        if ( label == "Door" ) {
-                            SoundManager::get().playSound("heavy_door_open");
-                        }
-                        MapManager::get().switchToMap(tr.targetMap, tr.spawnPosition);
-                        m_nearTransition.reset();
-                    }
+                if (!m_editor->isActive()) {
+                    InteractionManager::get().handleKeyPress(key->code);
                 }
-
+                
+                
                 if (key->code == sf::Keyboard::Key::Escape && !m_editor->isActive())
                 {
                     UIManager::get().pushScreen(std::make_unique<PauseMenu>(this));
                 }
+
             }
 
+            if (!m_editor->isActive()) {
+                Player::get().handleEvents();
+            }
+            
             if (m_editor->isActive())
             {
                 m_editor->handleEvent(*event, m_window);
@@ -472,6 +485,8 @@ namespace Game
             }
             m_window.setView(UIManager::get().getUIView(m_window));
             UIManager::get().draw(m_window);
+            Notification::update(dt, m_window);    // update timer & animation
+            Notification::draw(m_window);          // draw the notification
             SoundManager::get().update(dt);
             m_fpsDisplay->update(dt, m_window);
             m_window.display();
@@ -536,6 +551,7 @@ namespace Game
 
     void Game::autoSave() const
     {
+        Log::info << "Writing autosave...\n";
         // Create saves directory if it doesn't exist
         std::filesystem::create_directories(m_saveDir);
         saveCurrentState(m_saveDir + "autosave.dat");
@@ -585,9 +601,10 @@ namespace Game
 
         // 4. Spawn NPCs (they will use the restored story flags)
         MapManager::get().spawnNPCs();
-
         // 5. Set player character and position
+        Player::get().clearStack();
         Character *player = Player::get().getPlayer();
+        ClueManager::get().loadDiscovered(save.cluesDiscovered);
         if (player)
         {
             player->setCharacter(save.playerCharacter);

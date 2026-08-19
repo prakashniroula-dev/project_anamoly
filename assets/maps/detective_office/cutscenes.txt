@@ -1,0 +1,3 @@
+cutscene_intro 50.1 254.9 50 intro null
+cutscene_intro2 50 255 50 case0 explainer
+cutscene_flash 73.6 481.1 50 flash null

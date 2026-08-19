@@ -1,5 +1,6 @@
 #include <entities/player.hpp>
 #include <ui/ui_manager.hpp>
+#include <story/story_manager.hpp>
 
 void Player::update(sf::RenderWindow &win, float dt)
 {
@@ -75,42 +76,45 @@ void Player::swapBack() {
         return;
     }
 
-    // 1. Disable current player's controls and re‑enable its AI (if it's an NPC)
     if (player) {
         player->lockControls();
         if (NPC* npc = dynamic_cast<NPC*>(player)) {
             npc->pauseAI(false);   // resume AI
+            npc->idle();           // reset movement state so patrol can take over
         }
     }
 
-    // 2. Pop the previous character from stack and set as player.
     Character* prev = m_characterStack.back();
     m_characterStack.pop_back();
 
     player = prev;
     player->unlockControls();
 
-    // 3. Disable AI for the new player (prev was originally an NPC? Might need to pause it again)
-    //    Actually, when we first swapped away from an NPC, we paused it; now we are swapping back
-    //    to another character (could be original player or an NPC). If the new player is an NPC,
-    //    we should pause its AI so it doesn't move autonomously.
     if (NPC* npc = dynamic_cast<NPC*>(player)) {
         npc->pauseAI(true);
     }
 }
 
-void Player::setTooltip(const std::string& text) {
-    m_tooltipText = text;
+bool Player::canSwap(NPC* npc) const {
+    // Base condition: the NPC must exist.
+    if (!npc) return false;
+
+    // EXTEND HERE: add additional conditions, e.g.:
+
+    // example -> right now evaluates to false disabling all swap !!
+    if (!StoryManager::get().getFlag("swap_enabled")) return false;
+
+    // if (npc->getType().id == "special") return false;
+
+    // Default: swapping is allowed.
+    return true;
 }
 
-void Player::clearTooltip() {
-    m_tooltipText.clear();
-}
 
 void Player::drawTooltip(sf::RenderWindow& win) const {
-    if (m_tooltipText.empty() || !player) return;
+    if (m_hints.empty() || !player) return;
 
-    // 1. Player head world position -> screen coordinates
+    // 1. Head world -> screen coordinates
     sf::FloatRect bounds = player->getBounds();
     sf::Vector2f headWorld = bounds.position + sf::Vector2f(bounds.size.x / 2.f, 0.f);
     sf::Vector2f headScreen = sf::Vector2f(win.mapCoordsToPixel(headWorld));
@@ -118,42 +122,62 @@ void Player::drawTooltip(sf::RenderWindow& win) const {
 
     sf::Font& font = UIManager::get().getFont();
 
-    // 2. UI constants (pixel sizes, no scaling)
-    const float fontSizeKey   = 28.f;     // larger "E"
-    const float fontSizeLabel = 18.f;
-    const float padding       = 12.f;     // horizontal padding
-    const float verticalPad   = 14.f;     // slightly more vertical padding (was 12)
-    const float gap           = 10.f;     // space between "E" and label
-    const float pointerSize   = 10.f;     // triangle height
-    const float borderThick   = 2.f;
+    // 2. Build text objects for each hint
+    struct HintRender {
+        sf::Text keyText;
+        sf::Text labelText;
+        float width;   // total width of this hint (key + gap + label + padding)
+    };
+    std::vector<HintRender> renders;
+    const float keyFontSize = 28.f;
+    const float labelFontSize = 18.f;
+    const float padding = 12.f;
+    const float gap = 8.f;
+    const float verticalPad = 14.f;
+    const float pointerSize = 10.f;
+    const float borderThick = 2.f;
+    const float spacingBetweenHints = 20.f;
 
-    // 3. Build "E" text (white, bold)
-    sf::Text keyText(font, "E", fontSizeKey);
-    keyText.setFillColor(sf::Color(180, 200, 255));
-    keyText.setStyle(sf::Text::Bold);
-    sf::FloatRect keyBounds = keyText.getLocalBounds();
+    for (const auto& hint : m_hints) {
+        sf::Text keyText(font, std::string(1, hint.key), keyFontSize);
+        keyText.setFillColor(sf::Color(180, 200, 255));  // subtle tint
+        keyText.setStyle(sf::Text::Bold);
 
-    // 4. Build label text (white)
-    sf::Text labelText(font, m_tooltipText, fontSizeLabel);
-    labelText.setFillColor(sf::Color::White);
-    sf::FloatRect labelBounds = labelText.getLocalBounds();
+        sf::Text labelText(font, hint.label, labelFontSize);
+        labelText.setFillColor(sf::Color::White);
 
-    // 5. Layout: rectangle with extra vertical padding for a bit more height
-    float totalWidth  = keyBounds.size.x + gap + labelBounds.size.x + padding * 2;
-    float totalHeight = std::max(keyBounds.size.y, labelBounds.size.y) + verticalPad * 2;
+        sf::FloatRect keyBounds = keyText.getLocalBounds();
+        sf::FloatRect labelBounds = labelText.getLocalBounds();
 
-    // 6. Position the bubble so its bottom‑center aligns with headScreen
+        float hintWidth = keyBounds.size.x + gap + labelBounds.size.x + padding * 2;
+        renders.push_back({std::move(keyText), std::move(labelText), hintWidth});
+    }
+
+    // 3. Compute total width and height
+    float totalWidth = 0.f;
+    for (size_t i = 0; i < renders.size(); ++i) {
+        totalWidth += renders[i].width;
+        if (i > 0) totalWidth += spacingBetweenHints;
+    }
+    float maxHeight = 0.f;
+    for (auto& r : renders) {
+        maxHeight = std::max(maxHeight, r.keyText.getLocalBounds().size.y);
+        maxHeight = std::max(maxHeight, r.labelText.getLocalBounds().size.y);
+    }
+    float totalHeight = maxHeight + verticalPad * 2;
+
+    // 4. Position the bubble
     float bubbleX = headScreen.x - totalWidth / 2.f;
-    float bubbleY = headScreen.y - totalHeight - pointerSize - 5.f; // gap above pointer
+    float bubbleY = headScreen.y - totalHeight - pointerSize - 5.f;
 
-    // 7. Background rectangle (dark with light blue border)
+    // 5. Background
     sf::RectangleShape background({totalWidth, totalHeight});
     background.setPosition({bubbleX, bubbleY});
     background.setFillColor(sf::Color(15, 15, 25, 220));
     background.setOutlineColor(sf::Color(180, 200, 255));
     background.setOutlineThickness(borderThick);
 
-    // 8. Pointer triangle (points down)
+    // 6. Pointer triangle
     sf::ConvexShape pointer;
     pointer.setPointCount(3);
     float pointerX = headScreen.x;
@@ -165,26 +189,34 @@ void Player::drawTooltip(sf::RenderWindow& win) const {
     pointer.setOutlineColor(sf::Color(180, 200, 255));
     pointer.setOutlineThickness(borderThick);
 
-    // 9. Position texts – both vertically centered inside the box
-    // "E" on the left
-    float keyX = bubbleX + padding;
-    float keyY = bubbleY + (totalHeight - keyBounds.size.y) / 2.f - 4.f;
-    keyText.setPosition({keyX, keyY});
+    // 7. Place each hint's text inside the box
+    float currentX = bubbleX + padding;
+    for (auto& r : renders) {
+        // Key (aligned left, vertically centered)
+        sf::FloatRect keyBounds = r.keyText.getLocalBounds();
+        float keyX = currentX;
+        float keyY = bubbleY + (totalHeight - keyBounds.size.y) / 2.f - 4.f;
+        r.keyText.setPosition({keyX, keyY});
 
-    // Label to the right, also vertically centered
-    float labelX = keyX + keyBounds.size.x + gap;
-    float labelY = bubbleY + (totalHeight - labelBounds.size.y) / 2.f - 2.f;
-    labelText.setPosition({labelX, labelY});
+        // Label (to the right of key)
+        float labelX = keyX + keyBounds.size.x + gap;
+        sf::FloatRect labelBounds = r.labelText.getLocalBounds();
+        float labelY = bubbleY + (totalHeight - labelBounds.size.y) / 2.f - 2.f;
+        r.labelText.setPosition({labelX, labelY});
 
-    // 10. Draw in UI view
+        currentX += r.width + spacingBetweenHints;
+    }
+
+    // 8. Draw in UI view
     sf::View originalView = win.getView();
-    win.setView(UIManager::get().getUIView(win)); // switch to UI view
+    win.setView(UIManager::get().getUIView(win));
 
     win.draw(background);
     win.draw(pointer);
-    win.draw(keyText);
-    win.draw(labelText);
+    for (auto& r : renders) {
+        win.draw(r.keyText);
+        win.draw(r.labelText);
+    }
 
-    // Restore view
     win.setView(originalView);
 }

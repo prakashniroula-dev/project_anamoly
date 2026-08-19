@@ -1,7 +1,7 @@
 #include <map/objects.hpp>
 #include <graphics/textures.hpp>
 #include <SFML/Graphics.hpp>
-
+#include <unordered_map>
 namespace Objects
 {
   namespace {
@@ -10,6 +10,8 @@ namespace Objects
     std::string getObjectKey(int index) {
       return "object_" + std::to_string(index + 1);
     }
+
+    std::unordered_map<int, std::string> specialObjects;
   }
 
   void load() {
@@ -52,6 +54,23 @@ namespace Objects
         {"billboards/ads/22x40", 15},
         {"billboards/ads/64x64", 15},
         {"billboards/ads/128x64", 15},
+
+        // vehicle bodies
+        {"vehicle_body/type1", 8},
+        {"vehicle_body/type2", 2},
+        {"vehicle_body/type3", 4},
+        {"vehicle_body/type4", 2},
+        {"vehicle_body/type5", 4},
+        {"vehicle_body/type6", 4},
+        {"vehicle_body/type7", 2},
+        {"vehicle_body/type8", 2},
+        {"vehicle_body/type9", 2},
+        {"vehicle_body/type10", 3},
+        {"vehicle_body/type11", 1},
+        {"vehicle_body/type12", 2},
+        {"vehicle_body/type13", 2},
+
+        
     };
     
     for ( const auto& [path, count] : objectKeys) {
@@ -62,10 +81,27 @@ namespace Objects
         totalObjects++;
       }
     }
+
+    /* Special objects */
+    std::string path = "vehicle_tires/1.png";
+    Textures::load(getObjectKey(totalObjects), path);
+    specialObjects[totalObjects++] = "vehicle_tires";
+
+    path = "vehicle_tires/2.png";
+    Textures::load(getObjectKey(totalObjects), path);
+    specialObjects[totalObjects++] = "vehicle_tires";
   }
 
   sf::Sprite getObjectSprite(int index) {
     std::string key = getObjectKey(index);
+    if (specialObjects.find(index) != specialObjects.end()) {
+      std::string type = specialObjects[index];
+      if (type == "vehicle_tires") {
+        sf::Sprite s(Textures::get(key));
+        s.setTextureRect(sf::IntRect({0,0},{48,48})); // Use only the first 48x48
+        return s;
+      }
+    }
     return sf::Sprite(Textures::get(key));
   }
 

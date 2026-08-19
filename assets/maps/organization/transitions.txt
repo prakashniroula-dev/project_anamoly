@@ -1,0 +1,4 @@
+341.6 448.2 self Ladder 300.9 256.3
+308 256 self Ladder 341.6 448.2
+1348.7 256.1 outside_org Door 419.5 95.3
+836.9 256.4 outside_org Door 745.4 101.7

@@ -27,4 +27,5 @@ public:
 
     // Whether the game should update while this screen is on top
     virtual bool blocksGameUpdate() const { return true; }
+    // virtual bool isNotification() const { return false; }
 };

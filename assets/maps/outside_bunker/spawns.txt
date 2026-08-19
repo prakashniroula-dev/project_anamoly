@@ -1,0 +1,2 @@
+# x y charKey scale rot flipX flipY npcTypeId uniqueID scriptName waypoints
+106.667 64.6511 fighter_detective 1 0 0 0 player _ _ _

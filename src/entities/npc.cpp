@@ -8,6 +8,7 @@
 #include <ui/ui_screen.hpp>
 #include <entities/player.hpp>
 #include <story/story_manager.hpp>
+#include <story/story_helpers.hpp>
 
 NPC::NPC(const NPCType& type, const sf::Vector2f& spawnPos, const std::string& uniqueID)
     : Character(type.characterKey, false), type(type), uniqueID(uniqueID) {
@@ -31,6 +32,23 @@ void NPC::dialogueEnded() {
 void NPC::update(sf::RenderWindow& win, float dt) {
     // Log::info << "NPC update: state=" << static_cast<int>(state) << ", scriptRunning=" << m_scriptRunning << "\n";
     Character::update(win, dt); // base physics & animation
+    if (!isAlive()) return;
+    if (!m_cutsceneTriggered && !m_scriptRunning && !type.cutsceneScriptName.empty()) {
+        Character* player = Player::get().getPlayer();
+        if (player) {
+            sf::Vector2f diff = player->getPosition() - getPosition();
+            float dist = std::hypot(diff.x, diff.y);
+            if (dist <= type.cutsceneRadius * Scale::get()) {
+                auto it = ScriptRegistry::scripts.find(type.cutsceneScriptName);
+                if (it != ScriptRegistry::scripts.end()) {
+                    m_sequenceTruthful = runSequence(it->second);
+                    m_cutsceneTriggered = true;
+                } else {
+                    Log::warn << "NPC cutscene script not found: " << type.cutsceneScriptName << "\n";
+                }
+            }
+        }
+    }
     if (m_scriptRunning) {
         if (m_actionTimer > 0.f) {
             m_actionTimer -= dt;
@@ -72,28 +90,50 @@ void NPC::update(sf::RenderWindow& win, float dt) {
     }
 }
 
-void NPC::runSequence(const std::vector<Action::Action>& actions) {
+bool NPC::runSequence(const std::vector<Action::Action>& actions) {
+    // Save current AI state before script takes over
+    m_originalBehaviorType = behaviorState.type;
+    m_originalWaypointIndex = nextWaypoint;
     m_script = actions;
     m_waiting = false;
-    for (auto& action : m_script) {
-        if (action.type == ActionType::ShowDialogue || action.type == ActionType::SwapPlayer) {
-            action.npc = this; // set the NPC pointer
-        }
-    }
+    // for (auto& action : m_script) {
+    //     if (action.type == ActionType::ShowDialogue || action.type == ActionType::SwapPlayer) {
+    //         action.npc = this;
+    //     }
+    // }
     m_currentActionIndex = 0;
     m_actionTimer = 0.f;
     m_scriptRunning = true;
-    // Pause AI while script runs
+    m_sequenceTruthful = true; // assume sequence is truthful
+    flag_conditions = true; // reset flag conditions
     pauseAI(true);
     executeCurrentAction();
-    Log::info << "Action sequence done for NPC " << uniqueID << " with " << m_script.size() << " actions.\n";    
+    bool result = m_sequenceTruthful;
+    Log::info << "Action sequence started for NPC " << uniqueID << " with " << m_script.size() << " actions.\n";
+    return result;
+}
+
+void NPC::restoreAIState() {
+    behaviorState.type = m_originalBehaviorType;
+    // For patrol, reset to the original waypoint index
+    if (behaviorState.type == BehaviorState::Type::Patrol) {
+        const auto& wps = getWaypoints();
+        if (!wps.empty()) {
+            nextWaypoint = m_originalWaypointIndex % wps.size();
+            behaviorState.targetPos = wps[nextWaypoint];
+        }
+    }
+    // For follow or idle, you may need additional restoration logic
+    m_scriptRunning = false;
+    pauseAI(false);
+    idle();          // stop any scripted movement
 }
 
 void NPC::executeCurrentAction() {
     if (m_currentActionIndex >= m_script.size()) {
-        Log::info << "NPC script finished." << std::endl;
         m_scriptRunning = false;
         pauseAI(false);
+        restoreAIState();
         return;
     }
 
@@ -102,52 +142,13 @@ void NPC::executeCurrentAction() {
     Log::info << "Executing action " << m_currentActionIndex << ": type=" << static_cast<int>(action.type) << std::endl;
 
     // ---- Handle flag-related actions unconditionally ----
-    if (action.type == ActionType::CheckFlag ||
-        action.type == ActionType::CheckFlagModeOR ||
-        action.type == ActionType::CheckFlagModeAND ||
-        action.type == ActionType::SetFlag) {
-
-        switch (action.type) {
-            case ActionType::CheckFlag: {
-                if (!checkFlagModeAND && flag_conditions) {
-                    // OR mode: if any previous condition was true, skip this check
-                    advanceScript();
-                    break;
-                }
-                if (checkFlagModeAND && !flag_conditions) {
-                    // AND mode: if any previous condition was false, skip this check
-                    advanceScript();
-                    break;
-                }
-                bool expected = (action.duration == 0.f);
-                bool current  = StoryManager::get().getFlag(action.labelId);
-                flag_conditions = (current == expected);
-                Log::info << "CheckFlag: " << action.labelId << " = " << current
-                          << ", expected = " << expected << ", result = " << flag_conditions << std::endl;
-                advanceScript();
-                break;
-            }
-            case ActionType::CheckFlagModeOR:
-                checkFlagModeAND = false;
-                flag_conditions = false;   // reset for OR mode
-                advanceScript();
-                break;
-            case ActionType::CheckFlagModeAND:
-                checkFlagModeAND = true;
-                flag_conditions = true;    // reset for AND mode
-                advanceScript();
-                break;
-            case ActionType::SetFlag:
-                Log::info << "SetFlag: " << action.labelId << " = " << (action.duration == 0.f) << std::endl;
-                StoryManager::get().setFlag(action.labelId, action.duration == 0.f);
-                advanceScript();
-                break;
-            default:
-                // Should never happen
-                advanceScript();
-                break;
-        }
-        return;  // flag actions are done
+    if (action.type == ActionType::EvaluateState) {
+        std::string evalName = std::get<std::string>(action.param);
+        bool result = StoryHelpers::evaluateCondition(evalName);
+        flag_conditions = result;
+        Log::info << "EvaluateState: " << evalName << " => " << (result ? "true" : "false") << std::endl;
+        advanceScript();
+        return;
     }
 
     // ---- Handle regular actions only if flag conditions allow ----
@@ -158,8 +159,24 @@ void NPC::executeCurrentAction() {
         return;
     }
 
+     // Now that we are executing an action, set sequenceTruthful to true
     // Now flag_conditions is true; execute the action
     switch (action.type) {
+        case ActionType::ExecuteState:
+            StoryHelpers::executeAction(std::get<std::string>(action.param));
+            Log::info << "ExecuteState: " << std::get<std::string>(action.param) << std::endl;
+            advanceScript();
+            break;
+        case ActionType::Truthful:
+            m_sequenceTruthful = true;
+            Log::info << "Sequence marked as truthful.\n";
+            advanceScript();
+            break;
+        case ActionType::Falseful:
+            m_sequenceTruthful = false;
+            Log::info << "Sequence marked as falseful.\n";
+            advanceScript();
+            break;
         case ActionType::FacePlayer: {
             Character* player = Player::get().getPlayer();
             if (!player) {
@@ -174,18 +191,42 @@ void NPC::executeCurrentAction() {
         }
         case ActionType::MoveTo:
             behaviorState.type = BehaviorState::Type::Scripted;
-            behaviorState.targetPos = action.targetPos;
+            behaviorState.targetPos = std::get<sf::Vector2f>(action.param);
             m_actionTimer = -1.f;   // no wait timer
             break;
+
         case ActionType::MoveRelative:
             behaviorState.type = BehaviorState::Type::Scripted;
-            behaviorState.targetPos = getPosition() / Scale::get() + action.targetPos;
+            behaviorState.targetPos = getPosition() / Scale::get() + std::get<sf::Vector2f>(action.param);
             m_actionTimer = -1.f;
             break;
+
+        case ActionType::MoveTowardsPlayer: {
+            Character* player = Player::get().getPlayer();
+            if (!player) {
+                Log::warn << "MoveTowardsPlayer: Player pointer is null. Skipping.\n";
+                advanceScript();
+                break;
+            }
+            sf::Vector2f playerPos = player->getPosition() / Scale::get();
+            sf::Vector2f currentPos = getPosition() / Scale::get();
+            sf::Vector2f diff = playerPos - currentPos;
+            int direction = diff.x < 0 ? -1 : 1;
+            float amt = std::get<float>(action.param);
+            if ( amt < 0.f ) {
+                amt = std::abs(diff.x) - 50.f;
+                amt = std::max(amt, 0.f); // ensure non-negative
+            }
+            behaviorState.type = BehaviorState::Type::Scripted;
+            behaviorState.targetPos = currentPos + sf::Vector2f(direction * amt, 0.f);
+            m_actionTimer = -1.f;
+            break;
+        }
         case ActionType::Wait:
-            m_actionTimer = action.duration;
+            m_actionTimer = std::get<float>(action.param);
             Log::info << "Waiting for " << m_actionTimer << " seconds.\n";
             break;
+
         case ActionType::LockPlayer:
             Player::get().lockControls();
             advanceScript();
@@ -195,40 +236,43 @@ void NPC::executeCurrentAction() {
             advanceScript();
             break;
         case ActionType::PlayAnimation:
-            m_scriptedAnim = action.animKey;
+            m_scriptedAnim = std::get<std::string>(action.param);
             advanceScript();
             break;
-        case ActionType::ShowDialogue:
-            if (action.npc) {
-                UIManager::get().pushScreen(std::make_unique<DialogScreen>(action.npc));
-            } else {
-                UIManager::get().pushScreen(std::make_unique<DialogScreen>(this));
-            }
+
+        case ActionType::ShowDialogue: {
+            std::string dialogueId = std::get<std::string>(action.param);
+            bool allowEscape = std::get<bool>(action.param2);
+            UIManager::get().pushScreen(std::make_unique<DialogScreen>(this, dialogueId, allowEscape));
             m_waitingForDialogue = true;   // block script until dialogue closes
             break;
+        }
+
         case ActionType::SwapPlayer:
-            if (action.npc) {
-                Player::get().swapTo(action.npc);
+            if (std::get<NPC*>(action.param)) {
+                Player::get().swapTo(std::get<NPC*>(action.param));
             } else {
                 Player::get().swapBack();
             }
             advanceScript();
             break;
         case ActionType::CallFunction: {
-            Log::info << "Calling function: " << action.extName << std::endl;
-            auto it = FunctionRegistry::functions.find(action.extName);
+            std::string funcName = std::get<std::string>(action.param);
+            Log::info << "Calling function: " << funcName << std::endl;
+            auto it = FunctionRegistry::functions.find(funcName);
             if (it != FunctionRegistry::functions.end()) {
                 it->second(this);
             } else {
-                Log::warn << "Unknown function: " << action.extName << std::endl;
+                Log::warn << "Unknown function: " << funcName << std::endl;
             }
             advanceScript();
             break;
         }
         case ActionType::EndSequence:
             m_scriptRunning = false;
+            Log::info << "Setting sequnce complete to true!";
             pauseAI(false);
-            behaviorState.type = BehaviorState::Type::Idle;
+            restoreAIState();
             // No advanceScript – script ends here
             break;
         default:
@@ -361,23 +405,32 @@ void NPC::idleUpdate(float dt) {
     if (m_waiting) {
         m_waitTimer -= dt;
         if (m_waitTimer <= 0.f) {
-            // Waiting finished: move to the next waypoint
             m_waiting = false;
             nextWaypoint = m_nextWaypointAfterWait;
             const auto& wps = getWaypoints();
             if (!wps.empty()) {
                 behaviorState.targetPos = wps[nextWaypoint];
                 behaviorState.type = BehaviorState::Type::Patrol;
-                moving = CharacterMoving::Idle;   // allow new direction on next frame
+                moving = CharacterMoving::Idle;
                 vel.x = 0.f;
-                Log::info << "Resuming patrol to waypoint " << nextWaypoint << " at (" 
-                          << wps[nextWaypoint].x << ", " << wps[nextWaypoint].y << ")" << std::endl;
+                Log::info << "Resuming patrol to waypoint " << nextWaypoint << std::endl;
             } else {
-                behaviorState.type = BehaviorState::Type::Idle; // no waypoints, stay idle
+                behaviorState.type = BehaviorState::Type::Idle;
             }
         }
+    } else if (behaviorState.type == BehaviorState::Type::Idle) {
+        // If we are idle but not waiting, and we have waypoints, resume patrol
+        const auto& wps = getWaypoints();
+        if (!wps.empty()) {
+            // Ensure nextWaypoint is valid
+            if (nextWaypoint >= wps.size()) nextWaypoint = 0;
+            behaviorState.targetPos = wps[nextWaypoint];
+            behaviorState.type = BehaviorState::Type::Patrol;
+            moving = CharacterMoving::Idle;
+            vel.x = 0.f;
+            Log::info << "Resuming patrol from idle state to waypoint " << nextWaypoint << std::endl;
+        }
     }
-    // If not waiting, do nothing (or you can add other idle behaviours)
 }
 
 void NPC::followUpdate(float dt) { /* implement later */ }

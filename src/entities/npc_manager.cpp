@@ -2,6 +2,7 @@
 #include <debug/logs.hpp>
 #include <story/script_registry.hpp>
 #include <story/story_manager.hpp>
+#include <entities/player.hpp>
 
 NPCManager& NPCManager::get() {
     static NPCManager instance;
@@ -51,90 +52,43 @@ NPC* NPCManager::createNPC(const SpawnProps& props, const sf::Vector2f& pos) {
     return raw;
 }
 
-void NPCManager::clearAll() {
-    npcStorage.clear();
-    npcList.clear();
-    npcMap.clear();
+void NPCManager::clearAll(bool keepPlayer) {
+    if (!keepPlayer) {
+        npcStorage.clear();
+        npcList.clear();
+        npcMap.clear();
+        pendingAutoTalks.clear();
+        return;
+    }
+    auto it = npcStorage.begin();
+    while (it != npcStorage.end()) {
+        if ((*it)->getUniqueID() == "player") {
+            ++it;
+            continue;
+        }
+        NPC* raw = it->get();
+        auto listIt = std::find(npcList.begin(), npcList.end(), raw);
+        if (listIt != npcList.end()) npcList.erase(listIt);
+        npcMap.erase(raw->getUniqueID());
+        it = npcStorage.erase(it);
+    }
     pendingAutoTalks.clear();
 }
 
-void guardShoot(NPC* npc) {
+void NPCManager::removeNPC(NPC* npc) {
     if (!npc) return;
-    Log::info << "guardShoot() called for NPC at (" << npc->getPosition().x << ", " << npc->getPosition().y << ")\n";
-    // Set the character state to Shooting so the animation plays.
-    npc->shoot();   // Character::shoot() sets state to Shooting and resets timer
-    // Optionally spawn a visual bullet or flash here.
-}
-
-void NPCManager::loadDefinitions() {
-    // ---- Detective with choices ----
-    NPCType detective;
-    detective.id = "detective_explainer";
-    detective.characterKey = Characters::Fighter_Detective;
-    detective.behaviorType = "idle";
-    detective.autoStartDialogue = true;
-    detective.autoStartDelay = 0.5f;
-
-    
-    detective.dialogue = {
-      {"detective_mission", "Detective", "Let's catch the anamoly.", "hasFlag(detective_intro)", "", -1, {}},
-      {"detective_intro", "Detective", "Ready for the first mission?", "!hasFlag(detective_intro)", "", 1, {
-        {"choice1", "Player", "Yes, I'm ready, Let's do this.", "", "setFlag(detective_intro); setFlag(mission_start)", 3, {}},
-        {"choice2", "Player", "What mission?", "", "setFlag(mission_info)", 4, {}},
-        {"choice3", "Player", "No, I need more time.", "", "setFlag(mission_delay)", 2, {}},
-      }},
-      {"detective_hurry", "Detective", "We don't have much time, are you ready yet?", "hasFlag(mission_info) && !hasFlag(mission_start)", "", -1, {
-        {"choice1", "Player", "Yes, I'm ready, Let's do this.", "", "setFlag(mission_start)", 3, {}},
-        {"choice2", "Player", "No, I need more time.", "", "setFlag(mission_delay)", 2, {}},
-      }}, // Placeholder for choice branches
-      {"detective_not_ready", "Detective", "Come back when you're ready.", "", "", -1, {}},
-      {"detective_mission", "Detective", "Let's catch the anamoly.", "", "", -1, {}},
-      {"detective_confused", "Detective", "Ah, is that your headaches acting up ?\nI was told about them but didn't expect it to be this bad.", "", "", 5, {}},
-      {"detective_confused2", "Detective", "The fugitive anamoly ... remember ?", "", "", 6, {
-        {"choice1", "Player", "Yes, somewhat...", "", "", 6, {}},
-        {"choice2", "Player", "(Stay silent)", "", "", 6, {}}
-      }},
-      {"detective_confused3", "Detective",
-        "That bastard who has wrecked havoc in the town...\nHe went on a killing spree and has been on the run, laying low for a while.\nWe need to catch him and make him pay for his crimes.",
-        "", "", -1, {
-          {"choice1", "Player", "I understand, let's catch him.", "", "setFlag(detective_intro)", -1, {}},
-          {"choice2", "Player", "(Stay silent)", "", "setFlag(detective_intro)", -1, {}}
-        }
-      },
-    };
-    registerType(detective);
-
-    // ---- Guard ----
-    NPCType guard;
-    guard.id = "generic_guard";
-    guard.characterKey = Characters::Fighter_Boss;
-    guard.behaviorType = "patrol";
-    guard.waypoints = {{5.f,5.f}, {10.f,5.f}, {10.f,10.f}};
-    guard.dialogue = {
-        {"guard_halt", "Guard", "Halt! Who goes there?", "!hasFlag(met_guard)", "", 1, {
-          {"choice1", "Player", "I'm Detective Smith.", "", "setFlag(met_guard)", 2, {}},
-          {"choice2", "Player", "None of your business.", "", "setFlag(met_guard); setFlag(angry_guard)", 1, {}}
-        }},
-        {"guard_angry", "Guard", "Fuck off!", "hasFlag(angry_guard)", "", 2, {}},
-        {"guard_friendly", "Guard", "Ah, welcome Detective Smith, You've changed your attire.", "!hasFlag(angry_guard)", "", -1, {}}
-    };
-    registerType(guard);
-
-    NPCType guardCutscene;
-    guardCutscene.id = "guard_cutscene";
-    guardCutscene.characterKey = Characters::Fighter_Boss;  // same sprite as generic guard
-    guardCutscene.behaviorType = "idle";                   // or "patrol" if you want
-    guardCutscene.dialogue = {
-        {"guard_shoot_intro", "Guard", "Stop right there, criminal! You're under arrest!", "", "", -1, {}},
-        {"guard_shoot_2", "Guard", "Take this!", "", "", -1, {}}
-    };
-    registerType(guardCutscene);
-
-    FunctionRegistry::registerFunction("guardShoot", guardShoot);
-    FunctionRegistry::registerFunction("setFlag_guardshoot_started", [](NPC* npc) {
-        StoryManager::get().setFlag("guardshoot_started");
-    });
-
+    // Remove from npcList
+    auto listIt = std::find(npcList.begin(), npcList.end(), npc);
+    if (listIt != npcList.end()) npcList.erase(listIt);
+    // Remove from npcMap
+    npcMap.erase(npc->getUniqueID());
+    // Remove from npcStorage (unique_ptr)
+    auto storageIt = std::find_if(npcStorage.begin(), npcStorage.end(),
+        [npc](const std::unique_ptr<NPC>& ptr) { return ptr.get() == npc; });
+    if (storageIt != npcStorage.end()) npcStorage.erase(storageIt);
+    // Also remove from pendingAutoTalks if present
+    auto autoIt = std::find(pendingAutoTalks.begin(), pendingAutoTalks.end(), npc);
+    if (autoIt != pendingAutoTalks.end()) pendingAutoTalks.erase(autoIt);
 }
 
 
@@ -177,13 +131,18 @@ void NPCManager::processAutoTalks() {
 }
 
 void NPCManager::update(sf::RenderWindow& win, float dt) {
+    Character* playerChar = Player::get().getPlayer();
     for (NPC* npc : npcList) {
+        if (npc == playerChar) continue;   // player controls this NPC – skip its AI
         npc->update(win, dt);
-
+    }
+    for (NPC* npc : npcList) {
+        if (npc == playerChar) continue;   // skip player
         // Auto‑start dialogue if enabled and not already talked
         if (npc->getType().autoStartDialogue && !npc->hasAutoTalked()) {
-            if (m_player) {
-                sf::Vector2f playerPos = m_player->getPosition();
+            NPC* playerNPC = NPCManager::get().getNPC("player");
+            if (playerNPC) {
+                sf::Vector2f playerPos = playerNPC->getPosition();
                 sf::Vector2f npcPos = npc->getPosition();
                 float dist = std::hypot(playerPos.x - npcPos.x, playerPos.y - npcPos.y);
                 if (dist <= npc->getType().talkRadius) {
@@ -196,22 +155,27 @@ void NPCManager::update(sf::RenderWindow& win, float dt) {
 }
 
 void NPCManager::draw(sf::RenderWindow& win, float dt) {
+    Character* playerChar = Player::get().getPlayer();
     for (NPC* npc : npcList) {
+        if (npc == playerChar) continue;
         npc->draw(win, dt);
     }
 }
 
 // entities/npc_manager.cpp
-NPC* NPCManager::getNearestInteractable(const sf::Vector2f& playerPos) const {
+NPC* NPCManager::getNearestInteractable(const sf::Vector2f& playerPos, const NPC* exclude) const {
+    NPC* best = nullptr;
+    float bestDist = std::numeric_limits<float>::max();
     for (NPC* npc : npcList) {
-        sf::Vector2f npcPos = npc->getPosition();
-        float dist = std::hypot(playerPos.x - npcPos.x, playerPos.y - npcPos.y);
-        bool isAutoTalk = npc->getType().autoStartDialogue && !npc->hasAutoTalked();
-        if (dist <= npc->getType().talkRadius && !isAutoTalk) {
-            return npc;   // return the first one found (you could also pick the closest)
+        if (npc == exclude) continue;
+        sf::Vector2f diff = npc->getPosition() - playerPos;
+        float dist = std::hypot(diff.x, diff.y);
+        if (dist <= npc->getType().talkRadius && dist < bestDist) {
+            bestDist = dist;
+            best = npc;
         }
     }
-    return nullptr;
+    return best;
 }
 
 void NPCManager::spawnAllNPCs() {
@@ -220,6 +184,7 @@ void NPCManager::spawnAllNPCs() {
         sf::Vector2f worldPos(pos.first, pos.second);
         if (props.characterKey == "Player" || props.npcTypeId == "player") {
             Terrain::setPlayerSpawnPosition(worldPos);
+            continue;
         } else {
             // NPC spawn
             NPC* npc = NPCManager::get().createNPC(props, worldPos);   // new overload
@@ -231,14 +196,11 @@ void NPCManager::spawnAllNPCs() {
     scope.info << "Finished spawning all NPCs." << std::endl;
 }
 
-void NPCManager::setPlayer(Character* player) {
-    m_player = player;
-}
-
 void NPCManager::interact() {
-    if (!m_player) return;  // player not set
+    NPC* playerNPC = NPCManager::get().getNPC("player");
+    if (!playerNPC) return;  // player not set
 
-    sf::Vector2f playerPos = m_player->getPosition();
+    sf::Vector2f playerPos = playerNPC->getPosition();
     for (NPC* npc : npcList) {
         sf::Vector2f npcPos = npc->getPosition();
         float dist = std::hypot(playerPos.x - npcPos.x, playerPos.y - npcPos.y);

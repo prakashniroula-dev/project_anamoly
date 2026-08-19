@@ -12,8 +12,6 @@ public:
     static void spawnAllNPCs();
     
     void interact();
-    void setPlayer(Character* player);
-
     // ---- Load definitions ----
     void loadDefinitions(); // hardcoded for now
 
@@ -37,8 +35,13 @@ public:
         return ids;
     }
 
-    void clearAll(); // clears npcStorage, npcList, npcMap, pendingAutoTalks
-    NPC* getNearestInteractable(const sf::Vector2f& playerPos) const; // new
+    void clearAll(bool keepPlayer = true); // clears npcStorage, npcList, npcMap, pendingAutoTalks
+    NPC* getNearestInteractable(const sf::Vector2f& playerPos, const NPC* exclude = nullptr) const; // new
+    void removeNPC(NPC* npc);
+    void registerType(const NPCType& type);
+    NPCType* getRegisteredType( const std::string& typeId) {
+        return (typeRegistry.find(typeId) != typeRegistry.end()) ? &typeRegistry[typeId] : nullptr;
+    };
 
 private:
     NPCManager() = default;
@@ -47,7 +50,5 @@ private:
     std::unordered_map<std::string, NPC*> npcMap;
     std::unordered_map<std::string, NPCType> typeRegistry;
     std::vector<NPC*> pendingAutoTalks;
-    Character* m_player = nullptr;
 
-    void registerType(const NPCType& type);
 };

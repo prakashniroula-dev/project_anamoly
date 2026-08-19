@@ -1,0 +1,2 @@
+106.7 64.7 outside_org Travel 1663.8 161.3
+803.9 128.6 bunker Door 70.7 97.3

@@ -1,0 +1,9 @@
+70.7 97.3 outside_bunker Door 803.9 128.6
+524.5 320.6 self Ladder 525.5 480.8
+525.5 480.8 self Ladder 524.5 320.6
+269.2 323 self Ladder 280.7 480.9
+280.7 480.9 self Ladder 269.2 323
+2322.8 321.2 self Ladder 2323.3 97.8
+2323.3 97.8 self Ladder 2322.8 321.2
+1636.1 480.2 self Door 1735.3 480.2
+1735.3 480.2 self Door 1636.1 480.2

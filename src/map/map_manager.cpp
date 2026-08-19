@@ -1,182 +1,157 @@
-#include "map_manager.hpp"
 #include <map/terrain.hpp>
 #include <entities/npc_manager.hpp>
 #include <entities/player.hpp>
 #include <core/constants.hpp>
 #include <debug/logs.hpp>
-#include <fstream>
-#include <sstream>
-#include <cmath>
 #include <ui/transition_screen.hpp>
 #include <ui/ui_manager.hpp>
 #include <game/game.hpp>
+#include <map/types.hpp>   // for Transition
+#include <map/map_manager.hpp>
+#include <map/map_data.hpp>
+#include <story/story_manager.hpp>
 
 MapManager& MapManager::get() {
     static MapManager instance;
     return instance;
 }
 
-std::filesystem::path MapManager::getPath(const std::string& filename) const {
-    return std::filesystem::path(baseDir) / currentMap / filename;
-}
-
 void MapManager::clearCurrentMapData() {
-    Terrain::setMap(TileMap{});
-    Terrain::clearObjects();
-    Terrain::clearSolidMap();
-    Terrain::clearSpawns();
-    transitions.clear();
+    m_data.clear();
     NPCManager::get().clearAll();
 }
 
-// map/map_manager.cpp - loadMap()
+// map/map_manager.cpp
+void MapManager::checkCutsceneTriggers(const sf::Vector2f& playerPos) {
+    // Log::info << "Checking for triggers from : " << m_data.cutsceneTriggers.size() << "\n";
+    for (const auto& trigger : m_data.cutsceneTriggers) {
+        // Already triggered?
+        if (m_data.triggeredCutscenes.find(trigger.id) != m_data.triggeredCutscenes.end())
+            continue;
+
+        // Distance check (unscaled coordinates)
+        sf::Vector2f worldPos = trigger.position * Scale::get();
+        float dist = std::hypot(playerPos.x - worldPos.x, playerPos.y - worldPos.y);
+        if (dist > trigger.radius * Scale::get())
+            continue;
+
+        // Look up the NPC
+        NPC* npc = NPCManager::get().getNPC(trigger.npcId);
+        if (!npc) {
+            Log::warn << "Cutscene trigger " << trigger.id << ": NPC '" << trigger.npcId << "' not found.\n";
+            continue;
+        }
+
+        // Get script
+        auto it = ScriptRegistry::scripts.find(trigger.scriptName);
+        if (it == ScriptRegistry::scripts.end()) {
+            Log::warn << "Cutscene trigger " << trigger.id << ": script '" << trigger.scriptName << "' not found.\n";
+            continue;
+        }
+        bool complete = npc->runSequence(it->second);
+        Log::info << "NPC Runsequence result: " << complete << "\n";
+        if (complete) {
+            m_data.triggeredCutscenes.insert(trigger.id);
+        }
+    }
+}
+
 void MapManager::loadMap(const std::string& mapName) {
     currentMap = mapName;
     Log::info << "Loading map: " << currentMap << "\n";
+    clearCurrentMapData();
+    std::string mapDir = baseDir + currentMap;
+    m_data.loadFromDirectory(mapDir);
+    // DO NOT spawn NPCs here – that is done later by spawnNPCs()
+}
 
-    // Load terrain layers
-    Terrain::loadFromFile(getPath("map.txt").string());
-    Terrain::loadObjectsFromFile(getPath("objects.txt").string());
-    Terrain::loadSolidFromFile(getPath("solid_tiles.txt").string());
-    Terrain::loadSpawnsFromFile(getPath("spawns.txt").string());
+void MapManager::spawnNPCs() {
+    Log::Scope scope("MapManager::spawnNPCs");
+    for (const auto& [pos, props] : m_data.spawns) {
+        if (props.npcTypeId == "player") continue;
 
-    // Load transitions
-    transitions.clear();
-    std::ifstream file(getPath("transitions.txt").string());
-    if (file.is_open()) {
-        std::string line;
-        while (std::getline(file, line)) {
-            if (line.empty() || line[0] == '#') continue;
-            std::istringstream iss(line);
-            float x, y, x2, y2;
-            std::string target, label;
-            if (iss >> x >> y >> target >> label) {
-                Transition tr;
-                tr.triggerPos = sf::Vector2f(x, y);
-                tr.targetMap = target;
-                tr.label = label;
-                if (iss >> x2 >> y2) {
-                    tr.spawnPosition = sf::Vector2f(x2, y2);
-                }
-                transitions.push_back(tr);
-            } else {
-                Log::warn << "Invalid transition line: " << line << "\n";
+        // Skip if this NPC is marked dead
+        if (!props.uniqueID.empty()) {
+            std::string deadFlag = "npc_dead_" + props.uniqueID;
+            if (StoryManager::get().hasFlag(deadFlag)) {
+                Log::info << "Skipping dead NPC: " << props.uniqueID << "\n";
+                continue;
             }
         }
-        file.close();
-        Log::info << "Loaded " << transitions.size() << " transitions.\n";
-    } else {
-        Log::info << "No transitions file found.\n";
+
+        Log::info << "Spawning NPC: " << props.npcTypeId << " at (" << pos.first << ", " << pos.second << ")\n";
+        
+
+        NPC* npc = NPCManager::get().createNPC(props, sf::Vector2f(pos.first, pos.second));
+        if (npc) {
+            if (!props.waypoints.empty()) npc->setWaypoints(props.waypoints);
+            if (!props.scriptName.empty()) {
+                auto it = ScriptRegistry::scripts.find(props.scriptName);
+                if (it != ScriptRegistry::scripts.end()) npc->runSequence(it->second);
+            }
+        }
+    }
+    if (m_data.playerSpawnPos != sf::Vector2f(0.f,0.f)) {
+        Terrain::setPlayerSpawnPosition(m_data.playerSpawnPos);
     }
 }
 
-// ---------- Fixed saveCurrentMap ----------
 void MapManager::saveCurrentMap() const {
-    Log::info << "Saving map: " << currentMap << "\n";
-
-    Terrain::saveToFile(getPath("map.txt").string());
-    Terrain::saveObjectsToFile(getPath("objects.txt").string());
-    Terrain::saveSolidToFile(getPath("solid_tiles.txt").string());
-    Terrain::saveSpawnsToFile(getPath("spawns.txt").string());
-
-    std::ofstream file(getPath("transitions.txt").string());
-    if (file.is_open()) {
-        for (const auto& tr : transitions) {
-            file << tr.triggerPos.x << " " << tr.triggerPos.y << " "
-                 << tr.targetMap << " " << tr.label;
-            if (tr.spawnPosition.has_value()) {
-                file << " " << tr.spawnPosition->x << " " << tr.spawnPosition->y;
-            }
-            file << "\n";
-        }
-        file.close();
-    } else {
-        Log::error << "Failed to save transitions.txt\n";
-    }
+    std::string mapDir = baseDir + currentMap;
+    m_data.saveToDirectory(mapDir);
 }
 
 std::optional<Transition> MapManager::getTransitionAt(const sf::Vector2f& position, float threshold) const {
-    for (auto& tr : transitions) {
-        sf::Vector2f triggerPos = tr.triggerPos * Scale::get(); // Scale trigger position to world coordinates
-        sf::Vector2f diff = triggerPos - position;
-        float dY = std::abs(diff.y);
-        float dX = std::abs(diff.x);
-        if (dX <= threshold && dY <= threshold) {
+    for (const auto& tr : m_data.transitions) {
+        sf::Vector2f trigger = tr.triggerPos * Scale::get();
+        if (std::abs(trigger.x - position.x) < threshold && std::abs(trigger.y - position.y) < threshold) {
             return tr;
         }
     }
     return std::nullopt;
 }
 
-void MapManager::spawnNPCs() {
-    Log::Scope scope("MapManager::spawnNPCs");
-    scope.info << "Spawning NPCs for map: " << currentMap << "\n";
-    NPCManager::spawnAllNPCs();
-    for (NPC* npc : NPCManager::get().getAllNPCs()) {
-        npc->snapToGround();
-    }
-}
-
 void MapManager::switchToMap(const std::string& mapName, std::optional<sf::Vector2f> spawnPos) {
-    if (m_game) {
-        m_game->autoSave();
-    }
-    if (mapName == currentMap) {
-        // if same then just reposition player but with transition
+    if (m_game) m_game->autoSave();
+
+    if (mapName == currentMap || mapName == "self") {
         auto action = [this, spawnPos](TransitionScreen& screen) {
-            Log::info << "TransitionScreen: action called for repositioning player in same map " << currentMap << "\n";
-            if (m_player) {
-                if (spawnPos.has_value()) {
-                    m_player->resetToPosition(*spawnPos);
-                    Log::info << "Player placed at custom spawn (" << spawnPos->x << ", " << spawnPos->y << ")\n";
-                } else {
-                    m_player->resetToSpawn();
-                    m_player->snapToGround();
-                    Log::info << "Player reset to map default spawn.\n";
+            auto* player = Player::get().getPlayer();
+            if (player) {
+                if (spawnPos) player->resetToPosition(*spawnPos);
+                else {
+                    player->resetToSpawn();
+                    player->snapToGround();
                 }
-            } else {
-                Log::warn << "No player pointer in MapManager; cannot reposition player.\n";
             }
-            if (m_game) {
-                m_game->snapCameraToPlayer();
-                m_game->autoSave();
-            }
+            if (m_game) m_game->snapCameraToPlayer();
             screen.continueTransition();
         };
+        UIManager::get().pushScreen(std::make_unique<TransitionScreen>(action, 1.f));
+        return;
     }
 
-    Log::info << "Switching from " << currentMap << " to " << mapName << "\n";
-
+    // we need to clear old NPCs, load new map, reposition player
     auto action = [this, mapName, spawnPos](TransitionScreen& screen) {
-        Log::info << "TransitionScreen: action called for map switch to " << mapName << "\n";
-        // 1. Clear old data
+        // clear old world state (NPCs, etc.) – but keep player?
+        // We'll clear everything and respawn
         clearCurrentMapData();
-
-        // 2. Load new map (without spawning NPCs)
         loadMap(mapName);
-
         spawnNPCs();
-        // 3. Reposition player
-        if (m_player) {
-            if (spawnPos.has_value()) {
-                m_player->resetToPosition(*spawnPos);
-                Log::info << "Player placed at custom spawn (" << spawnPos->x << ", " << spawnPos->y << ")\n";
-            } else {
-                m_player->resetToSpawn();
-                m_player->snapToGround();
-                Log::info << "Player reset to map default spawn.\n";
+        // reposition player
+        auto* player = Player::get().getPlayer();
+        if (player) {
+            if (spawnPos) player->resetToPosition(*spawnPos);
+            else {
+                player->resetToSpawn();
+                player->snapToGround();
             }
-        } else {
-            Log::warn << "No player pointer in MapManager; cannot reposition player.\n";
         }
         if (m_game) {
             m_game->snapCameraToPlayer();
             m_game->autoSave();
         }
-
-        Log::info << "continueTransition() called after map switch.\n";
         screen.continueTransition();
     };
-
     UIManager::get().pushScreen(std::make_unique<TransitionScreen>(action, 1.f));
 }

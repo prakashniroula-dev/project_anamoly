@@ -1,6 +1,8 @@
 #pragma once
 #include <entities/characters.hpp>
 #include <debug/logs.hpp>
+#include <entities/npc.hpp>
+#include <game/interaction_manager.hpp>   // for ActionHint
 
 class Player {
 public:
@@ -10,6 +12,7 @@ public:
     }
 
     void setPlayer(Character& c) { player = &c; }
+    void setPlayerNPC(NPC* npc) { player = static_cast<Character*>(npc); }
     Character* getPlayer() { return player; }
     void setCharacter(std::string c) {
       if (player) {
@@ -34,18 +37,29 @@ public:
         return player ? player->controlsLocked() : true;
     }
 
-    void swapTo(Character* newChar);    // take control of an NPC (or any Character)
-    void swapBack();                    // revert to the previous character
-    bool canSwapBack() const { return m_characterStack.size() > 1; }
+    void handleEvents() {
+      if (player) player->handleEvents();
+    }
 
     
-    void setTooltip(const std::string& text);
-    void clearTooltip();
-    void drawTooltip(sf::RenderWindow& win) const;
+    bool canSwap(NPC* npc) const;
+    void swapTo(Character* newChar);    // take control of an NPC (or any Character)
+    void swapBack();                    // revert to the previous character
+    bool canSwapBack() const { return m_characterStack.size() == 1; }
+
+    
+    void setHints(const std::vector<ActionHint>& hints) { m_hints = hints; }
+    void clearHints() { m_hints.clear(); }
+    void drawTooltip(sf::RenderWindow& win) const;   // now uses m_hints
+
+    void clearStack() {
+      m_characterStack.clear();
+    }
     
     private:
     Player() = default;  // private constructor
     Character* player = nullptr;
      std::vector<Character*> m_characterStack;
      std::string m_tooltipText;
+      std::vector<ActionHint> m_hints;
 };

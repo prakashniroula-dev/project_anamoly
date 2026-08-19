@@ -1,6 +1,8 @@
+/* story\story_helpers.hpp */
 #pragma once
 #include <string>
 #include "story_manager.hpp"
+#include <clue/clue_manager.hpp>   // NEW
 #include <debug/logs.hpp>
 #include <sstream>  // for std::stringstream
 
@@ -51,6 +53,9 @@ namespace StoryHelpers {
                 } else if (condStr.rfind("hasItem(", 0) == 0) {
                     std::string key = condStr.substr(8, condStr.size() - 9);
                     val = StoryManager::get().hasItem(key);
+                } else if (condStr.rfind("hasDiscoveredClue(", 0) == 0) {   // NEW
+                    std::string key = condStr.substr(18, condStr.size() - 19);
+                    val = ClueManager::get().isDiscovered(key);
                 } else {
                     Log::warn << "Unknown condition atom: " << condStr << std::endl;
                     val = false;
@@ -78,9 +83,21 @@ namespace StoryHelpers {
             if (token.rfind("setFlag(", 0) == 0) {
                 std::string key = token.substr(8, token.size() - 9);
                 StoryManager::get().setFlag(key);
+            } else if (token.rfind("clearFlag(", 0) == 0) {
+                std::string key = token.substr(10, token.size() - 11);
+                StoryManager::get().setFlag(key, false);
             } else if (token.rfind("giveItem(", 0) == 0) {
                 std::string key = token.substr(9, token.size() - 10);
                 StoryManager::get().giveItem(key);
+            } else if (token.rfind("takeItem(", 0) == 0) {
+                std::string key = token.substr(9, token.size() - 10);
+                StoryManager::get().giveItem(key, false);
+            } else if (token.rfind("discoverClue(", 0) == 0) {   // NEW
+                std::string key = token.substr(13, token.size() - 14);
+                ClueManager::get().discoverClue(key);
+            } else if (token.rfind("undiscoverClue(", 0) == 0) {   // NEW
+                std::string key = token.substr(15, token.size() - 16);
+                ClueManager::get().discoverClue(key, false);
             } else {
                 Log::warn << "Unknown action: " << token << std::endl;
             }

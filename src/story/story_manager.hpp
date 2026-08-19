@@ -32,7 +32,7 @@ public:
     }
 
     // Items (simple boolean presence)
-    void giveItem(const std::string& item) { items[item] = true; }
+    void giveItem(const std::string& item, bool value = true) { items[item] = value; }
     bool hasItem(const std::string& item) const { return items.find(item) != items.end() && items.at(item); }
 
     // Choices made (for later reference)

@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include <sound/sound_manager.hpp>
+#include <settings/settings.hpp>
 
 // -----------------------------------------------------------------------------
 // Layout constants
@@ -95,7 +96,43 @@ OptionsMenu::OptionsMenu() : m_titleText(m_font) {
 
 // -----------------------------------------------------------------------------
 void OptionsMenu::onEnter() {
-    Log::info << "OptionsMenu entered.\n";
+    // Read current values from Settings
+    m_volume = Settings::get().masterVolume;
+    m_musicOn = Settings::get().musicVolume > 0.0f;
+    m_sfxOn   = Settings::get().sfxVolume > 0.0f;
+    m_maxFps = Settings::get().maxFps;
+
+    // Apply to SoundManager (so they are in sync)
+    SoundManager::get().setMasterVolume(m_volume);
+    SoundManager::get().setMusicVolume(m_musicOn ? 1.0f : 0.0f);
+    SoundManager::get().setSFXVolume(m_sfxOn ? 1.0f : 0.0f);
+
+    // ---- Sync the control UI values ----
+    for (auto& ctrl : m_controls) {
+        switch (ctrl.id) {
+            case ControlID::Volume:
+                ctrl.value = m_volume;
+                break;
+            case ControlID::MaxFps: {
+                const int steps[] = {30, 60, 120, 240, 0};
+                int idx = 0;
+                for (int i = 0; i < 5; ++i) {
+                    if (steps[i] == m_maxFps) { idx = i; break; }
+                }
+                ctrl.value = idx / 4.0f; // 0..1
+                break;
+            }
+            case ControlID::Music:
+                ctrl.value = m_musicOn ? 1.0f : 0.0f;
+                break;
+            case ControlID::Sfx:
+                ctrl.value = m_sfxOn ? 1.0f : 0.0f;
+                break;
+            default:
+                break;
+        }
+    }
+
     m_needLayoutUpdate = true;
 }
 
@@ -316,13 +353,20 @@ void OptionsMenu::onControlChanged(Control& ctrl) {
 
 void OptionsMenu::applySettings() {
     // Apply to SoundManager
+    Settings::get().masterVolume = m_volume;
     SoundManager::get().setMasterVolume(m_volume);
+
+    Settings::get().musicVolume = m_musicOn ? 1.0f : 0.0f;
     SoundManager::get().setMusicVolume(m_musicOn ? 1.0f : 0.0f);
+
+    Settings::get().sfxVolume = m_sfxOn ? 1.0f : 0.0f;
     SoundManager::get().setSFXVolume(m_sfxOn ? 1.0f : 0.0f);
-    Log::info << "Options applied: Volume=" << (int)(m_volume*100)
-              << "%, FPS=" << (m_maxFps==0?"Unlimited":std::to_string(m_maxFps))
-              << ", Music=" << (m_musicOn?"On":"Off")
-              << ", SFX=" << (m_sfxOn?"On":"Off") << "\n";
+
+    // Log::info << "Options applied: Volume=" << (int)(m_volume*100)
+    //           << "%, FPS=" << (m_maxFps==0?"Unlimited":std::to_string(m_maxFps))
+    //           << ", Music=" << (m_musicOn?"On":"Off")
+    //           << ", SFX=" << (m_sfxOn?"On":"Off") << "\n";
+    Settings::get().save();
 }
 
 // -----------------------------------------------------------------------------

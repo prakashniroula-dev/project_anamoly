@@ -65,6 +65,7 @@ void SpawnEditor::init() {
 
     std::vector<std::string> typeIds = NPCManager::get().getTypeIds();
     for (const auto& id : typeIds) {
+        if ( id == "player") continue; // skip player type (already added)
         spawnKeys.push_back(id);
     }
 

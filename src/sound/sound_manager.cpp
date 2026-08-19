@@ -9,8 +9,33 @@ namespace {
   static const std::unordered_map<std::string, std::string> sfxList = {
     {"ui_click", "ui_click.wav"},
     {"heavy_door_open", "door.wav"},
+    {"door_locked", "door_locked.wav"},
     {"shot", "shot.wav"},
-    {"footsteps", "footsteps.wav"}
+    {"footsteps", "footsteps.wav"},
+
+    {"ladder0", "ladder0.wav"},
+    {"ladder1", "ladder1.wav"},
+
+    {"inspect", "inspect.wav"},
+    {"ui_back", "ui_back.wav"},
+
+    {"thunder", "thunder.wav"},
+
+    /* NPC sounds */
+    {"npc_talk_start0", "npc/npc_talk_start0.wav"},
+    {"npc_talk_start1", "npc/npc_talk_start1.wav"},
+    {"npc_talk_short0", "npc/npc_talk_short0.wav"},
+    {"npc_talk_short1", "npc/npc_talk_short1.wav"},
+    {"npc_talk_short2", "npc/npc_talk_short2.wav"},
+    {"npc_talk_short3", "npc/npc_talk_short3.wav"},
+    {"npc_talk_continue0", "npc/npc_talk_continue0.wav"},
+    {"npc_talk_continue1", "npc/npc_talk_continue1.wav"},
+    {"npc_talk_continue2", "npc/npc_talk_continue2.wav"},
+    {"npc_talk_continue3", "npc/npc_talk_continue3.wav"},
+    /* NPC emotion sounds */
+    {"npc_laugh_evil", "npc/npc_evil_laugh.wav"},
+    {"npc_talk_angry", "npc/npc_talk_angry.wav"},
+    {"npc_talk_excited", "npc/npc_talk_excited.wav"},
   };
   static const std::unordered_map<std::string, std::string> musicList = {
     {"main_menu", "main_menu.wav"},
@@ -20,7 +45,7 @@ namespace {
 
 void SoundManager::initAllSounds() {
   for (const auto& [key, filename] : sfxList) {
-    SoundManager::get().loadSound(key, SFX_DIR + filename, 0.8f);
+    SoundManager::get().loadSound(key, SFX_DIR + filename);
   }
 }
 
@@ -69,6 +94,8 @@ void SoundManager::playSound(const std::string& key, float volumeMultiplier, flo
 
     auto sound = std::make_unique<sf::Sound>(*it->second.buffer);
     float finalVol = m_masterVol * m_sfxVol * it->second.defaultVolume * volumeMultiplier;
+    // increase volume of SFX by 30% for better audibility
+    finalVol = std::clamp(finalVol * 1.3f, 0.0f, 1.0f);
     sound->setVolume(finalVol * 100.f);
     sound->setPitch(pitch);
     sound->setLooping(loop);
@@ -147,7 +174,6 @@ void SoundManager::update(float dt) {
     if (footstepTimer >= static_cast<int>(footstepInterval * 1000)) {
         footstepTimer = 0;
         playingFootstep = false;
-        Log::info << "Footstep sound timer reset. Stopping footstep sound if playing.\n";
         if (m_footstepSound && m_footstepSound->getStatus() == sf::SoundSource::Status::Playing) {
             m_footstepSound->pause();
         }
@@ -180,6 +206,7 @@ void SoundManager::setSFXVolume(float vol) {
 }
 
 void SoundManager::setMusicVolume(float vol) {
+  vol = vol * 0.8f; // 20% reduction for better balance with SFX
     m_musicVol = std::clamp(vol, 0.0f, 1.0f);
     if (m_currentMusic && m_currentMusic->getStatus() == sf::SoundSource::Status::Playing) {
         float finalVol = m_masterVol * m_musicVol * 1.0f;

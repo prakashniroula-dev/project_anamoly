@@ -43,12 +43,34 @@ public:
     const std::vector<sf::Vector2f> &getWaypoints() const { return m_waypoints.empty() ? type.waypoints : m_waypoints; }
 
     // Run a script (sequence)
-    void runSequence(const std::vector<Action::Action> &actions);
+    bool runSequence(const std::vector<Action::Action> &actions);
     void dialogueEnded(); 
 
 private:
 private:
+
+    // Behavior state
+    struct BehaviorState
+    {
+        enum class Type
+        {
+            Idle,
+            Patrol,
+            Follow,
+            Scripted,
+            Talking
+        } type = Type::Idle;
+        sf::Vector2f targetPos;
+        float timer = 0.f;
+    };
+
+    bool m_sequenceTruthful = false;
+    bool m_cutsceneTriggered = false;
     bool m_waitingForDialogue = false;
+    BehaviorState::Type m_originalBehaviorType = BehaviorState::Type::Idle;
+    size_t m_originalWaypointIndex = 0;
+
+    void restoreAIState();   // new helper
     bool m_aiPaused = false;
     float m_blockedTimer = 0.f;       // cooldown to prevent rapid direction changes
     bool m_directionReversed = false; // to avoid flipping multiple times per frame
@@ -77,20 +99,6 @@ private:
     void executeCurrentAction();
     void advanceScript();
 
-    // Behavior state
-    struct BehaviorState
-    {
-        enum class Type
-        {
-            Idle,
-            Patrol,
-            Follow,
-            Scripted,
-            Talking
-        } type = Type::Idle;
-        sf::Vector2f targetPos;
-        float timer = 0.f;
-    };
     BehaviorState behaviorState;
     size_t nextWaypoint = 0;
 

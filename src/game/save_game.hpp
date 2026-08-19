@@ -16,12 +16,13 @@ struct SaveGame {
     sf::Vector2f playerPos;          // unscaled world coordinates
     std::string playerCharacter;     // key like "fighter_detective"
     std::unordered_map<std::string, NPCState> npcStates;
-
+    
     // Story state
     std::unordered_map<std::string, bool> flags;
     std::unordered_map<std::string, bool> items;
     std::vector<std::string> choicesMade;
-
+    std::vector<std::string> cluesDiscovered;
+    
     // Save/load to file
     bool save(const std::string& filepath) const;
     bool load(const std::string& filepath);

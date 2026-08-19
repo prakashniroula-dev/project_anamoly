@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <debug/logs.hpp>
-
+#include <clue/clue_manager.hpp>
 bool SaveGame::save(const std::string& filepath) const {
     std::ofstream out(filepath);
     if (!out.is_open()) {
@@ -27,6 +27,8 @@ bool SaveGame::save(const std::string& filepath) const {
     for (const auto& [id, state] : npcStates) {
         out << id << " " << (state.autoTalked ? 1 : 0) << " " << (state.talked ? 1 : 0) << "\n";
     }
+    out << "#clues\n";
+    ClueManager::get().saveToStream(out);
     out << "#end\n";
     return true;
 }
@@ -82,6 +84,8 @@ bool SaveGame::load(const std::string& filepath) {
                     state.talked = (talked != 0);
                     npcStates[id] = state;
                 }
+            } else if (section == "clues") {
+              cluesDiscovered.push_back(line);
             } else if (section == "end") {
                 break;
             }
